@@ -1,19 +1,22 @@
 #
 # Clase que representa la mano de los jugadores
 #
-class Hand:
-    cereal = 0
-    mineral = 0
-    wood = 0
-    clay = 0
-    wool = 0
+from Classes.Materials import Materials
 
+
+class Hand:
+    resources = Materials()
+
+    # add_material(resource, added) -> void
+    #
     # Suma num al material seleccionado
-    def add_material(self, material, added):
+    def add_material(self, resource, added):
         return
 
+    # subtract_material(resource, subtracted) ->
+    #
     # Resta num al material seleccionado
-    def substract_material(self, material, substracted):
+    def subtract_material(self, resource, subtracted):
         return
 
     def __init__(self):

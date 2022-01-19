@@ -1,10 +1,10 @@
 from Classes.Materials import Materials
 
 
-#
-# Clase que representa los intercambios entre jugadores.
-#
 class TradeOffer:
+    """
+    Clase que representa los intercambios entre jugadores.
+    """
     gives = Materials()
     receives = Materials()
 

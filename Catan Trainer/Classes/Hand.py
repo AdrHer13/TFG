@@ -1,22 +1,28 @@
-#
-# Clase que representa la mano de los jugadores
-#
 from Classes.Materials import Materials
 
 
 class Hand:
+    """
+    Clase que representa la mano de los jugadores
+    """
     resources = Materials()
 
-    # add_material(resource, added) -> void
-    #
-    # Suma num al material seleccionado
     def add_material(self, resource, added):
+        """
+        Suma added al material seleccionado
+        :param resource: tipo de recurso a añadir
+        :param added: cantidad del material a añadir
+        :return: void
+        """
         return
 
-    # subtract_material(resource, subtracted) ->
-    #
-    # Resta num al material seleccionado
     def subtract_material(self, resource, subtracted):
+        """
+        Resta subtracted al material seleccionado
+        :param resource: tipo de recurso a restar
+        :param subtracted: cantidad del material a añadir
+        :return:
+        """
         return
 
     def __init__(self):

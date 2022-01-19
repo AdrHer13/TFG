@@ -1,7 +1,7 @@
-#
-# Clase que representa los materiales. Se usa tanto en la mano de los jugadores como en las ofertas
-#
 class Materials:
+    """
+    Clase que representa los materiales. Se usa tanto en la mano de los jugadores como en las ofertas
+    """
     cereal = 0
     mineral = 0
     clay = 0

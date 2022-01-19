@@ -1,38 +1,45 @@
 from Classes.Hand import Hand
+from Classes.TradeOffer import TradeOffer
 
 
-#
-# Interfaz que implementa a un bot
-#
 class BotInterface:
+    """
+    Interfaz que implementa a un bot
+    """
     resources = Hand()
 
-    # on_trade_offer() -> void
-    #
-    # Trigger para cuando llega una oferta
-    def on_trade_offer(self):
+    def on_trade_offer(self, incoming_trade_offer=TradeOffer()):
+        """
+        Trigger para cuando llega una oferta
+        :param incoming_trade_offer: Oferta de comercio que le llega al bot
+        :return: void
+        """
         pass
 
-    # on_turn_start() -> void
-    #
-    # Trigger para cuando empieza el turno (muy probablemente innecesarios)
     def on_turn_start(self):
+        """
+        Trigger para cuando empieza el turno (muy probablemente innecesarios)
+        :return: void
+        """
         pass
 
-    # on_turn_end() -> void
-    #
-    # Trigger para cuando acaba el turno (muy probablemente innecesarios)
     def on_turn_end(self):
+        """
+        Trigger para cuando acaba el turno (muy probablemente innecesarios)
+        :return: void
+        """
         pass
 
-    # on_commerce_phase() -> void
-    #
-    # Trigger para cuando empieza la fase de comercio
     def on_commerce_phase(self):
+        """
+        Trigger para cuando empieza la fase de comercio
+        :return: void
+        """
         pass
 
-    # on_build_phase() -> void
-    #
-    # Trigger para cuando empieza la fase de construcción
     def on_build_phase(self):
+        """
+        Trigger para cuando empieza la fase de construcción
+        :return: void
+        """
         pass

@@ -25,6 +25,7 @@ class GameManager:
         Función que devuelve un valor entre el 2 y el 12, simulando una tirada de 2d6
         :return: integer entre 2 y 12
         """
+        print('throw dice')
         return
 
     def give_resources(self):
@@ -32,6 +33,8 @@ class GameManager:
         Función que entrega materiales a cada uno de los jugadores en función de la tirada de dados
         :return: void
         """
+        print(self.lastDiceRoll)
+        print('give resources')
         return
 
     ########### Board functions ###################
@@ -42,7 +45,7 @@ class GameManager:
         :param node: Número que representa un nodo en el tablero
         :return: void
         """
-        self.board.build_town(player, node)
+        # self.board.build_town(player, node)
         return
 
     def build_city(self, player, node):
@@ -52,7 +55,7 @@ class GameManager:
         :param node: Número que representa un nodo en el tablero
         :return: void
         """
-        self.board.build_city(player, node)
+        # self.board.build_city(player, node)
         return
 
     def build_road(self, player, road):
@@ -62,7 +65,7 @@ class GameManager:
         :param road: Número que representa una carretera en el tablero
         :return: void
         """
-        self.board.build_road(player, road)
+        # self.board.build_road(player, road)
         return
 
     def move_thief(self, terrain, adjacentPlayer):
@@ -73,7 +76,7 @@ class GameManager:
         :param adjacentPlayer: Número de un jugador que esté adyacente al hexágono seleccionado
         :return: void
         """
-        self.board.move_thief(terrain)
+        # self.board.move_thief(terrain)
         self.__steal_from_player(adjacentPlayer)
         return
 

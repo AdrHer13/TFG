@@ -12,6 +12,10 @@ class TurnManager:
     round = int
 
     def __init__(self):
+        self.turn, self.whoseTurnIsIt, self.phase, self.round = 0, 1, 0, 0
+        return
+
+    def end_phase(self):
         return
 
     #############################
@@ -39,4 +43,35 @@ class TurnManager:
         """
         :return: int round
         """
+        return
+
+    #############################
+    ########## setters ##########
+    #############################
+    def set_turn(self, turn=int):
+        """
+        :return: int turn
+        """
+        self.turn = turn
+        return
+
+    def set_whose_turn_is_it(self, player=int):
+        """
+        :return: int whose_turn_is_it
+        """
+        self.whoseTurnIsIt = player
+        return
+
+    def set_phase(self, phase=int):
+        """
+        :return: int phase
+        """
+        self.phase = phase
+        return
+
+    def set_round(self, round=int):
+        """
+        :return: int round
+        """
+        self.round = round
         return

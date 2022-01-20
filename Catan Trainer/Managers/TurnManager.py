@@ -9,36 +9,9 @@ class TurnManager:
     turn = int
     whoseTurnIsIt = int
     phase = int
+    round = int
 
     def __init__(self):
-        return
-
-    def start_turn(self):
-        """
-        Esta función permite iniciar el turno
-        :return: void
-        """
-        return
-
-    def start_commerce_phase(self):
-        """
-        Esta función permite pasar a la fase de comercio
-        :return: void
-        """
-        return
-
-    def start_build_phase(self):
-        """
-        Esta función permite pasar a la fase de construcción
-        :return: void
-        """
-        return
-
-    def end_turn(self):
-        """
-        Esta función permite finalizar el turno
-        :return: void
-        """
         return
 
     #############################
@@ -59,5 +32,11 @@ class TurnManager:
     def get_phase(self):
         """
         :return: int phase
+        """
+        return
+
+    def get_round(self):
+        """
+        :return: int round
         """
         return

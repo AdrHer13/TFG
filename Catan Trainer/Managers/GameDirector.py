@@ -13,7 +13,6 @@ class GameDirector:
     game_manager = GameManager()
 
     def __init__(self):
-        self.bot_manager = BotManager(self.__class__)
         return
 
     # Turn #
@@ -23,7 +22,7 @@ class GameDirector:
         :param player: número que representa al jugador
         :return: void
         """
-        print('start turn: ' + self.turn_manager.turn)
+        print('start turn: ' + str(self.turn_manager.turn))
         self.turn_manager.set_phase(0)
         self.bot_manager.set_actual_player(player)
 
@@ -39,9 +38,11 @@ class GameDirector:
         :param player: número que representa al jugador
         :return: void
         """
-        print('start commerce phase: ' + self.turn_manager.turn)
+        print('start commerce phase: ' + str(self.turn_manager.turn))
         self.turn_manager.set_phase(1)
-        self.bot_manager.actualPlayer.on_commerce_phase()
+        trade_offer = self.bot_manager.actualPlayer.on_commerce_phase()
+        if trade_offer:
+            self.game_manager.commerceManager.trade_with_player(trade_offer)
         return
 
     def start_build_phase(self, player=int):
@@ -50,10 +51,22 @@ class GameDirector:
         :param player: número que representa al jugador
         :return: void
         """
-        print('start build phase: ' + self.turn_manager.turn)
+        print('start build phase: ' + str(self.turn_manager.turn))
         self.turn_manager.set_phase(2)
-        self.bot_manager.actualPlayer.on_build_phase()
-        return
+        to_build = self.bot_manager.actualPlayer.on_build_phase()
+        if to_build:
+            if to_build[0] == "town":
+                self.game_manager.build_town(self.bot_manager.actualPlayer, to_build[1])
+            elif to_build[0] == "city":
+                self.game_manager.build_city(self.bot_manager.actualPlayer, to_build[1])
+            elif to_build[0] == "road":
+                self.game_manager.build_road(self.bot_manager.actualPlayer, to_build[1])
+            elif to_build[0] == "card":
+                # TODO
+                print("Por hacer, última actualización si eso")
+                pass
+        else:
+            return
 
     def end_turn(self, player=int):
         """
@@ -61,7 +74,7 @@ class GameDirector:
         :param player: número que representa al jugador
         :return: void
         """
-        print('start end turn: ' + self.turn_manager.turn)
+        print('start end turn: ' + str(self.turn_manager.turn))
         self.turn_manager.set_phase(3)
         self.bot_manager.actualPlayer.on_turn_end()
         return
@@ -93,9 +106,10 @@ class GameDirector:
         print('round start')
         self.turn_manager.set_whose_turn_is_it(1)
         self.start_turn(self.turn_manager.whoseTurnIsIt)
-        # self.start_commerce_phase(self.turn_manager.whoseTurnIsIt)
-        # self.start_build_phase(self.turn_manager.whoseTurnIsIt)
-        # self.end_turn(self.turn_manager.whoseTurnIsIt)
+        self.start_commerce_phase(self.turn_manager.whoseTurnIsIt)
+        self.start_build_phase(self.turn_manager.whoseTurnIsIt)
+        self.end_turn(self.turn_manager.whoseTurnIsIt)
+        self.round_end()
         return
 
     def round_end(self):
@@ -104,7 +118,8 @@ class GameDirector:
         :return:
         """
         print('round end')
-        if(self.turn_manager.get_round() >= 2):
+        if self.turn_manager.get_round() >= 2:
+            # TODO
             return
         else:
             self.turn_manager.set_round(self.turn_manager.get_round() + 1)

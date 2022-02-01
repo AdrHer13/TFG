@@ -25,25 +25,25 @@ class TurnManager:
         """
         :return: int turn
         """
-        return
+        return self.turn
 
     def get_whose_turn_is_it(self):
         """
         :return: int whose_turn_is_it
         """
-        return
+        return self.whoseTurnIsIt
 
     def get_phase(self):
         """
         :return: int phase
         """
-        return
+        return self.phase
 
     def get_round(self):
         """
         :return: int round
         """
-        return
+        return self.round
 
     #############################
     ########## setters ##########

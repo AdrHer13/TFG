@@ -1,62 +1,59 @@
 from Classes.Board import Board
 from Classes.Hand import Hand
 from Classes.TradeOffer import TradeOffer
+
+
 # from Managers.TurnManager import TurnManager
-from Managers.GameDirector import GameDirector
 
 
 class BotInterface:
     """
     Interfaz que implementa a un bot
     """
-    gameDirector = GameDirector()
     resources = Hand()
     board = Board()
 
-    def __init__(self, game_director=GameDirector()) -> None:
+    def __init__(self) -> None:
         super().__init__()
-        self.gameDirector = game_director
 
+    # Los triggers son llamados por el GameDirector las veces que sean necesarias hasta que devuelvan null
+    #  o el GameDirector le niegue continuar el trigger
     def on_trade_offer(self, incoming_trade_offer=TradeOffer()):
         """
-        Trigger para cuando llega una oferta
+        Trigger para cuando llega una oferta. Devuelve si la acepta, la niega o envía una contraoferta
         :param incoming_trade_offer: Oferta de comercio que le llega al bot
-        :return: void
+        :return: true, TradeOffer, false, None
         """
-        pass
+        return None
 
     def on_turn_start(self):
         """
-        Trigger para cuando empieza el turno (muy probablemente innecesarios)
-        :return: void
+        Trigger para cuando empieza el turno (muy probablemente innecesarios). Termina cuando hace un return
+        :return: void, None
         """
         print('Player on turn start')
-        self.gameDirector.end_phase()
-        return
+        return None
 
     def on_turn_end(self):
         """
-        Trigger para cuando acaba el turno (muy probablemente innecesarios)
-        :return: void
+        Trigger para cuando acaba el turno (muy probablemente innecesarios). Termina cuando hace un return
+        :return: void, None
         """
         print('Player on turn end')
-        self.gameDirector.end_phase()
-        pass
+        return None
 
     def on_commerce_phase(self):
         """
-        Trigger para cuando empieza la fase de comercio
-        :return: void
+        Trigger para cuando empieza la fase de comercio. Devuelve una oferta
+        :return: TradeOffer, None
         """
         print('Player on commerce phase')
-        self.gameDirector.end_phase()
-        pass
+        return None
 
     def on_build_phase(self):
         """
-        Trigger para cuando empieza la fase de construcción
-        :return: void
+        Trigger para cuando empieza la fase de construcción. Devuelve un string indicando qué quiere construir
+        :return: array[string: (town, city, road, card), int], None
         """
         print('Player on build phase')
-        self.gameDirector.end_phase()
-        pass
+        return None

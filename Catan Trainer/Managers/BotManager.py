@@ -1,5 +1,4 @@
 from Interfaces.BotInterface import BotInterface
-from Managers.GameDirector import GameDirector
 
 
 class BotManager:
@@ -13,11 +12,7 @@ class BotManager:
     playerThree = BotInterface()
     playerFour = BotInterface()
 
-    def __init__(self, game_director=GameDirector()):
-        self.playerOne = BotInterface(game_director)
-        self.playerTwo = BotInterface(game_director)
-        self.playerThree = BotInterface(game_director)
-        self.playerFour = BotInterface(game_director)
+    def __init__(self):
         return
 
     def load_bots(self):

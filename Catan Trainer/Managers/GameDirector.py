@@ -22,7 +22,8 @@ class GameDirector:
         :param player: número que representa al jugador
         :return: void
         """
-        print('start turn: ' + str(self.turn_manager.turn))
+        print('----------')
+        print('start turn: ' + str(self.turn_manager.get_turn()))
         self.turn_manager.set_phase(0)
         self.bot_manager.set_actual_player(player)
 
@@ -38,7 +39,7 @@ class GameDirector:
         :param player: número que representa al jugador
         :return: void
         """
-        print('start commerce phase: ' + str(self.turn_manager.turn))
+        print('start commerce phase: ' + str(self.turn_manager.get_turn()))
         self.turn_manager.set_phase(1)
         trade_offer = self.bot_manager.actualPlayer.on_commerce_phase()
         if trade_offer:
@@ -51,7 +52,7 @@ class GameDirector:
         :param player: número que representa al jugador
         :return: void
         """
-        print('start build phase: ' + str(self.turn_manager.turn))
+        print('start build phase: ' + str(self.turn_manager.get_turn()))
         self.turn_manager.set_phase(2)
         to_build = self.bot_manager.actualPlayer.on_build_phase()
         if to_build:
@@ -74,12 +75,14 @@ class GameDirector:
         :param player: número que representa al jugador
         :return: void
         """
-        print('start end turn: ' + str(self.turn_manager.turn))
+        print('start end turn: ' + str(self.turn_manager.get_turn()))
         self.turn_manager.set_phase(3)
         self.bot_manager.actualPlayer.on_turn_end()
         return
 
     def end_phase(self):
+        # TODO
+        # Probablemente innecesario
         print('end phase')
         if self.turn_manager.phase == 0:
             self.start_commerce_phase(self.turn_manager.get_whose_turn_is_it())
@@ -103,12 +106,16 @@ class GameDirector:
         Esta función permite comenzar una ronda nueva
         :return:
         """
+        print('---------------------')
         print('round start')
-        self.turn_manager.set_whose_turn_is_it(1)
-        self.start_turn(self.turn_manager.whoseTurnIsIt)
-        self.start_commerce_phase(self.turn_manager.whoseTurnIsIt)
-        self.start_build_phase(self.turn_manager.whoseTurnIsIt)
-        self.end_turn(self.turn_manager.whoseTurnIsIt)
+        turn_array = [1, 2, 3, 4]
+        for i in turn_array:
+            self.turn_manager.set_turn(self.turn_manager.get_turn() + 1)
+            self.turn_manager.set_whose_turn_is_it(i)
+            self.start_turn(self.turn_manager.whoseTurnIsIt)
+            self.start_commerce_phase(self.turn_manager.whoseTurnIsIt)
+            self.start_build_phase(self.turn_manager.whoseTurnIsIt)
+            self.end_turn(self.turn_manager.whoseTurnIsIt)
         self.round_end()
         return
 
@@ -118,6 +125,7 @@ class GameDirector:
         :return:
         """
         print('round end')
+        print('---------------------')
         if self.turn_manager.get_round() >= 2:
             # TODO
             return

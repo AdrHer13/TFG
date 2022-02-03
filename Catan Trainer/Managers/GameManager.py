@@ -1,6 +1,8 @@
 #
 # Clase que se encarga de dirigir una partida de Catan
 #
+import random
+
 from Classes.Board import Board
 from Managers.TurnManager import TurnManager
 from Managers.CommerceManager import CommerceManager
@@ -25,7 +27,8 @@ class GameManager:
         Función que devuelve un valor entre el 2 y el 12, simulando una tirada de 2d6
         :return: integer entre 2 y 12
         """
-        print('throw dice')
+        self.lastDiceRoll = random.randint(2, 12)
+        print('throw dice: ' + str(self.lastDiceRoll))
         return
 
     def give_resources(self):
@@ -33,7 +36,6 @@ class GameManager:
         Función que entrega materiales a cada uno de los jugadores en función de la tirada de dados
         :return: void
         """
-        print(self.lastDiceRoll)
         print('give resources')
         return
 

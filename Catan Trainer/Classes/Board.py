@@ -1,18 +1,27 @@
+from Classes.Node import Node
+
+
 class Board:
     """
     Clase que representa una instancia del tablero.
+
+    nodes: [Node(), Node()...] Representa los nodos del tablero. Poseen información de los puertos y nodos adyacentes
+    terrain: [Terrain(), Terrain()...] Representa una ficha de terreno del tablero. Poseen información de los nodos con
+                                       los que hacen contacto, si posee al ladrón actualmente y su probabilidad de salir
     """
-    nodes = []
-    roads = []
-    origTerrain = []
-    terrain = []
-    terrainProb = []
+    nodes = []  # 0 a 53
+    terrain = []  # 0 a 19  # Al recorrer este array para mirar la probabilidad cortar si se han encontrado 2 respuestas
 
     def __init__(self):
         """
         Cuando se llama al init se establece el valor inicial del tablero antes de que se pongan pueblos y carreteras.
         Aquí se pone el terreno y su probabilidad
         """
+        i = 0
+        while i < 54:
+            self.nodes.append(Node(id=i, adjacent_nodes=[]))
+            i += 1
+
         return
 
     # def build_town(self, player, node):

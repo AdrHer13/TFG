@@ -8,6 +8,7 @@ class TradeOffer:
     gives = Materials()
     receives = Materials()
 
-    def __init__(self, init=True):
-        if init:
-            pass
+    def __init__(self, gives=Materials(0, 0, 0, 0, 0), receives=Materials(0, 0, 0, 0, 0)):
+        self.gives = gives
+        self.receives = receives
+        return

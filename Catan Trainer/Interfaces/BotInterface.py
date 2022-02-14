@@ -1,9 +1,7 @@
 from Classes.Board import Board
 from Classes.Hand import Hand
 from Classes.TradeOffer import TradeOffer
-
-
-# from Managers.TurnManager import TurnManager
+from Classes.constants import MaterialConstants
 
 
 class BotInterface:
@@ -12,6 +10,7 @@ class BotInterface:
     """
     resources = Hand()
     board = Board()
+    materialConstants = MaterialConstants()
 
     def __init__(self) -> None:
         super().__init__()

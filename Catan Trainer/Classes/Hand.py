@@ -5,27 +5,30 @@ class Hand:
     """
     Clase que representa la mano de los jugadores
     """
-    resources = Materials()
-
-    def add_material(self, resource, added):
-        """
-        Suma added al material seleccionado
-        :param resource: tipo de recurso a añadir
-        :param added: cantidad del material a añadir
-        :return: void
-        """
-        return
-
-    def subtract_material(self, resource, subtracted):
-        """
-        Resta subtracted al material seleccionado
-        :param resource: tipo de recurso a restar
-        :param subtracted: cantidad del material a añadir
-        :return:
-        """
-        return
+    resources = Materials(0, 0, 0, 0, 0)
 
     def __init__(self):
-        # print(self.cereal)
         return
 
+    def add_material(self, resource, amount):
+        """
+        Suma amount al material seleccionado (si es negativo lo resta de la cantidad actual)
+        :param resource: tipo de recurso a añadir
+        :param amount: cantidad del material a añadir
+        :return: void
+        """
+        if resource == 0:
+            self.resources.add_cereal(amount)
+        elif resource == 1:
+            self.resources.add_mineral(amount)
+        elif resource == 2:
+            self.resources.add_clay(amount)
+        elif resource == 3:
+            self.resources.add_wood(amount)
+        elif resource == 4:
+            self.resources.add_wool(amount)
+        else:
+            return None
+
+    def get_resources(self):
+        return self.resources

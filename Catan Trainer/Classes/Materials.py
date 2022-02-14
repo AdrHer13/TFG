@@ -2,13 +2,19 @@ class Materials:
     """
     Clase que representa los materiales. Se usa tanto en la mano de los jugadores como en las ofertas
     """
-    cereal = 0
-    mineral = 0
-    clay = 0
-    wood = 0
-    wool = 0
+    # Variables
+    cereal = int
+    mineral = int
+    clay = int
+    wood = int
+    wool = int
 
-    def __init__(self):
+    def __init__(self, cereal=0, mineral=0, clay=0, wood=0, wool=0):
+        self.cereal = cereal
+        self.mineral = mineral
+        self.clay = clay
+        self.wood = wood
+        self.wool = wool
         return
 
     ##### getters #####

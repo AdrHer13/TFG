@@ -16,7 +16,7 @@ class GameDirector:
         return
 
     # Turn #
-    def start_turn(self, player=int):
+    def start_turn(self, player=-1):
         """
         Esta función permite iniciar el turno
         :param player: número que representa al jugador
@@ -33,7 +33,7 @@ class GameDirector:
         self.bot_manager.actualPlayer.on_turn_start()
         return
 
-    def start_commerce_phase(self, player=int):
+    def start_commerce_phase(self, player=-1):
         """
         Esta función permite pasar a la fase de comercio
         :param player: número que representa al jugador
@@ -46,7 +46,7 @@ class GameDirector:
             self.game_manager.commerceManager.trade_with_player(trade_offer)
         return
 
-    def start_build_phase(self, player=int):
+    def start_build_phase(self, player=-1):
         """
         Esta función permite pasar a la fase de construcción
         :param player: número que representa al jugador
@@ -76,7 +76,7 @@ class GameDirector:
         else:
             return
 
-    def end_turn(self, player=int):
+    def end_turn(self, player=-1):
         """
         Esta función permite finalizar el turno
         :param player: número que representa al jugador

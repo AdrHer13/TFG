@@ -24,6 +24,9 @@ class BotManager:
         return
 
     def set_actual_player(self, player=int):
+        if player == -1:
+            # TODO: throw Exception
+            return None
         if player == 1:
             self.actualPlayer = self.playerOne
         elif player == 2:

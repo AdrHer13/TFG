@@ -23,7 +23,7 @@ class CommerceManager:
         """
         return
 
-    def trade_with_the_bank_with_port(self, gives=str, receives=str):
+    def trade_through_harbor(self, gives=str, receives=str):
         """
         Sustituye 3 del material pasado por 1 del deseado
         :param gives: qué material quiere cambiar con el puerto
@@ -32,7 +32,7 @@ class CommerceManager:
         """
         return
 
-    def trade_with_the_bank_with_upgraded_port(self, gives=str, receives=str):
+    def trade_through_special_harbor(self, gives=str, receives=str):
         """
         Sustituye 2 del material pasado por 1 del deseado
         :param gives: qué material quiere cambiar con el puerto

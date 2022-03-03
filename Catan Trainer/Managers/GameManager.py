@@ -47,8 +47,7 @@ class GameManager:
         :param node: Número que representa un nodo en el tablero
         :return: void
         """
-        # self.board.build_town(player, node)
-        return
+        return self.board.build_town(player, node)
 
     def build_city(self, player, node):
         """
@@ -57,8 +56,7 @@ class GameManager:
         :param node: Número que representa un nodo en el tablero
         :return: void
         """
-        # self.board.build_city(player, node)
-        return
+        return self.board.build_city(player, node)
 
     def build_road(self, player, road):
         """

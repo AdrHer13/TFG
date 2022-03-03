@@ -54,17 +54,24 @@ class GameDirector:
         """
         print('start build phase: ' + str(self.turn_manager.get_turn()))
         self.turn_manager.set_phase(2)
+        # TODO: Necesita hacer una comprobación que le llega el objeto esperado y no otra cosa
         to_build = self.bot_manager.actualPlayer.on_build_phase()
         if to_build:
+            built = False
             if to_build[0] == "town":
-                self.game_manager.build_town(self.bot_manager.actualPlayer, to_build[1])
+                built = self.game_manager.build_town(self.bot_manager.actualPlayer, to_build[1])
             elif to_build[0] == "city":
-                self.game_manager.build_city(self.bot_manager.actualPlayer, to_build[1])
+                built = self.game_manager.build_city(self.bot_manager.actualPlayer, to_build[1])
             elif to_build[0] == "road":
-                self.game_manager.build_road(self.bot_manager.actualPlayer, to_build[1])
+                built = self.game_manager.build_road(self.bot_manager.actualPlayer, to_build[1])
             elif to_build[0] == "card":
                 # TODO
-                print("Por hacer, última actualización si eso")
+                pass
+
+            if built:
+                self.start_build_phase(self.bot_manager.actualPlayer)
+            else:
+                # TODO: Avisar que no se ha podido construir
                 pass
         else:
             return

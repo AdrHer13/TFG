@@ -24,41 +24,46 @@ class Board:
     nodes = []  # 0 a 53
     terrain = []  # 0 a 18 | Al recorrer este array para mirar la probabilidad cortar si se han encontrado 2 respuestas
 
-    def __init__(self):
+    def __init__(self, nodes=None, terrain=None):
         """
         Cuando se llama al init se establece el valor inicial del tablero antes de que se pongan pueblos y carreteras.
         Aquí se pone el terreno y su probabilidad
         """
-        i = 0
-        while i < 54:
-            self.nodes.append({
-                "id": i,
-                "adjacent": self.__get_adjacent_nodes(i),
-                "harbor": self.__get_harbors(i),
-                "roads": [],
-                "hasCity": False,
-                "player": 0,
-            })
-            i += 1
-
-        j = 0
-        while j < 19:
-            probability = self.__get_probability(j)
-            if probability != 7:
-                self.terrain.append({
-                    "id": j,
-                    "hasThief": False,
-                    "probability": probability,
-                    "contactingNodes": self.__get_contacting_nodes(j),
+        if nodes is None:
+            i = 0
+            while i < 54:
+                self.nodes.append({
+                    "id": i,
+                    "adjacent": self.__get_adjacent_nodes(i),
+                    "harbor": self.__get_harbors(i),
+                    "roads": [],
+                    "hasCity": False,
+                    "player": 0,
                 })
-            else:
-                self.terrain.append({
-                    "id": j,
-                    "hasThief": True,
-                    "probability": 0,
-                    "contactingNodes": self.__get_contacting_nodes(j),
-                })
-            j += 1
+                i += 1
+        else:
+            self.nodes = nodes
+        if terrain is None:
+            j = 0
+            while j < 19:
+                probability = self.__get_probability(j)
+                if probability != 7:
+                    self.terrain.append({
+                        "id": j,
+                        "hasThief": False,
+                        "probability": probability,
+                        "contactingNodes": self.__get_contacting_nodes(j),
+                    })
+                else:
+                    self.terrain.append({
+                        "id": j,
+                        "hasThief": True,
+                        "probability": 0,
+                        "contactingNodes": self.__get_contacting_nodes(j),
+                    })
+                j += 1
+        else:
+            self.terrain = terrain
 
         ### Código para comprobar que el tablero se inicializa con los adyacentes correctos
         # print('Nodos:')
@@ -82,6 +87,9 @@ class Board:
         #
         #     m += 1
         return
+
+    def get_board(self):
+        return self.__class__()
 
     def __get_contacting_nodes(self, terrain_id):
         """
@@ -333,7 +341,8 @@ class Board:
             self.nodes[finishing_node]['roads'].append({'playerID': player, 'nodeID': starting_node})
             return {True, ''}
         else:
-            return {False, 'No puedes hacer una carretera aquí, no hay una carretera o nodo adyacente que te pertenezca'}
+            return {False,
+                    'No puedes hacer una carretera aquí, no hay una carretera o nodo adyacente que te pertenezca'}
 
     def move_thief(self, terrain=-1):
         """

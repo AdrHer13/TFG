@@ -17,14 +17,16 @@ class BotManager:
 
     def load_bots(self):
         """
-        Carga bots en la partida
+        Carga bots en la partida. Debería de coger 4 scripts de una carpeta, donde todas hereden de BotInterface y
+         las introduce en los correspondientes jugadores.
         :return: void
         """
+        self.playerOne = BotInterface()
         print('bot loading')
         return
 
-    def set_actual_player(self, player=int):
-        if player == -1:
+    def set_actual_player(self, player=0):
+        if player <= 0:
             # TODO: throw Exception
             return None
         if player == 1:

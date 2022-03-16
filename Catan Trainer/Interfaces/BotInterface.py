@@ -56,3 +56,9 @@ class BotInterface:
         """
         print('Player on build phase')
         return None
+
+    def on_game_start(self):
+        """
+        Se llama únicamente al inicio de la partida y sirve para colocar 1 pueblo y una carretera adyacente en el mapa
+        :return:
+        """

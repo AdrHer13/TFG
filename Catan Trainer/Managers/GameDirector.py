@@ -149,7 +149,15 @@ class GameDirector:
         :return:
         """
         print('game start')
+        # Se cargan los bots y se inicializa el tablero
         self.bot_manager.load_bots()
+        self.game_manager.board.__init__()
+
+        # Se le da paso al primer jugador para que ponga un poblado y una aldea
+        self.bot_manager.set_actual_player(1)
+        response = self.bot_manager.actualPlayer.on_game_start()
+
+
         self.round_start()
         return
 

@@ -1,4 +1,4 @@
-from Classes.Constants import HarborConstants
+from Classes.Constants import HarborConstants, TerrainConstants
 from Classes.Utilities import is_even
 
 
@@ -16,6 +16,7 @@ class Board:
     terrain: [{"id": int,
                "hasThief": bool,
                "probability": int(2,12),
+               "terrainType": int,
                "contactingNodes": [int...]}]
 
               Representa una ficha de terreno del tablero. Poseen información de los nodos con
@@ -52,6 +53,7 @@ class Board:
                         "id": j,
                         "hasThief": False,
                         "probability": probability,
+                        "terrainType": self.__get_terrain_type(j),
                         "contactingNodes": self.__get_contacting_nodes(j),
                     })
                 else:
@@ -59,6 +61,7 @@ class Board:
                         "id": j,
                         "hasThief": True,
                         "probability": 0,
+                        "terrainType": self.__get_terrain_type(j),
                         "contactingNodes": self.__get_contacting_nodes(j),
                     })
                 j += 1
@@ -76,16 +79,17 @@ class Board:
         #
         #     n += 1
 
-        ### Código para comprobar que el tablero se inicializa con el terreno correcto
+        # ## Código para comprobar que el tablero se inicializa con el terreno correcto
         # print('Terreno:')
         # m = 0
         # while m < 19:
-        #     print(self.terrain[m]['id'])
-        #     print(self.terrain[m]['probability'])
-        #     print(self.terrain[m]['contactingNodes'])
-        #     print('#######################\n')
-        #
-        #     m += 1
+            # print(self.terrain[m]['id'])
+            # print(self.terrain[m]['probability'])
+            # print(self.terrain[m]['contactingNodes'])
+            # print(self.terrain[m]['terrainType'])
+            # print('#######################\n')
+
+            # m += 1
         return
 
     def get_board(self):
@@ -166,32 +170,52 @@ class Board:
 
         return contacting_nodes
 
-    def __get_probability(self, node_id):
+    def __get_probability(self, terrain_id):
         # Establecer el tablero con las probabilidades por defecto del mapa de ejemplo de Catán
-        if node_id == 17:
+        if terrain_id == 17:
             return 2
-        elif node_id == 8 or node_id == 14:
+        elif terrain_id == 8 or terrain_id == 14:
             return 3
-        elif node_id == 3 or node_id == 10:
+        elif terrain_id == 3 or terrain_id == 10:
             return 4
-        elif node_id == 5 or node_id == 16:
+        elif terrain_id == 5 or terrain_id == 16:
             return 5
-        elif node_id == 4 or node_id == 18:
+        elif terrain_id == 4 or terrain_id == 18:
             return 6
-        elif node_id == 7:
+        elif terrain_id == 7:
             return 7
-        elif node_id == 11 or node_id == 12:
+        elif terrain_id == 11 or terrain_id == 12:
             return 8
-        elif node_id == 2 or node_id == 14:
+        elif terrain_id == 2 or terrain_id == 14:
             return 9
-        elif node_id == 6 or node_id == 13:
+        elif terrain_id == 6 or terrain_id == 13:
             return 10
-        elif node_id == 0 or node_id == 9:
+        elif terrain_id == 0 or terrain_id == 9:
             return 11
-        elif node_id == 1:
+        elif terrain_id == 1:
             return 12
         else:
             return 0
+
+    def __get_terrain_type(self, terrain_id):
+        """
+        Establecer el tablero con el tipo de terreno por defecto del mapa de ejemplo de Catán
+        :param terrain_id:
+        :return:
+        """
+        if terrain_id == 0 or terrain_id == 8 or terrain_id == 10 or terrain_id == 18:
+            return TerrainConstants.WOOD
+        elif terrain_id == 1 or terrain_id == 6 or terrain_id == 13 or terrain_id == 14:
+            return TerrainConstants.WOOL
+        elif terrain_id == 2 or terrain_id == 9 or terrain_id == 11 or terrain_id == 17:
+            return TerrainConstants.CEREAL
+        elif terrain_id == 3 or terrain_id == 5 or terrain_id == 12:
+            return TerrainConstants.CLAY
+        elif terrain_id == 4 or terrain_id == 15 or terrain_id == 16:
+            return TerrainConstants.MINERAL
+        else:
+            # En el caso de ser 7 o cualquier ID inexistente le asigna un desierto
+            return TerrainConstants.DESERT
 
     def __get_adjacent_nodes(self, node_id):
         """

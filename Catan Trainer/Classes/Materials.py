@@ -79,3 +79,10 @@ class Materials:
         wool = self.get_wool() + amount
         self.set_wool(wool)
         return
+
+    def __str__(self):
+        return 'Materials( Cereal: ' + str(self.cereal) + ', Mineral:' + str(self.mineral) + ', Clay:' + str(
+            self.mineral) + ', Wood:' + str(self.mineral) + ', Wool:' + str(self.mineral) + ')'
+
+    def __repr__(self):
+        return 'Materials()'

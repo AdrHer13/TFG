@@ -13,11 +13,11 @@ class GameManager:
     """
     Clase que representa el game manager, entidad que tiene todas las acciones que pueden hacer los jugadores
     """
-    lastDiceRoll = 0
+    last_dice_roll = 0
     board = Board()
-    turnManager = TurnManager()
-    commerceManager = CommerceManager()
-    botManager = BotManager()
+    turn_manager = TurnManager()
+    commerce_manager = CommerceManager()
+    bot_manager = BotManager()
 
     def __init__(self):
         return
@@ -27,8 +27,8 @@ class GameManager:
         Función que devuelve un valor entre el 2 y el 12, simulando una tirada de 2d6
         :return: integer entre 2 y 12
         """
-        self.lastDiceRoll = random.randint(2, 12)
-        print('throw dice: ' + str(self.lastDiceRoll))
+        self.last_dice_roll = random.randint(2, 12)
+        print('throw dice: ' + str(self.last_dice_roll))
         return
 
     def give_resources(self):
@@ -36,8 +36,21 @@ class GameManager:
         Función que entrega materiales a cada uno de los jugadores en función de la tirada de dados
         :return: void
         """
-        print('give resources')
-        return
+        # Por cada pieza de terreno en el tablero
+        for terrain in self.board.terrain:
+            # Si la probabilidad coincide
+            if terrain['probability'] == self.last_dice_roll:
+                # Se miran los nodos adyacentes
+                for node in terrain['contactingNodes']:
+                    # Si tiene jugador, implica que hay pueblo
+                    if self.board.nodes[node]['player'] != 0:
+                        player = self.bot_manager.get_player_from_int(self.board.nodes[node]['player'])
+                        # Si tiene ciudad se dan 2 en lugar de 1 material
+                        if self.board.nodes[node]['hasCity']:
+                            player.resources.add_material(terrain['terrainType'], 2)
+                        else:
+                            player.resources.add_material(terrain['terrainType'], 1)
+        return None
 
     ########### Board functions ###################
     def build_town(self, player, node):

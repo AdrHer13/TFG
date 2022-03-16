@@ -13,6 +13,10 @@ class BotManager:
     playerFour = BotInterface()
 
     def __init__(self):
+        self.playerOne = BotInterface()
+        self.playerTwo = BotInterface()
+        self.playerThree = BotInterface()
+        self.playerFour = BotInterface()
         return
 
     def load_bots(self):
@@ -22,23 +26,34 @@ class BotManager:
         :return: void
         """
         self.playerOne = BotInterface()
+        self.playerTwo = BotInterface()
+        self.playerThree = BotInterface()
+        self.playerFour = BotInterface()
         print('bot loading')
         return
 
     def set_actual_player(self, player=0):
-        if player <= 0:
-            # TODO: throw Exception
-            return None
         if player == 1:
             self.actualPlayer = self.playerOne
-            self.actualPlayerInt = 1
         elif player == 2:
             self.actualPlayer = self.playerTwo
-            self.actualPlayerInt = 2
         elif player == 3:
             self.actualPlayer = self.playerThree
-            self.actualPlayerInt = 3
-        else:
+        elif player == 4:
             self.actualPlayer = self.playerFour
-            self.actualPlayerInt = 4
-        return
+        else:
+            # TODO: throw exception
+            return None
+
+    def get_player_from_int(self, player_int=0):
+        if player_int == 1:
+            return self.playerOne
+        elif player_int == 2:
+            return self.playerTwo
+        elif player_int == 3:
+            return self.playerThree
+        elif player_int == 4:
+            return self.playerFour
+        else:
+            # TODO: throw exception
+            return None

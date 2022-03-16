@@ -17,18 +17,22 @@ class Hand:
         :param amount: cantidad del material a añadir
         :return: void
         """
-        if resource == 0:
-            self.resources.add_cereal(amount)
-        elif resource == 1:
-            self.resources.add_mineral(amount)
-        elif resource == 2:
-            self.resources.add_clay(amount)
-        elif resource == 3:
-            self.resources.add_wood(amount)
-        elif resource == 4:
-            self.resources.add_wool(amount)
+        if isinstance(resource, list):
+            for material in resource:
+                self.add_material(material, amount)
         else:
-            return None
+            if resource == 0:
+                self.resources.add_cereal(amount)
+            elif resource == 1:
+                self.resources.add_mineral(amount)
+            elif resource == 2:
+                self.resources.add_clay(amount)
+            elif resource == 3:
+                self.resources.add_wood(amount)
+            elif resource == 4:
+                self.resources.add_wool(amount)
+
+        return
 
     def get_resources(self):
         return self.resources

@@ -153,12 +153,90 @@ class GameDirector:
         self.bot_manager.load_bots()
         self.game_manager.board.__init__()
 
+        # TODO: falta comprobar que en los nodos adyacentes no hayan pueblos tampoco
+
         # Se le da paso al primer jugador para que ponga un poblado y una aldea
-        self.bot_manager.set_actual_player(1)
-        response = self.bot_manager.actualPlayer.on_game_start()
+        i = 1
+        while i <= 4:
+            self.bot_manager.set_actual_player(i)
+            node_id, road_to = self.bot_manager.actualPlayer.on_game_start(self.game_manager.board)
 
+            # TODO: Si no es valido,
+            #  repetir el paso "on_game_start" con el bot. En un segundo fallo directamente se le pone por él
+            if self.game_manager.board.nodes[node_id]['player'] == 0:
+                self.game_manager.board.nodes[node_id]['player'] = self.bot_manager.get_actual_player_int()
+            else:
+                print("el jugador " + str(self.bot_manager.get_actual_player_int()) +
+                      " ha intentado poner un nodo invalido")
 
-        self.round_start()
+            # TODO: Si no es valido, hacer lo mismo que con el nodo, solo que mirar si se podría pedir solo la carretera
+            if self.game_manager.board.nodes[node_id]['player'] == self.bot_manager.get_actual_player_int():
+                can_build_road = True
+                for roads in self.game_manager.board.nodes[node_id]['roads']:
+                    if road_to == roads['NodeID']:
+                        can_build_road = False
+                        break
+
+                if can_build_road:
+                    self.game_manager.board.nodes[node_id]['roads'].append(
+                        {
+                            "playerID": self.bot_manager.get_actual_player_int(),
+                            "nodeID": road_to,
+                        })
+                else:
+                    print("el jugador " + str(self.bot_manager.get_actual_player_int()) +
+                          " ha intentado poner una carretera invalida")
+
+            else:
+                print("el jugador " + str(self.bot_manager.get_actual_player_int()) +
+                      " ha intentado poner una carretera en un nodo que no le pertence")
+            i += 1
+
+        i = 4
+        while i >= 1:
+            self.bot_manager.set_actual_player(i)
+            node_id, road_to = self.bot_manager.actualPlayer.on_game_start(self.game_manager.board)
+
+            # TODO: Si no es valido,
+            #  repetir el paso "on_game_start" con el bot. En un segundo fallo directamente se le pone por él
+            if self.game_manager.board.nodes[node_id]['player'] == 0:
+                self.game_manager.board.nodes[node_id]['player'] = self.bot_manager.get_actual_player_int()
+            else:
+                print("el jugador " + str(self.bot_manager.get_actual_player_int()) +
+                      " ha intentado poner un nodo invalido")
+            # TODO: Si no es valido, hacer lo mismo que con el nodo, solo que mirar si se podría pedir solo la carretera
+            if self.game_manager.board.nodes[node_id]['player'] == self.bot_manager.get_actual_player_int():
+                can_build_road = True
+                for roads in self.game_manager.board.nodes[node_id]['roads']:
+                    if road_to == roads['nodeID']:
+                        can_build_road = False
+                        break
+
+                if can_build_road:
+                    self.game_manager.board.nodes[node_id]['roads'].append(
+                        {
+                            "playerID": self.bot_manager.get_actual_player_int(),
+                            "nodeID": road_to,
+                        })
+                else:
+                    print("el jugador " + str(self.bot_manager.get_actual_player_int()) +
+                          " ha intentado poner una carretera invalida")
+            else:
+                print("el jugador " + str(self.bot_manager.get_actual_player_int()) +
+                      " ha intentado poner una carretera en un nodo que no le pertence")
+            i -= 1
+
+        print('Nodos:')
+        n = 0
+        while n < 54:
+            print('ID: ' + str(self.game_manager.board.nodes[n]['id']))
+            print('Player: ' + str(self.game_manager.board.nodes[n]['player']))
+            print('Roads: ')
+            print(self.game_manager.board.nodes[n]['roads'])
+            print('---------------------\n')
+
+            n += 1
+        # self.round_start()
         return
 
     def game_end(self):

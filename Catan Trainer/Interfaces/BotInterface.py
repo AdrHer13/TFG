@@ -1,3 +1,5 @@
+import random
+
 from Classes.Board import Board
 from Classes.Hand import Hand
 from Classes.TradeOffer import TradeOffer
@@ -57,8 +59,14 @@ class BotInterface:
         print('Player on build phase')
         return None
 
-    def on_game_start(self):
+    def on_game_start(self, board_instance=Board()):
         """
         Se llama únicamente al inicio de la partida y sirve para colocar 1 pueblo y una carretera adyacente en el mapa
         :return:
         """
+        self.board = board_instance
+
+        node_id = random.randint(0, 53)
+        possible_roads = self.board.nodes[node_id]['adjacent']
+
+        return node_id, possible_roads[random.randint(0, len(possible_roads) - 1)]

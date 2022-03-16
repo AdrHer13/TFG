@@ -9,7 +9,7 @@ class Board:
     nodes: [{"id": int,
              "adjacent": [int...],
              "harbor": int,
-             "roads": [{playerID = id, nodeID = int}...],
+             "roads": [{"playerID": id, "nodeID": int}...],
              "hasCity": bool,
              "player": int}] Representa los nodos del tablero. Poseen información de los puertos y nodos adyacentes
 

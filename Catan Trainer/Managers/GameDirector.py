@@ -28,6 +28,12 @@ class GameDirector:
         self.game_manager.give_resources()
 
         print('Jugador: ' + str(self.game_manager.turn_manager.get_whose_turn_is_it()))
+        print('Resources ActualPlayer: ' + str(self.game_manager.bot_manager.actualPlayer.resources.resources))
+        print('Resources J1: ' + str(self.game_manager.bot_manager.playerOne.resources.resources))
+        print('Resources J2: ' + str(self.game_manager.bot_manager.playerTwo.resources.resources))
+        print('Resources J3: ' + str(self.game_manager.bot_manager.playerThree.resources.resources))
+        print('Resources J4: ' + str(self.game_manager.bot_manager.playerFour.resources.resources))
+
         self.game_manager.bot_manager.actualPlayer.on_turn_start()
         return
 
@@ -114,7 +120,7 @@ class GameDirector:
         """
         print('---------------------')
         print('round start')
-        i = 0
+        i = 1
         while i < 5:
             self.game_manager.turn_manager.set_turn(self.game_manager.turn_manager.get_turn() + 1)
             self.game_manager.turn_manager.set_whose_turn_is_it(i)
@@ -157,6 +163,7 @@ class GameDirector:
         # TODO: falta comprobar que en los nodos adyacentes no hayan pueblos tampoco
         #   Falta también que se entreguen los materiales a los jugadores correspondientes
         #   Y que de alguna manera dejen de repartirse los materiales a todas las instancias de la clase en lugar de a 1
+        #   Es verdad, se supone que no se pueden seleccionar casillas con puertos de buenas a primeras
 
         # Se le da paso al primer jugador para que ponga un poblado y una aldea
         i = 1
@@ -167,11 +174,17 @@ class GameDirector:
 
             # TODO: Si no es valido,
             #  repetir el paso "on_game_start" con el bot. En un segundo fallo directamente se le pone por él
+            print('______________________')
+            print('NODO: ' + str(node_id))
             if self.game_manager.board.nodes[node_id]['player'] == 0:
+                terrain_ids = self.game_manager.board.nodes[node_id]['contactingTerrain']
+                materials = []
+                for ter_id in terrain_ids:
+                    materials.append(self.game_manager.board.terrain[ter_id]['terrainType'])
                 self.game_manager.board.nodes[node_id]['player'] = self.game_manager.turn_manager.get_whose_turn_is_it()
-                # self.game_manager.bot_manager.get_player_from_int(i).\
-                # resources.add_material(self.game_manager.board.nodes[node_id]['adjacentTerrain'], 1)
-                self.game_manager.bot_manager.get_player_from_int(i).resources.add_material([0, 1, 2, 3, 4], 1)
+                print('Materiales del nodo de J' + str(self.game_manager.board.nodes[node_id]['player']))
+                print(materials)
+                self.game_manager.bot_manager.get_player_from_int(i).resources.add_material(materials, 1)
             else:
                 print("el jugador " + str(self.game_manager.turn_manager.get_whose_turn_is_it()) +
                       " ha intentado poner un nodo invalido")
@@ -208,8 +221,17 @@ class GameDirector:
 
             # TODO: Si no es valido,
             #  repetir el paso "on_game_start" con el bot. En un segundo fallo directamente se le pone por él
+            print('______________________')
+            print('NODO: ' + str(node_id))
             if self.game_manager.board.nodes[node_id]['player'] == 0:
+                terrain_ids = self.game_manager.board.nodes[node_id]['contactingTerrain']
+                materials = []
+                for ter_id in terrain_ids:
+                    materials.append(self.game_manager.board.terrain[ter_id]['terrainType'])
                 self.game_manager.board.nodes[node_id]['player'] = self.game_manager.turn_manager.get_whose_turn_is_it()
+                print('Materiales del nodo de J' + str(self.game_manager.board.nodes[node_id]['player']))
+                print(materials)
+                self.game_manager.bot_manager.get_player_from_int(i).resources.add_material(materials, 1)
             else:
                 print("el jugador " + str(self.game_manager.turn_manager.get_whose_turn_is_it()) +
                       " ha intentado poner un nodo invalido")
@@ -237,17 +259,23 @@ class GameDirector:
             i -= 1
 
         ######################################################
-        print('Nodos:')
-        n = 0
-        while n < 54:
-            print('ID: ' + str(self.game_manager.board.nodes[n]['id']))
-            print('Player: ' + str(self.game_manager.board.nodes[n]['player']))
-            print('Roads: ')
-            print(self.game_manager.board.nodes[n]['roads'])
-            print('---------------------\n')
-
-            n += 1
-        ######################################################
+        # print('---------------------\n')
+        # print('Nodos:')
+        # for node in self.game_manager.board.nodes:
+        #     print('ID: ' + str(node['id']))
+        #     print('Player: ' + str(node['player']))
+        #     print('Roads: ')
+        #     print(node['roads'])
+        #     print('---------------------\n')
+        # ######################################################
+        # print('#######################\n')
+        # print('Terreno:')
+        # for terrain in self.game_manager.board.terrain:
+        #     print('ID: ' + str(terrain['id']))
+        #     print('Prob: ' + str(terrain['probability']))
+        #     print('Type: ' + str(terrain['terrainType']))
+        #     print('#######################\n')
+        # ######################################################
 
         self.round_start()
         return
@@ -270,6 +298,6 @@ class GameDirector:
 
 
 if __name__ == '__main__':
-    print('#############################')
+    print('vvvvvvvvvvvvvvvvvvvvvvvvvvvvv')
     GameDirector().game_start()
-    print('#############################')
+    print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')

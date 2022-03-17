@@ -3,6 +3,7 @@ from Classes.Utilities import is_even
 
 
 class Board:
+    # TODO: Como todas las variables son propiedades estáticas, si la cambias en un lado se cambia en todos los lados
     """
     Clase que representa una instancia del tablero.
 
@@ -11,7 +12,8 @@ class Board:
              "harbor": int,
              "roads": [{"playerID": id, "nodeID": int}...],
              "hasCity": bool,
-             "player": int}] Representa los nodos del tablero. Poseen información de los puertos y nodos adyacentes
+             "player": int,
+             "contactingTerrain": [int...]}] Representa los nodos del tablero. Poseen información de los puertos y nodos adyacentes
 
     terrain: [{"id": int,
                "hasThief": bool,
@@ -26,6 +28,8 @@ class Board:
     terrain = []  # 0 a 18 | Al recorrer este array para mirar la probabilidad cortar si se han encontrado 2 respuestas
 
     def __init__(self, nodes=None, terrain=None):
+        self.nodes = []
+        self.terrain = []
         """
         Cuando se llama al init se establece el valor inicial del tablero antes de que se pongan pueblos y carreteras.
         Aquí se pone el terreno y su probabilidad
@@ -40,6 +44,7 @@ class Board:
                     "roads": [],
                     "hasCity": False,
                     "player": 0,
+                    "contactingTerrain": self.__get_contacting_terrain(i),
                 })
                 i += 1
         else:
@@ -83,17 +88,67 @@ class Board:
         # print('Terreno:')
         # m = 0
         # while m < 19:
-            # print(self.terrain[m]['id'])
-            # print(self.terrain[m]['probability'])
-            # print(self.terrain[m]['contactingNodes'])
-            # print(self.terrain[m]['terrainType'])
-            # print('#######################\n')
+        # print(self.terrain[m]['id'])
+        # print(self.terrain[m]['probability'])
+        # print(self.terrain[m]['contactingNodes'])
+        # print(self.terrain[m]['terrainType'])
+        # print('#######################\n')
 
-            # m += 1
+        # m += 1
         return
 
     def get_board(self):
         return self.__class__()
+
+    def __get_contacting_terrain(self, node_id):
+        """
+        Indica todas las piezas de terreno a los que el nodo es adyacente, para cosas como por ejemplo repartir materiales
+        :param node_id: La ID de la pieza del terreno actual
+        :return: [terrain_id, terrain_id, terrain_id, terrain_id, terrain_id, terrain_id]
+        """
+
+        contacting_terrain = []
+
+        if 0 <= node_id <= 2 or 8 <= node_id <= 10:
+            contacting_terrain.append(0)
+        if 2 <= node_id <= 4 or 10 <= node_id <= 12:
+            contacting_terrain.append(1)
+        if 4 <= node_id <= 6 or 12 <= node_id <= 14:
+            contacting_terrain.append(2)
+        if 7 <= node_id <= 9 or 17 <= node_id <= 19:
+            contacting_terrain.append(3)
+        if 9 <= node_id <= 11 or 19 <= node_id <= 21:
+            contacting_terrain.append(4)
+        if 11 <= node_id <= 13 or 21 <= node_id <= 23:
+            contacting_terrain.append(5)
+        if 13 <= node_id <= 15 or 23 <= node_id <= 25:
+            contacting_terrain.append(6)
+        if 16 <= node_id <= 18 or 27 <= node_id <= 29:
+            contacting_terrain.append(7)
+        if 18 <= node_id <= 20 or 29 <= node_id <= 31:
+            contacting_terrain.append(8)
+        if 20 <= node_id <= 22 or 31 <= node_id <= 33:
+            contacting_terrain.append(9)
+        if 22 <= node_id <= 24 or 33 <= node_id <= 35:
+            contacting_terrain.append(10)
+        if 24 <= node_id <= 26 or 35 <= node_id <= 37:
+            contacting_terrain.append(11)
+        if 28 <= node_id <= 30 or 38 <= node_id <= 40:
+            contacting_terrain.append(12)
+        if 30 <= node_id <= 32 or 40 <= node_id <= 42:
+            contacting_terrain.append(13)
+        if 32 <= node_id <= 34 or 42 <= node_id <= 44:
+            contacting_terrain.append(14)
+        if 34 <= node_id <= 36 or 44 <= node_id <= 46:
+            contacting_terrain.append(15)
+        if 39 <= node_id <= 41 or 47 <= node_id <= 49:
+            contacting_terrain.append(16)
+        if 41 <= node_id <= 43 or 49 <= node_id <= 51:
+            contacting_terrain.append(17)
+        if 43 <= node_id <= 45 or 51 <= node_id <= 53:
+            contacting_terrain.append(18)
+
+        return contacting_terrain
 
     def __get_contacting_nodes(self, terrain_id):
         """
@@ -102,8 +157,8 @@ class Board:
         :return: [node_id, node_id, node_id, node_id, node_id, node_id]
         """
 
-        # Si consigues esquina superior izquierda.
-        #   Nodos contactos son nodo +1, +2, (+8, +9, +10), (+10, +11, +12), (+11, +12, +13)
+        # Si empiezas en la esquina superior izquierda.
+        #   Nodos contactos son nodo +1, +2, (+8, +9, +10); +1, +2, (+10, +11, +12); +1, +2, (+11, +12, +13);
         contacting_nodes = []
         starting_node = -999
         bottom_row_sum = -999
@@ -174,7 +229,7 @@ class Board:
         # Establecer el tablero con las probabilidades por defecto del mapa de ejemplo de Catán
         if terrain_id == 17:
             return 2
-        elif terrain_id == 8 or terrain_id == 14:
+        elif terrain_id == 8 or terrain_id == 15:
             return 3
         elif terrain_id == 3 or terrain_id == 10:
             return 4

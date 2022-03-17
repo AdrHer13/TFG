@@ -13,9 +13,13 @@ class BotInterface:
     resources = Hand()
     board = Board()
     materialConstants = MaterialConstants()
+    id = 0
 
-    def __init__(self):
+    def __init__(self, bot_id=0):
         self.resources = Hand()
+        self.board = Board()
+        self.materialConstants = MaterialConstants()
+        self.id = bot_id
         pass
 
     # Los triggers son llamados por el GameDirector las veces que sean necesarias hasta que devuelvan null
@@ -33,7 +37,6 @@ class BotInterface:
         Trigger para cuando empieza el turno (muy probablemente innecesarios). Termina cuando hace un return
         :return: void, None
         """
-        print('resources: ' + str(self.resources.resources))
         print('Player on turn start')
         return None
 

@@ -7,16 +7,16 @@ class BotManager:
     el bot manager el que se encargue de darle paso a los bots a hacer sus turnos
     """
     actualPlayer = BotInterface()
-    playerOne = BotInterface()
-    playerTwo = BotInterface()
-    playerThree = BotInterface()
-    playerFour = BotInterface()
+    playerOne = BotInterface(1)
+    playerTwo = BotInterface(2)
+    playerThree = BotInterface(3)
+    playerFour = BotInterface(4)
 
     def __init__(self):
-        self.playerOne = BotInterface()
-        self.playerTwo = BotInterface()
-        self.playerThree = BotInterface()
-        self.playerFour = BotInterface()
+        self.playerOne = BotInterface(1)
+        self.playerTwo = BotInterface(2)
+        self.playerThree = BotInterface(3)
+        self.playerFour = BotInterface(4)
         return
 
     def load_bots(self):
@@ -25,11 +25,11 @@ class BotManager:
          las introduce en los correspondientes jugadores.
         :return: void
         """
-        self.playerOne = BotInterface()
-        self.playerTwo = BotInterface()
-        self.playerThree = BotInterface()
-        self.playerFour = BotInterface()
-        print('bot loading')
+        self.playerOne = BotInterface(1)
+        self.playerTwo = BotInterface(2)
+        self.playerThree = BotInterface(3)
+        self.playerFour = BotInterface(4)
+        # print('bot loading')
         return
 
     def set_actual_player(self, player=0):
@@ -42,6 +42,7 @@ class BotManager:
         elif player == 4:
             self.actualPlayer = self.playerFour
         else:
+            print("EXCEPTION")
             # TODO: throw exception
             return None
 

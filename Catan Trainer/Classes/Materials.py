@@ -34,55 +34,55 @@ class Materials:
         return self.wool
 
     ##### setters #####
-    def set_cereal(self, amount=int):
+    def set_cereal(self, amount=0):
         self.cereal = amount
-        return
+        return None
 
-    def set_mineral(self, amount=int):
+    def set_mineral(self, amount=0):
         self.mineral = amount
-        return
+        return None
 
-    def set_clay(self, amount=int):
+    def set_clay(self, amount=0):
         self.clay = amount
-        return
+        return None
 
-    def set_wood(self, amount=int):
+    def set_wood(self, amount=0):
         self.wood = amount
-        return
+        return None
 
-    def set_wool(self, amount=int):
+    def set_wool(self, amount=0):
         self.wool = amount
-        return
+        return None
 
     ##### adders #####
-    def add_cereal(self, amount):
+    def add_cereal(self, amount=0):
         cereal = self.get_cereal() + amount
         self.set_cereal(cereal)
-        return
+        return None
 
-    def add_mineral(self, amount):
+    def add_mineral(self, amount=0):
         mineral = self.get_mineral() + amount
         self.set_mineral(mineral)
-        return
+        return None
 
-    def add_clay(self, amount):
+    def add_clay(self, amount=0):
         clay = self.get_clay() + amount
         self.set_clay(clay)
-        return
+        return None
 
-    def add_wood(self, amount):
+    def add_wood(self, amount=0):
         wood = self.get_wood() + amount
         self.set_wood(wood)
-        return
+        return None
 
-    def add_wool(self, amount):
+    def add_wool(self, amount=0):
         wool = self.get_wool() + amount
         self.set_wool(wool)
-        return
+        return None
 
     def __str__(self):
         return 'Materials( Cereal: ' + str(self.cereal) + ', Mineral:' + str(self.mineral) + ', Clay:' + str(
-            self.mineral) + ', Wood:' + str(self.mineral) + ', Wool:' + str(self.mineral) + ')'
+            self.clay) + ', Wood:' + str(self.wood) + ', Wool:' + str(self.wool) + ' )'
 
     def __repr__(self):
         return 'Materials()'

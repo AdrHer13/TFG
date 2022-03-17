@@ -46,9 +46,14 @@ class GameManager:
                     if self.board.nodes[node]['player'] != 0:
                         player = self.bot_manager.get_player_from_int(self.board.nodes[node]['player'])
                         # Si tiene ciudad se dan 2 en lugar de 1 material
+
                         if self.board.nodes[node]['hasCity']:
+                            print('J' + str(self.board.nodes[node]['player']) + ' | material: ' + str(
+                                terrain['terrainType']) + ' | amount: 2')
                             player.resources.add_material(terrain['terrainType'], 2)
                         else:
+                            print('J' + str(self.board.nodes[node]['player']) + ' | material: ' + str(
+                                terrain['terrainType']) + ' | amount: 1')
                             player.resources.add_material(terrain['terrainType'], 1)
         return None
 

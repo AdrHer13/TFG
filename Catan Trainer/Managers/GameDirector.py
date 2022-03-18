@@ -1,3 +1,4 @@
+from Classes.TradeOffer import TradeOffer
 from Managers.GameManager import GameManager
 
 
@@ -19,6 +20,7 @@ class GameDirector:
         :param player: número que representa al jugador
         :return: void
         """
+        # TODO: si sale un 7 deben decidir donde mover al ladrón
         print('----------')
         print('start turn: ' + str(self.game_manager.turn_manager.get_turn()))
         self.game_manager.turn_manager.set_phase(0)
@@ -28,11 +30,11 @@ class GameDirector:
         self.game_manager.give_resources()
 
         print('Jugador: ' + str(self.game_manager.turn_manager.get_whose_turn_is_it()))
-        print('Resources ActualPlayer: ' + str(self.game_manager.bot_manager.actualPlayer.resources.resources))
-        print('Resources J1: ' + str(self.game_manager.bot_manager.playerOne.resources.resources))
-        print('Resources J2: ' + str(self.game_manager.bot_manager.playerTwo.resources.resources))
-        print('Resources J3: ' + str(self.game_manager.bot_manager.playerThree.resources.resources))
-        print('Resources J4: ' + str(self.game_manager.bot_manager.playerFour.resources.resources))
+        print('Resources ActualPlayer: ' + str(self.game_manager.bot_manager.actualPlayer.hand.resources))
+        print('Resources J1: ' + str(self.game_manager.bot_manager.playerOne.hand.resources))
+        print('Resources J2: ' + str(self.game_manager.bot_manager.playerTwo.hand.resources))
+        print('Resources J3: ' + str(self.game_manager.bot_manager.playerThree.hand.resources))
+        print('Resources J4: ' + str(self.game_manager.bot_manager.playerFour.hand.resources))
 
         self.game_manager.bot_manager.actualPlayer.on_turn_start()
         return
@@ -43,12 +45,42 @@ class GameDirector:
         :param player: número que representa al jugador
         :return: void
         """
+
+        # TODO: Comprobar que el trade offer es valido. Es decir, no da más materiales de los que tiene
         print('start commerce phase: ' + str(self.game_manager.turn_manager.get_turn()))
         self.game_manager.turn_manager.set_phase(1)
         trade_offer = self.game_manager.bot_manager.actualPlayer.on_commerce_phase()
-        if trade_offer:
-            self.game_manager.commerce_manager.trade_with_player(trade_offer)
-        return
+        if isinstance(trade_offer, TradeOffer):
+            if trade_offer:
+                print('Oferta: ' + str(trade_offer))
+                # TODO: comprobar que los materiales de gives sean menores que los materiales del jugador
+                if self.game_manager.bot_manager.actualPlayer.hand.resources.has_this_more_materials(trade_offer.gives):
+                    print('Puede hacer la oferta')
+                    self.game_manager.trade_with_everyone(trade_offer)
+                else:
+                    # TODO: se queja de que no puede hacerla, le da una segunda oportunidad, en otro fallo
+                    #       le salta la fase de comercio
+                    pass
+        elif isinstance(trade_offer, dict):
+            print('%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+            print('Jugador comercia por puerto')
+            print(self.game_manager.bot_manager.actualPlayer.hand)
+            response = self.game_manager.commerce_manager.trade_without_harbor(
+                self.game_manager.bot_manager.actualPlayer, trade_offer['gives'], trade_offer['receives'])
+            # self.game_manager.commerce_manager.trade_through_harbor(self.game_manager.bot_manager.actualPlayer,
+            #                                                         trade_offer['gives'], trade_offer['receives'])
+            # self.game_manager.commerce_manager.trade_through_special_harbor(self.game_manager.bot_manager.actualPlayer,
+            #                                                                 trade_offer['gives'],
+            #                                                                 trade_offer['receives'])
+            if response:
+                self.game_manager.bot_manager.actualPlayer.hand = response
+                print(self.game_manager.bot_manager.actualPlayer.hand)
+            else:
+                print('pero no tiene materiales suficientes')
+            print('%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+            return
+        else:
+            return
 
     def start_build_phase(self, player=-1):
         """
@@ -184,7 +216,7 @@ class GameDirector:
                 self.game_manager.board.nodes[node_id]['player'] = self.game_manager.turn_manager.get_whose_turn_is_it()
                 print('Materiales del nodo de J' + str(self.game_manager.board.nodes[node_id]['player']))
                 print(materials)
-                self.game_manager.bot_manager.get_player_from_int(i).resources.add_material(materials, 1)
+                self.game_manager.bot_manager.get_player_from_int(i).hand.add_material(materials, 1)
             else:
                 print("el jugador " + str(self.game_manager.turn_manager.get_whose_turn_is_it()) +
                       " ha intentado poner un nodo invalido")
@@ -231,7 +263,7 @@ class GameDirector:
                 self.game_manager.board.nodes[node_id]['player'] = self.game_manager.turn_manager.get_whose_turn_is_it()
                 print('Materiales del nodo de J' + str(self.game_manager.board.nodes[node_id]['player']))
                 print(materials)
-                self.game_manager.bot_manager.get_player_from_int(i).resources.add_material(materials, 1)
+                self.game_manager.bot_manager.get_player_from_int(i).hand.add_material(materials, 1)
             else:
                 print("el jugador " + str(self.game_manager.turn_manager.get_whose_turn_is_it()) +
                       " ha intentado poner un nodo invalido")

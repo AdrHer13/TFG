@@ -58,3 +58,16 @@ class BotManager:
         else:
             # TODO: throw exception
             return None
+
+    def get_other_players_except_int(self, player_int=0):
+        if player_int == 1:
+            return [self.playerTwo, self.playerThree, self.playerFour]
+        elif player_int == 2:
+            return [self.playerOne, self.playerThree, self.playerFour]
+        elif player_int == 3:
+            return [self.playerOne, self.playerTwo, self.playerFour]
+        elif player_int == 4:
+            return [self.playerOne, self.playerTwo, self.playerThree]
+        else:
+            # TODO: throw exception
+            return None

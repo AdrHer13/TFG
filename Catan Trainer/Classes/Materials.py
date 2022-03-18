@@ -3,11 +3,12 @@ class Materials:
     Clase que representa los materiales. Se usa tanto en la mano de los jugadores como en las ofertas
     """
     # Variables
-    cereal = int
-    mineral = int
-    clay = int
-    wood = int
-    wool = int
+    cereal = 0
+    mineral = 0
+    clay = 0
+    wood = 0
+    wool = 0
+    array_ids = [cereal, mineral, clay, wood, wool]
 
     def __init__(self, cereal=0, mineral=0, clay=0, wood=0, wool=0):
         self.cereal = cereal
@@ -15,7 +16,12 @@ class Materials:
         self.clay = clay
         self.wood = wood
         self.wool = wool
+        # self.array_ids = [cereal, mineral, clay, wood, wool]
         return
+
+    def get_from_id(self, material_constant):
+        self.array_ids = [self.cereal, self.mineral, self.clay, self.wood, self.wool]
+        return self.array_ids[material_constant]
 
     ##### getters #####
     def get_cereal(self):
@@ -79,6 +85,29 @@ class Materials:
         wool = self.get_wool() + amount
         self.set_wool(wool)
         return None
+
+    def has_this_more_materials(self, materials):
+        """
+        Le llega otra clase materiales y compara si esta clase tiene materiales suficientes
+        :param materials:
+        :return:
+        """
+        if self.wood < materials.wood:
+            print('Menos madera de la que piden')
+            return False
+        if self.wool < materials.wool:
+            print('Menos lana de la que piden')
+            return False
+        if self.clay < materials.clay:
+            print('Menos arcilla de la que piden')
+            return False
+        if self.mineral < materials.mineral:
+            print('Menos mineral del que piden')
+            return False
+        if self.cereal < materials.cereal:
+            print('Menos cereal del que piden')
+            return False
+        return True
 
     def __str__(self):
         return 'Materials( Cereal: ' + str(self.cereal) + ', Mineral:' + str(self.mineral) + ', Clay:' + str(

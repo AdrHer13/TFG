@@ -27,28 +27,59 @@ class Hand:
             # print('###########')
         else:
             if resource == 0:
-                print('add_cereal')
+                # print('add_cereal')
                 self.resources.add_cereal(amount)
                 pass
             elif resource == 1:
-                print('add_mineral')
+                # print('add_mineral')
                 self.resources.add_mineral(amount)
                 pass
             elif resource == 2:
-                print('add_clay')
+                # print('add_clay')
                 self.resources.add_clay(amount)
                 pass
             elif resource == 3:
-                print('add_wood')
+                # print('add_wood')
                 self.resources.add_wood(amount)
                 pass
             elif resource == 4:
-                print('add_wool')
+                # print('add_wool')
                 self.resources.add_wool(amount)
                 pass
             else:
                 print('add_desert')
         return
 
+    def remove_material(self, resource, amount):
+        """
+        Resta amount al material seleccionado
+        :param resource: tipo de recurso a añadir
+        :param amount: cantidad del material a añadir
+        :return: void
+        """
+        self.add_material(resource, (amount * -1))
+        return
+
+    def get_from_id(self, material_id):
+        return self.resources.get_from_id(material_id)
+
     def get_resources(self):
         return self.resources
+
+    def get_cereal(self):
+        return self.resources.cereal
+
+    def get_mineral(self):
+        return self.resources.mineral
+
+    def get_clay(self):
+        return self.resources.clay
+
+    def get_wood(self):
+        return self.resources.wood
+
+    def get_wool(self):
+        return self.resources.wool
+
+    def __str__(self):
+        return 'Hand(' + str(self.resources) + ')'

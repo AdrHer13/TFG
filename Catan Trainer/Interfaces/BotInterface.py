@@ -2,6 +2,7 @@ import random
 
 from Classes.Board import Board
 from Classes.Hand import Hand
+from Classes.Materials import Materials
 from Classes.TradeOffer import TradeOffer
 from Classes.Constants import MaterialConstants
 
@@ -10,13 +11,14 @@ class BotInterface:
     """
     Interfaz que implementa a un bot
     """
-    resources = Hand()
+    hand = Hand()
     board = Board()
     materialConstants = MaterialConstants()
+    # TODO: no debe de tener una ID de esta manera. Porque como mínimo rompen el GameDirector
     id = 0
 
     def __init__(self, bot_id=0):
-        self.resources = Hand()
+        self.hand = Hand()
         self.board = Board()
         self.materialConstants = MaterialConstants()
         self.id = bot_id
@@ -30,7 +32,21 @@ class BotInterface:
         :param incoming_trade_offer: Oferta de comercio que le llega al bot
         :return: true, TradeOffer, false, None
         """
-        return None
+        answer = random.randint(0, 2)
+        if answer:
+            if answer == 2:
+                gives = Materials(random.randint(0, self.hand.get_cereal()), random.randint(0, self.hand.get_mineral()),
+                                  random.randint(0, self.hand.get_clay()), random.randint(0, self.hand.get_wood()),
+                                  random.randint(0, self.hand.get_wool()))
+                receives = Materials(random.randint(0, self.hand.get_cereal()),
+                                     random.randint(0, self.hand.get_mineral()),
+                                     random.randint(0, self.hand.get_clay()), random.randint(0, self.hand.get_wood()),
+                                     random.randint(0, self.hand.get_wool()))
+                return TradeOffer(gives, receives)
+            else:
+                return True
+        else:
+            return False
 
     def on_turn_start(self):
         """
@@ -51,10 +67,33 @@ class BotInterface:
     def on_commerce_phase(self):
         """
         Trigger para cuando empieza la fase de comercio. Devuelve una oferta
-        :return: TradeOffer, None
+        :return: TradeOffer, Dictionary, None
         """
         print('Player on commerce phase')
-        return None
+        answer = random.randint(0, 1)
+        if answer:
+            print(' - Jugador intenta comerciar por puerto - ')
+            if self.hand.get_cereal() >= 4:
+                return {'gives': MaterialConstants.CEREAL, 'receives': MaterialConstants.MINERAL}
+            if self.hand.get_mineral() >= 4:
+                return {'gives': MaterialConstants.MINERAL, 'receives': MaterialConstants.CEREAL}
+            if self.hand.get_clay() >= 4:
+                return {'gives': MaterialConstants.CLAY, 'receives': MaterialConstants.CEREAL}
+            if self.hand.get_wood() >= 4:
+                return {'gives': MaterialConstants.WOOD, 'receives': MaterialConstants.CEREAL}
+            if self.hand.get_wool() >= 4:
+                return {'gives': MaterialConstants.WOOL, 'receives': MaterialConstants.CEREAL}
+            print('Jugador no quiere comerciar')
+            return None
+        else:
+            gives = Materials(random.randint(0, self.hand.get_cereal()), random.randint(0, self.hand.get_mineral()),
+                              random.randint(0, self.hand.get_clay()), random.randint(0, self.hand.get_wood()),
+                              random.randint(0, self.hand.get_wool()))
+            receives = Materials(random.randint(0, self.hand.get_cereal()), random.randint(0, self.hand.get_mineral()),
+                                 random.randint(0, self.hand.get_clay()), random.randint(0, self.hand.get_wood()),
+                                 random.randint(0, self.hand.get_wool()))
+            trade_offer = TradeOffer(gives, receives)
+            return trade_offer
 
     def on_build_phase(self):
         """

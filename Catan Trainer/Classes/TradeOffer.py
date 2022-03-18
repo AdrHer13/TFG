@@ -12,3 +12,6 @@ class TradeOffer:
         self.gives = gives
         self.receives = receives
         return
+
+    def __str__(self):
+        return 'TradeOffer( ' + str(self.gives) + ' | ' + str(self.receives) + ' )'

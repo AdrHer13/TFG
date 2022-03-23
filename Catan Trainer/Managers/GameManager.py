@@ -5,6 +5,7 @@ import random
 
 from Classes.Board import Board
 from Classes.Constants import MaterialConstants
+from Classes.Materials import Materials
 from Classes.TradeOffer import TradeOffer
 from Managers.TurnManager import TurnManager
 from Managers.CommerceManager import CommerceManager
@@ -161,7 +162,14 @@ class GameManager:
         :param node: Número que representa un nodo en el tablero
         :return: void
         """
-        return self.board.build_town(player, node)
+        if player.hand.resources.has_this_more_materials(Materials(1, 0, 1, 1, 1)):
+            player.hand.remove_material(MaterialConstants.CEREAL, 1)
+            player.hand.remove_material(MaterialConstants.CLAY, 1)
+            player.hand.remove_material(MaterialConstants.WOOD, 1)
+            player.hand.remove_material(MaterialConstants.WOOL, 1)
+            return self.board.build_town(self.turn_manager.get_whose_turn_is_it(), node)
+        else:
+            return False
 
     def build_city(self, player, node):
         """
@@ -170,17 +178,42 @@ class GameManager:
         :param node: Número que representa un nodo en el tablero
         :return: void
         """
-        return self.board.build_city(player, node)
+        if player.hand.resources.has_this_more_materials(Materials(2, 3, 0, 0, 0)):
+            player.hand.remove_material(MaterialConstants.CEREAL, 2)
+            player.hand.remove_material(MaterialConstants.MINERAL, 3)
+            return self.board.build_city(self.turn_manager.get_whose_turn_is_it(), node)
+        else:
+            return False
 
-    def build_road(self, player, road):
+    def build_road(self, player, node, road):
         """
         Permite construir una carretera en el camino seleccionado
         :param player: Número que representa al jugador
+        :param node: Número que representa
         :param road: Número que representa una carretera en el tablero
         :return: void
         """
-        # self.board.build_road(player, road)
-        return
+        if player.hand.resources.has_this_more_materials(Materials(0, 0, 1, 1, 0)):
+            player.hand.remove_material(MaterialConstants.CLAY, 1)
+            player.hand.remove_material(MaterialConstants.WOOD, 1)
+            return self.board.build_road(self.turn_manager.get_whose_turn_is_it(), node, road)
+        else:
+            return False
+
+    def build_development_card(self, player):
+        """
+        Permite construir una carta de desarrollo
+        :param player:
+        :return:
+        """
+        if player.hand.resources.has_this_more_materials(Materials(1, 1, 0, 0, 1)):
+            player.hand.remove_material(MaterialConstants.CEREAL, 1)
+            player.hand.remove_material(MaterialConstants.MINERAL, 1)
+            player.hand.remove_material(MaterialConstants.WOOL, 1)
+            # return self.board.build_road(player)
+            return True
+        else:
+            return False
 
     def move_thief(self, terrain, adjacentPlayer):
         """

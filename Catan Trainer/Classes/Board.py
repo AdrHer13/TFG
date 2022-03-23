@@ -370,11 +370,22 @@ class Board:
         :return: {bool, string}. Devuelve si se ha podido o no construir el poblado, y en caso de no el porqué
         """
         if self.nodes[node]['player'] == 0:
-            self.nodes[node]['player'] = player
-            self.nodes[node]['hasCity'] = False
-            return True
+            can_build = False
+            for roads in self.nodes[node]['roads']:
+                if roads['playerID'] == player:
+                    can_build = True
+
+            if self.adyacent_nodes_dont_have_towns(node):
+                return {'response': False, 'errorMsg': 'Hay un pueblo o ciudad muy cercano al nodo'}
+            if can_build:
+                self.nodes[node]['player'] = player
+                self.nodes[node]['hasCity'] = False
+                return {'response': True, 'errorMsg': ''}
+            else:
+                return {'response': False,
+                        'errorMsg': 'Debes poseer una carretera hasta el nodo para poder construir un pueblo'}
         else:
-            return False
+            return {'response': False, 'errorMsg': 'No se puede construir en un nodo que le pertenece a otro jugador'}
 
     def build_city(self, player, node=-1):
         """
@@ -384,17 +395,16 @@ class Board:
         :param node: Número que representa un nodo en el tablero
         :return: {bool, string}. Envía si se ha podido construir la ciudad y en caso de no haberse podido el porqué
         """
-
         if self.nodes[node]['player'] == player:
             if self.nodes[node]['hasCity']:
-                return {False, 'Ya hay una ciudad tuya en el nodo'}
-            self.nodes[node]['player'] = player
+                return {'response': False, 'errorMsg': 'Ya hay una ciudad tuya en el nodo'}
+            # self.nodes[node]['player'] = player
             self.nodes[node]['hasCity'] = True
-            return {True, ''}
+            return {'response': True, 'errorMsg': ''}
         elif self.nodes[node]['player'] == 0:
-            return {True, 'Primero debe construirse un poblado'}
+            return {'response': True, 'errorMsg': 'Primero debe construirse un poblado'}
         else:
-            return {False, 'Ya posee el nodo otro jugador'}
+            return {'response': False, 'errorMsg': 'Ya posee el nodo otro jugador'}
 
     def build_road(self, player, starting_node=-1, finishing_node=-1):
         """
@@ -405,23 +415,24 @@ class Board:
         :param finishing_node: Nodo al que llega la carretera. Debe ser adyacente
         :return: void
         """
-
         can_build = False
+        # Comprueba si ya había una carretera puesta que le pertenezca al jugador
         for roads in self.nodes[starting_node]['roads']:
+            if roads['nodeID'] == finishing_node:
+                # Dejamos de mirar si ya hay una carretera hacia el nodo final
+                return {'response': False, 'errorMsg': 'Ya hay una carretera aquí'}
             if roads['playerID'] == player:
                 can_build = True
 
+        # Si le pertenece el nodo inicial o tiene una carretera, deja construir
         if self.nodes[starting_node]['player'] == player or can_build:
-            for roads in self.nodes[starting_node]['roads']:
-                if roads['nodeID'] == finishing_node:
-                    return {False, 'Ya hay una carretera aquí'}
-
             self.nodes[starting_node]['roads'].append({'playerID': player, 'nodeID': finishing_node})
             self.nodes[finishing_node]['roads'].append({'playerID': player, 'nodeID': starting_node})
-            return {True, ''}
+            return {'response': True, 'errorMsg': ''}
         else:
-            return {False,
-                    'No puedes hacer una carretera aquí, no hay una carretera o nodo adyacente que te pertenezca'}
+            return {'response': False,
+                    'errorMsg': 'No puedes hacer una carretera aquí,' +
+                                ' no hay una carretera o nodo adyacente que te pertenezca'}
 
     def move_thief(self, terrain=-1):
         """
@@ -445,6 +456,58 @@ class Board:
         :return: void
         """
         return
+
+    def adyacent_nodes_dont_have_towns(self, node_id):
+        """
+        Comprueba si los nodos a una casilla de distancia del node_id tienen pueblo o ciudad
+        :param node_id:
+        :return:
+        """
+        starting_node = self.nodes[node_id]
+        adjacent_ids_array = starting_node['adjacent']
+        for adjacent_id in adjacent_ids_array:
+            if self.nodes[adjacent_id]['player']:
+                return False
+        return True
+
+    def valid_town_nodes(self, player_id):
+        """
+        Devuelve un array de las ids de los nodos válidos donde el jugador puede poner un pueblo
+        :param player_id: int
+        :return: [id...]
+        """
+        valid_nodes = []
+        for node in self.nodes:
+            for road in node['roads']:
+                if road['playerID'] == player_id and self.adyacent_nodes_dont_have_towns(node['id']):
+                    valid_nodes.append(node['id'])
+        return valid_nodes
+
+    def valid_city_nodes(self, player_id):
+        """
+        Devuelve un array de las ids de los nodos válidos para convertir pueblos en ciudades
+        :param player_id: int
+        :return: [id...]
+        """
+        valid_nodes = []
+        for node in self.nodes:
+            if node['player'] == player_id:
+                valid_nodes.append(node['id'])
+        return valid_nodes
+
+    def valid_road_nodes(self, player_id):
+        """
+        Devuelve un array de diccionarios con los nodos iniciales y finales en los que se puede hacer una carretera
+        :param player_id:
+        :return: [{'startingNode': int, 'finishingNode': int}, ...]
+        """
+        valid_nodes = []
+        for node in self.nodes:
+            for adjacent in node['adjacent']:
+                for road in self.nodes[adjacent]['roads']:
+                    if road['playerID'] == player_id and road['nodeID'] != node['id']:
+                        valid_nodes.append({'startingNode': node['id'], 'finishingNode': adjacent})
+        return valid_nodes
 
 # if __name__ == '__main__':
 #     print('#############################')

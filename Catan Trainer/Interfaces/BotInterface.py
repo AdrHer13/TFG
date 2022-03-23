@@ -4,7 +4,7 @@ from Classes.Board import Board
 from Classes.Hand import Hand
 from Classes.Materials import Materials
 from Classes.TradeOffer import TradeOffer
-from Classes.Constants import MaterialConstants
+from Classes.Constants import MaterialConstants, BuildConstants
 
 
 class BotInterface:
@@ -95,15 +95,44 @@ class BotInterface:
             trade_offer = TradeOffer(gives, receives)
             return trade_offer
 
-    def on_build_phase(self):
+    def on_build_phase(self, board_instance):
         """
         Trigger para cuando empieza la fase de construcción. Devuelve un string indicando qué quiere construir
-        :return: array[string: (town, city, road, card), int], None
+        :return: dict{'building': str, 'nodeID': int, 'roadTo': int/None}, None
         """
         print('Player on build phase')
+        self.board = board_instance
+        # Pueblo / carretera
+        if self.hand.resources.has_this_more_materials(BuildConstants.TOWN):
+            answer = random.randint(0, 1)
+            # Elegimos aleatoriamente si hacer un pueblo o una carretera
+            if answer:
+                valid_nodes = self.board.valid_town_nodes(self.id)
+                if len(valid_nodes):
+                    town_node = random.randint(0, len(valid_nodes) - 1)
+                    return {'building': BuildConstants.TOWN, 'nodeID': valid_nodes[town_node]}
+            else:
+                valid_nodes = self.board.valid_road_nodes(self.id)
+                if len(valid_nodes):
+                    road_node = random.randint(0, len(valid_nodes) - 1)
+                    return {'building': BuildConstants.ROAD,
+                            'nodeID': valid_nodes[road_node]['startingNode'],
+                            'roadTo': valid_nodes[road_node]['finishingNode']}
+
+        # Ciudad
+        elif self.hand.resources.has_this_more_materials(BuildConstants.CITY):
+            valid_nodes = self.board.valid_city_nodes(self.id)
+            if len(valid_nodes):
+                city_node = random.randint(0, len(valid_nodes) - 1)
+                return {'building': BuildConstants.CITY, 'nodeID': valid_nodes[city_node]}
+
+        # Carta de desarrollo
+        elif self.hand.resources.has_this_more_materials(BuildConstants.CARD):
+            return None
+
         return None
 
-    def on_game_start(self, board_instance=Board()):
+    def on_game_start(self, board_instance):
         """
         Se llama únicamente al inicio de la partida y sirve para colocar 1 pueblo y una carretera adyacente en el mapa
         :return:

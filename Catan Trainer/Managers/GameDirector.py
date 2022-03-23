@@ -1,3 +1,4 @@
+from Classes.Constants import BuildConstants
 from Classes.TradeOffer import TradeOffer
 from Managers.GameManager import GameManager
 
@@ -88,27 +89,40 @@ class GameDirector:
         :param player: número que representa al jugador
         :return: void
         """
+        print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
+        print('vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv')
         print('start build phase: ' + str(self.game_manager.turn_manager.get_turn()))
         self.game_manager.turn_manager.set_phase(2)
-        # TODO: Necesita hacer una comprobación que le llega el objeto esperado y no otra cosa
-        to_build = self.game_manager.bot_manager.actualPlayer.on_build_phase()
-        if to_build:
+        to_build = self.game_manager.bot_manager.actualPlayer.on_build_phase(self.game_manager.board)
+        if isinstance(to_build, dict):
             built = False
-            if to_build[0] == "town":
-                built = self.game_manager.build_town(self.game_manager.bot_manager.actualPlayer, to_build[1])
-            elif to_build[0] == "city":
-                built = self.game_manager.build_city(self.game_manager.bot_manager.actualPlayer, to_build[1])
-            elif to_build[0] == "road":
-                built = self.game_manager.build_road(self.game_manager.bot_manager.actualPlayer, to_build[1])
-            elif to_build[0] == "card":
+            if to_build['building'] == BuildConstants.TOWN:
+                built = self.game_manager.build_town(self.game_manager.bot_manager.actualPlayer, to_build['nodeID'])
+            elif to_build['building'] == BuildConstants.CITY:
+                built = self.game_manager.build_city(self.game_manager.bot_manager.actualPlayer, to_build['nodeID'])
+            elif to_build['building'] == BuildConstants.ROAD:
+                built = self.game_manager.build_road(self.game_manager.bot_manager.actualPlayer, to_build['nodeID'],
+                                                     to_build['roadTo'])
+            elif to_build['building'] == BuildConstants.CARD:
+                built = self.game_manager.build_development_card(self.game_manager.bot_manager.actualPlayer)
                 # TODO
-                pass
+                return
 
-            if built:
-                self.start_build_phase(self.game_manager.bot_manager.actualPlayer)
+            if isinstance(built, dict):
+                if built['response']:
+                    print('J' + str(player) + ' ha construido algo: ')
+                    print(built)
+                    # Si se ha construido permitir que vuelvan a construir
+                    self.start_build_phase(self.game_manager.bot_manager.actualPlayer)
+                else:
+                    print('J' + str(player) + ' ha fallado en algo: ')
+                    print(built['errorMsg'])
+                    # TODO: Avisar que no se ha podido construir
+                    return
             else:
+                print('No se ha podido construir por falta de materiales')
                 # TODO: Avisar que no se ha podido construir
-                pass
+                return
         else:
             return
 
@@ -123,26 +137,26 @@ class GameDirector:
         self.game_manager.bot_manager.actualPlayer.on_turn_end()
         return
 
-    def end_phase(self):
-        # TODO
-        # Probablemente innecesario
-        print('end phase')
-        if self.game_manager.turn_manager.phase == 0:
-            self.start_commerce_phase(self.game_manager.turn_manager.get_whose_turn_is_it())
-        elif self.game_manager.turn_manager.phase == 1:
-            self.start_build_phase(self.game_manager.turn_manager.get_whose_turn_is_it())
-        elif self.game_manager.turn_manager.phase == 2:
-            self.end_turn(self.game_manager.turn_manager.get_whose_turn_is_it())
-        elif self.game_manager.turn_manager.phase == 3:
-            if self.game_manager.turn_manager.get_whose_turn_is_it() >= 4:
-                self.round_end()
-            else:
-                self.game_manager.turn_manager.set_whose_turn_is_it(
-                    self.game_manager.turn_manager.get_whose_turn_is_it() + 1)
-                self.start_turn(self.game_manager.turn_manager.whoseTurnIsIt)
-        else:
-            pass
-        return
+    # def end_phase(self):
+    #     # TODO
+    #     # Probablemente innecesario
+    #     print('end phase')
+    #     if self.game_manager.turn_manager.phase == 0:
+    #         self.start_commerce_phase(self.game_manager.turn_manager.get_whose_turn_is_it())
+    #     elif self.game_manager.turn_manager.phase == 1:
+    #         self.start_build_phase(self.game_manager.turn_manager.get_whose_turn_is_it())
+    #     elif self.game_manager.turn_manager.phase == 2:
+    #         self.end_turn(self.game_manager.turn_manager.get_whose_turn_is_it())
+    #     elif self.game_manager.turn_manager.phase == 3:
+    #         if self.game_manager.turn_manager.get_whose_turn_is_it() >= 4:
+    #             self.round_end()
+    #         else:
+    #             self.game_manager.turn_manager.set_whose_turn_is_it(
+    #                 self.game_manager.turn_manager.get_whose_turn_is_it() + 1)
+    #             self.start_turn(self.game_manager.turn_manager.whoseTurnIsIt)
+    #     else:
+    #         pass
+    #     return
 
     # Round #
     def round_start(self):
@@ -160,6 +174,8 @@ class GameDirector:
             self.start_turn(self.game_manager.turn_manager.get_whose_turn_is_it())
             self.start_commerce_phase(self.game_manager.turn_manager.get_whose_turn_is_it())
             self.start_build_phase(self.game_manager.turn_manager.get_whose_turn_is_it())
+            print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
+            print('vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv')
             self.end_turn(self.game_manager.turn_manager.get_whose_turn_is_it())
             i += 1
         self.round_end()

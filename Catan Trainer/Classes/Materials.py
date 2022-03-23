@@ -90,24 +90,40 @@ class Materials:
         """
         Le llega otra clase materiales y compara si esta clase tiene materiales suficientes
         :param materials:
-        :return:
+        :return: bool
         """
-        if self.wood < materials.wood:
-            print('Menos madera de la que piden')
+        if isinstance(materials, str):
+            if materials == 'town':
+                materials = Materials(1, 0, 1, 1, 1)
+            elif materials == 'city':
+                materials = Materials(2, 3, 0, 0, 0)
+            elif materials == 'road':
+                materials = Materials(0, 0, 1, 1, 0)
+            elif materials == 'card':
+                materials = Materials(1, 0, 0, 1, 1)
+            else:
+                print('has_this_more_materials(): El string es invalido')
+                return False
+        if isinstance(materials, Materials):
+            if self.wood < materials.wood:
+                print('has_this_more_materials(): Menos madera de la que piden')
+                return False
+            if self.wool < materials.wool:
+                print('has_this_more_materials(): Menos lana de la que piden')
+                return False
+            if self.clay < materials.clay:
+                print('has_this_more_materials(): Menos arcilla de la que piden')
+                return False
+            if self.mineral < materials.mineral:
+                print('has_this_more_materials(): Menos mineral del que piden')
+                return False
+            if self.cereal < materials.cereal:
+                print('has_this_more_materials(): Menos cereal del que piden')
+                return False
+            return True
+        else:
+            print('has_this_more_materials(): No es una instancia de materiales')
             return False
-        if self.wool < materials.wool:
-            print('Menos lana de la que piden')
-            return False
-        if self.clay < materials.clay:
-            print('Menos arcilla de la que piden')
-            return False
-        if self.mineral < materials.mineral:
-            print('Menos mineral del que piden')
-            return False
-        if self.cereal < materials.cereal:
-            print('Menos cereal del que piden')
-            return False
-        return True
 
     def __str__(self):
         return 'Materials( Cereal: ' + str(self.cereal) + ', Mineral:' + str(self.mineral) + ', Clay:' + str(

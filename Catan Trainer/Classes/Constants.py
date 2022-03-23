@@ -40,3 +40,16 @@ class TerrainConstants:
 
     def __init__(self):
         pass
+
+class BuildConstants:
+    """
+    Constantes para facilitar la legibilidad al trabajar con construcciones
+    """
+
+    TOWN = 'town'
+    CITY = 'city'
+    ROAD = 'road'
+    CARD = 'card'
+
+    def __init__(self):
+        pass

@@ -29,15 +29,16 @@ class GameDirector:
 
         self.game_manager.throw_dice()
         self.game_manager.give_resources()
+        self.game_manager.give_all_resources()
 
         print('Jugador: ' + str(self.game_manager.turn_manager.get_whose_turn_is_it()))
-        print('Resources ActualPlayer: ' + str(self.game_manager.bot_manager.actualPlayer.hand.resources))
-        print('Resources J1: ' + str(self.game_manager.bot_manager.playerOne.hand.resources))
-        print('Resources J2: ' + str(self.game_manager.bot_manager.playerTwo.hand.resources))
-        print('Resources J3: ' + str(self.game_manager.bot_manager.playerThree.hand.resources))
-        print('Resources J4: ' + str(self.game_manager.bot_manager.playerFour.hand.resources))
+        print('Resources ActualPlayer: ' + str(self.game_manager.bot_manager.players[player]['player'].hand.resources))
+        print('Resources J1: ' + str(self.game_manager.bot_manager.players[0]['player'].hand.resources))
+        print('Resources J2: ' + str(self.game_manager.bot_manager.players[1]['player'].hand.resources))
+        print('Resources J3: ' + str(self.game_manager.bot_manager.players[2]['player'].hand.resources))
+        print('Resources J4: ' + str(self.game_manager.bot_manager.players[3]['player'].hand.resources))
 
-        self.game_manager.bot_manager.actualPlayer.on_turn_start()
+        self.game_manager.bot_manager.players[player]['player'].on_turn_start()
         return
 
     def start_commerce_phase(self, player=-1):
@@ -46,16 +47,16 @@ class GameDirector:
         :param player: número que representa al jugador
         :return: void
         """
-
         # TODO: Comprobar que el trade offer es valido. Es decir, no da más materiales de los que tiene
-        print('start commerce phase: ' + str(self.game_manager.turn_manager.get_turn()))
+        print('Start commerce phase: ' + str(self.game_manager.turn_manager.get_turn()))
         self.game_manager.turn_manager.set_phase(1)
-        trade_offer = self.game_manager.bot_manager.actualPlayer.on_commerce_phase()
+        trade_offer = self.game_manager.bot_manager.players[player]['player'].on_commerce_phase()
         if isinstance(trade_offer, TradeOffer):
             if trade_offer:
                 print('Oferta: ' + str(trade_offer))
                 # TODO: comprobar que los materiales de gives sean menores que los materiales del jugador
-                if self.game_manager.bot_manager.actualPlayer.hand.resources.has_this_more_materials(trade_offer.gives):
+                if self.game_manager.bot_manager.players[player]['player'].hand.resources.has_this_more_materials(
+                        trade_offer.gives):
                     print('Puede hacer la oferta')
                     self.game_manager.trade_with_everyone(trade_offer)
                 else:
@@ -65,17 +66,17 @@ class GameDirector:
         elif isinstance(trade_offer, dict):
             print('%%%%%%%%%%%%%%%%%%%%%%%%%%%')
             print('Jugador comercia por puerto')
-            print(self.game_manager.bot_manager.actualPlayer.hand)
+            print(self.game_manager.bot_manager.players[player]['player'].hand)
             response = self.game_manager.commerce_manager.trade_without_harbor(
-                self.game_manager.bot_manager.actualPlayer, trade_offer['gives'], trade_offer['receives'])
+                self.game_manager.bot_manager.players[player]['player'], trade_offer['gives'], trade_offer['receives'])
             # self.game_manager.commerce_manager.trade_through_harbor(self.game_manager.bot_manager.actualPlayer,
             #                                                         trade_offer['gives'], trade_offer['receives'])
             # self.game_manager.commerce_manager.trade_through_special_harbor(self.game_manager.bot_manager.actualPlayer,
             #                                                                 trade_offer['gives'],
             #                                                                 trade_offer['receives'])
             if response:
-                self.game_manager.bot_manager.actualPlayer.hand = response
-                print(self.game_manager.bot_manager.actualPlayer.hand)
+                self.game_manager.bot_manager.players[player]['player'].hand = response
+                print(self.game_manager.bot_manager.players[player]['player'].hand)
             else:
                 print('pero no tiene materiales suficientes')
             print('%%%%%%%%%%%%%%%%%%%%%%%%%%%')
@@ -93,29 +94,33 @@ class GameDirector:
         print('vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv')
         print('start build phase: ' + str(self.game_manager.turn_manager.get_turn()))
         self.game_manager.turn_manager.set_phase(2)
-        to_build = self.game_manager.bot_manager.actualPlayer.on_build_phase(self.game_manager.board)
+        to_build = self.game_manager.bot_manager.players[player]['player'].on_build_phase(self.game_manager.board)
         if isinstance(to_build, dict):
             built = False
             if to_build['building'] == BuildConstants.TOWN:
-                built = self.game_manager.build_town(self.game_manager.bot_manager.actualPlayer, to_build['nodeID'])
+                built = self.game_manager.build_town(player, to_build['nodeID'])
+                if built['response']:
+                    self.game_manager.bot_manager.players[player]['victoryPoints'] += 1
             elif to_build['building'] == BuildConstants.CITY:
-                built = self.game_manager.build_city(self.game_manager.bot_manager.actualPlayer, to_build['nodeID'])
+                built = self.game_manager.build_city(player, to_build['nodeID'])
+                if built['response']:
+                    self.game_manager.bot_manager.players[player]['victoryPoints'] += 1
             elif to_build['building'] == BuildConstants.ROAD:
-                built = self.game_manager.build_road(self.game_manager.bot_manager.actualPlayer, to_build['nodeID'],
-                                                     to_build['roadTo'])
+                built = self.game_manager.build_road(player, to_build['nodeID'], to_build['roadTo'])
             elif to_build['building'] == BuildConstants.CARD:
-                built = self.game_manager.build_development_card(self.game_manager.bot_manager.actualPlayer)
+                built = self.game_manager.build_development_card(player)
                 # TODO
                 return
 
             if isinstance(built, dict):
                 if built['response']:
                     print('J' + str(player) + ' ha construido algo: ')
-                    print(built)
+                    print(to_build)
                     # Si se ha construido permitir que vuelvan a construir
-                    self.start_build_phase(self.game_manager.bot_manager.actualPlayer)
+                    self.start_build_phase(player)
                 else:
                     print('J' + str(player) + ' ha fallado en algo: ')
+                    print(to_build)
                     print(built['errorMsg'])
                     # TODO: Avisar que no se ha podido construir
                     return
@@ -133,8 +138,12 @@ class GameDirector:
         :return: void
         """
         print('start end turn: ' + str(self.game_manager.turn_manager.get_turn()))
+        print('----- Puntos de victoria de los jugadores: ------')
+        for i in range(4):
+            print('J' + str(i) + ': ' + str(self.game_manager.bot_manager.players[i]['victoryPoints']))
+        print('----- FIN Puntos de victoria de los jugadores ------')
         self.game_manager.turn_manager.set_phase(3)
-        self.game_manager.bot_manager.actualPlayer.on_turn_end()
+        self.game_manager.bot_manager.players[player]['player'].on_turn_end()
         return
 
     # def end_phase(self):
@@ -166,8 +175,8 @@ class GameDirector:
         """
         print('---------------------')
         print('round start')
-        i = 1
-        while i < 5:
+        i = 0
+        while i < 4:
             self.game_manager.turn_manager.set_turn(self.game_manager.turn_manager.get_turn() + 1)
             self.game_manager.turn_manager.set_whose_turn_is_it(i)
 
@@ -188,14 +197,18 @@ class GameDirector:
         """
         print('round end')
         print('---------------------')
-        if self.game_manager.turn_manager.get_round() >= 2:
-            # TODO
-            return
-        else:
-            self.game_manager.turn_manager.set_round(self.game_manager.turn_manager.get_round() + 1)
-            self.round_start()
+        # if self.game_manager.turn_manager.get_round() >= 2:
+        #     TODO
+            # return
+        # else:
+        winner = False
+        for player in self.game_manager.bot_manager.players:
+            if player['victoryPoints'] >= 10:
+                winner = True
 
-        return
+        self.game_manager.turn_manager.set_round(self.game_manager.turn_manager.get_round() + 1)
+        return winner
+        # return
 
     # Game #
     def game_start(self):
@@ -205,7 +218,7 @@ class GameDirector:
         """
         print('game start')
         # Se cargan los bots y se inicializa el tablero
-        self.game_manager.bot_manager.load_bots()
+        # self.game_manager.bot_manager.load_bots()
         self.game_manager.board.__init__()
 
         # TODO: falta comprobar que en los nodos adyacentes no hayan pueblos tampoco
@@ -214,11 +227,11 @@ class GameDirector:
         #   Es verdad, se supone que no se pueden seleccionar casillas con puertos de buenas a primeras
 
         # Se le da paso al primer jugador para que ponga un poblado y una aldea
-        i = 1
-        while i <= 4:
+        i = 0
+        while i <= 3:
             self.game_manager.bot_manager.set_actual_player(i)
             self.game_manager.turn_manager.set_whose_turn_is_it(i)
-            node_id, road_to = self.game_manager.bot_manager.actualPlayer.on_game_start(self.game_manager.board)
+            node_id, road_to = self.game_manager.bot_manager.players[i]['player'].on_game_start(self.game_manager.board)
 
             # TODO: Si no es valido,
             #  repetir el paso "on_game_start" con el bot. En un segundo fallo directamente se le pone por él
@@ -232,7 +245,8 @@ class GameDirector:
                 self.game_manager.board.nodes[node_id]['player'] = self.game_manager.turn_manager.get_whose_turn_is_it()
                 print('Materiales del nodo de J' + str(self.game_manager.board.nodes[node_id]['player']))
                 print(materials)
-                self.game_manager.bot_manager.get_player_from_int(i).hand.add_material(materials, 1)
+                self.game_manager.bot_manager.players[i]['player'].hand.add_material(materials, 1)
+                self.game_manager.bot_manager.players[i]['victoryPoints'] += 1
             else:
                 print("el jugador " + str(self.game_manager.turn_manager.get_whose_turn_is_it()) +
                       " ha intentado poner un nodo invalido")
@@ -242,7 +256,7 @@ class GameDirector:
                     self.game_manager.turn_manager.get_whose_turn_is_it()):
                 can_build_road = True
                 for roads in self.game_manager.board.nodes[node_id]['roads']:
-                    if road_to == roads['NodeID']:
+                    if road_to == roads['nodeID']:
                         can_build_road = False
                         break
 
@@ -261,11 +275,11 @@ class GameDirector:
                       " ha intentado poner una carretera en un nodo que no le pertence")
             i += 1
 
-        i = 4
-        while i >= 1:
+        i = 3
+        while i >= 0:
             self.game_manager.bot_manager.set_actual_player(i)
             self.game_manager.turn_manager.set_whose_turn_is_it(i)
-            node_id, road_to = self.game_manager.bot_manager.actualPlayer.on_game_start(self.game_manager.board)
+            node_id, road_to = self.game_manager.bot_manager.players[i]['player'].on_game_start(self.game_manager.board)
 
             # TODO: Si no es valido,
             #  repetir el paso "on_game_start" con el bot. En un segundo fallo directamente se le pone por él
@@ -279,13 +293,14 @@ class GameDirector:
                 self.game_manager.board.nodes[node_id]['player'] = self.game_manager.turn_manager.get_whose_turn_is_it()
                 print('Materiales del nodo de J' + str(self.game_manager.board.nodes[node_id]['player']))
                 print(materials)
-                self.game_manager.bot_manager.get_player_from_int(i).hand.add_material(materials, 1)
+                self.game_manager.bot_manager.players[i]['player'].hand.add_material(materials, 1)
+                self.game_manager.bot_manager.players[i]['victoryPoints'] += 1
             else:
                 print("el jugador " + str(self.game_manager.turn_manager.get_whose_turn_is_it()) +
                       " ha intentado poner un nodo invalido")
             # TODO: Si no es valido, hacer lo mismo que con el nodo, solo que mirar si se podría pedir solo la carretera
-            if self.game_manager.board.nodes[node_id][
-                'player'] == self.game_manager.turn_manager.get_whose_turn_is_it():
+            if (self.game_manager.board.nodes[node_id]['player']
+                    == self.game_manager.turn_manager.get_whose_turn_is_it()):
                 can_build_road = True
                 for roads in self.game_manager.board.nodes[node_id]['roads']:
                     if road_to == roads['nodeID']:
@@ -303,7 +318,7 @@ class GameDirector:
                           " ha intentado poner una carretera invalida")
             else:
                 print("el jugador " + str(self.game_manager.turn_manager.get_whose_turn_is_it()) +
-                      " ha intentado poner una carretera en un nodo que no le pertence")
+                      " ha intentado poner una carretera en un nodo que no le pertenece")
             i -= 1
 
         ######################################################
@@ -325,7 +340,10 @@ class GameDirector:
         #     print('#######################\n')
         # ######################################################
 
-        self.round_start()
+        winner = False
+        while not winner:
+            self.round_start()
+            winner = self.round_end()
         return
 
     def game_end(self):

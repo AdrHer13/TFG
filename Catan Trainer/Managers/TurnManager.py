@@ -6,13 +6,13 @@ class TurnManager:
     1 en el comercio, 2 en construcción y 3 en el final del turno
     """
 
-    turn = int
-    whoseTurnIsIt = int
-    phase = int
-    round = int
+    turn = 0
+    whoseTurnIsIt = 0
+    phase = 0
+    round = 0
 
     def __init__(self):
-        self.turn, self.whoseTurnIsIt, self.phase, self.round = 0, 1, 0, 0
+        self.turn, self.whoseTurnIsIt, self.phase, self.round = 0, 0, 0, 0
         return
 
     def end_phase(self):
@@ -48,28 +48,28 @@ class TurnManager:
     #############################
     ########## setters ##########
     #############################
-    def set_turn(self, turn=int):
+    def set_turn(self, turn=0):
         """
         :return: int turn
         """
         self.turn = turn
         return
 
-    def set_whose_turn_is_it(self, player=int):
+    def set_whose_turn_is_it(self, player=0):
         """
         :return: int whose_turn_is_it
         """
         self.whoseTurnIsIt = player
         return
 
-    def set_phase(self, phase=int):
+    def set_phase(self, phase=0):
         """
         :return: int phase
         """
         self.phase = phase
         return
 
-    def set_round(self, round=int):
+    def set_round(self, round=0):
         """
         :return: int round
         """

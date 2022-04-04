@@ -199,7 +199,7 @@ class GameDirector:
         print('---------------------')
         # if self.game_manager.turn_manager.get_round() >= 2:
         #     TODO
-            # return
+        # return
         # else:
         winner = False
         for player in self.game_manager.bot_manager.players:
@@ -207,6 +207,8 @@ class GameDirector:
                 winner = True
 
         self.game_manager.turn_manager.set_round(self.game_manager.turn_manager.get_round() + 1)
+        # if self.game_manager.turn_manager.get_round() == 2:
+        #     winner = True
         return winner
         # return
 
@@ -222,7 +224,6 @@ class GameDirector:
         self.game_manager.board.__init__()
 
         # TODO: falta comprobar que en los nodos adyacentes no hayan pueblos tampoco
-        #   Falta también que se entreguen los materiales a los jugadores correspondientes
         #   Y que de alguna manera dejen de repartirse los materiales a todas las instancias de la clase en lugar de a 1
         #   Es verdad, se supone que no se pueden seleccionar casillas con puertos de buenas a primeras
 
@@ -237,7 +238,7 @@ class GameDirector:
             #  repetir el paso "on_game_start" con el bot. En un segundo fallo directamente se le pone por él
             print('______________________')
             print('NODO: ' + str(node_id))
-            if self.game_manager.board.nodes[node_id]['player'] == 0:
+            if self.game_manager.board.nodes[node_id]['player'] == -1:
                 terrain_ids = self.game_manager.board.nodes[node_id]['contactingTerrain']
                 materials = []
                 for ter_id in terrain_ids:
@@ -254,21 +255,27 @@ class GameDirector:
             # TODO: Si no es valido, hacer lo mismo que con el nodo, solo que mirar si se podría pedir solo la carretera
             if (self.game_manager.board.nodes[node_id]['player'] ==
                     self.game_manager.turn_manager.get_whose_turn_is_it()):
-                can_build_road = True
-                for roads in self.game_manager.board.nodes[node_id]['roads']:
-                    if road_to == roads['nodeID']:
-                        can_build_road = False
-                        break
-
-                if can_build_road:
-                    self.game_manager.board.nodes[node_id]['roads'].append(
-                        {
-                            "playerID": self.game_manager.turn_manager.get_whose_turn_is_it(),
-                            "nodeID": road_to,
-                        })
-                else:
-                    print("el jugador " + str(self.game_manager.turn_manager.get_whose_turn_is_it()) +
-                          " ha intentado poner una carretera invalida")
+                response = self.game_manager.board.build_road(self.game_manager.turn_manager.get_whose_turn_is_it(),
+                                                              node_id, road_to)
+                if not response['response']:
+                    print(response['errorMsg'])
+                # can_build_road = True
+                # for roads in self.game_manager.board.nodes[node_id]['roads']:
+                #     if road_to == roads['nodeID']:
+                #         can_build_road = False
+                #         break
+                #
+                # if can_build_road:
+                #     self.game_manager.board.nodes[node_id]['roads'].append(
+                #         {
+                #             "playerID": self.game_manager.turn_manager.get_whose_turn_is_it(),
+                #             "nodeID": road_to,
+                #         })
+                #     print('Carretera: ')
+                #     print(self.game_manager.board.nodes[node_id]['roads'])
+                # else:
+                #     print("el jugador " + str(self.game_manager.turn_manager.get_whose_turn_is_it()) +
+                #           " ha intentado poner una carretera invalida")
 
             else:
                 print("el jugador " + str(self.game_manager.turn_manager.get_whose_turn_is_it()) +
@@ -285,7 +292,7 @@ class GameDirector:
             #  repetir el paso "on_game_start" con el bot. En un segundo fallo directamente se le pone por él
             print('______________________')
             print('NODO: ' + str(node_id))
-            if self.game_manager.board.nodes[node_id]['player'] == 0:
+            if self.game_manager.board.nodes[node_id]['player'] == -1:
                 terrain_ids = self.game_manager.board.nodes[node_id]['contactingTerrain']
                 materials = []
                 for ter_id in terrain_ids:
@@ -301,21 +308,27 @@ class GameDirector:
             # TODO: Si no es valido, hacer lo mismo que con el nodo, solo que mirar si se podría pedir solo la carretera
             if (self.game_manager.board.nodes[node_id]['player']
                     == self.game_manager.turn_manager.get_whose_turn_is_it()):
-                can_build_road = True
-                for roads in self.game_manager.board.nodes[node_id]['roads']:
-                    if road_to == roads['nodeID']:
-                        can_build_road = False
-                        break
-
-                if can_build_road:
-                    self.game_manager.board.nodes[node_id]['roads'].append(
-                        {
-                            "playerID": self.game_manager.turn_manager.get_whose_turn_is_it(),
-                            "nodeID": road_to,
-                        })
-                else:
-                    print("el jugador " + str(self.game_manager.turn_manager.get_whose_turn_is_it()) +
-                          " ha intentado poner una carretera invalida")
+                response = self.game_manager.board.build_road(self.game_manager.turn_manager.get_whose_turn_is_it(),
+                                                              node_id, road_to)
+                if not response['response']:
+                    print(response['errorMsg'])
+                # can_build_road = True
+                # for roads in self.game_manager.board.nodes[node_id]['roads']:
+                #     if road_to == roads['nodeID']:
+                #         can_build_road = False
+                #         break
+                #
+                # if can_build_road:
+                #     self.game_manager.board.nodes[node_id]['roads'].append(
+                #         {
+                #             "playerID": self.game_manager.turn_manager.get_whose_turn_is_it(),
+                #             "nodeID": road_to,
+                #         })
+                #     print('Carretera: ')
+                #     print(self.game_manager.board.nodes[node_id]['roads'])
+                # else:
+                #     print("el jugador " + str(self.game_manager.turn_manager.get_whose_turn_is_it()) +
+                #           " ha intentado poner una carretera invalida")
             else:
                 print("el jugador " + str(self.game_manager.turn_manager.get_whose_turn_is_it()) +
                       " ha intentado poner una carretera en un nodo que no le pertenece")

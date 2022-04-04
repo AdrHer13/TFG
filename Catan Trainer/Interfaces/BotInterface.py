@@ -102,8 +102,9 @@ class BotInterface:
         """
         print('Player on build phase')
         self.board = board_instance
+        answer = random.randint(0, 1)
         # Pueblo / carretera
-        if self.hand.resources.has_this_more_materials(BuildConstants.TOWN):
+        if self.hand.resources.has_this_more_materials(BuildConstants.TOWN) and answer == 0:
             answer = random.randint(0, 1)
             # Elegimos aleatoriamente si hacer un pueblo o una carretera
             if answer:
@@ -120,7 +121,7 @@ class BotInterface:
                             'roadTo': valid_nodes[road_node]['finishingNode']}
 
         # Ciudad
-        elif self.hand.resources.has_this_more_materials(BuildConstants.CITY):
+        elif self.hand.resources.has_this_more_materials(BuildConstants.CITY) and answer == 1:
             valid_nodes = self.board.valid_city_nodes(self.id)
             if len(valid_nodes):
                 city_node = random.randint(0, len(valid_nodes) - 1)

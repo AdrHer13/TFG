@@ -43,7 +43,7 @@ class Board:
                     "harbor": self.__get_harbors(i),
                     "roads": [],
                     "hasCity": False,
-                    "player": 0,
+                    "player": -1,
                     "contactingTerrain": self.__get_contacting_terrain(i),
                 })
                 i += 1
@@ -369,13 +369,13 @@ class Board:
         :param node: Número que representa un nodo en el tablero
         :return: {bool, string}. Devuelve si se ha podido o no construir el poblado, y en caso de no el porqué
         """
-        if self.nodes[node]['player'] == 0:
+        if self.nodes[node]['player'] == -1:
             can_build = False
             for roads in self.nodes[node]['roads']:
                 if roads['playerID'] == player:
                     can_build = True
 
-            if self.adyacent_nodes_dont_have_towns(node):
+            if not self.adyacent_nodes_dont_have_towns(node):
                 return {'response': False, 'errorMsg': 'Hay un pueblo o ciudad muy cercano al nodo'}
             if can_build:
                 self.nodes[node]['player'] = player
@@ -401,7 +401,7 @@ class Board:
             # self.nodes[node]['player'] = player
             self.nodes[node]['hasCity'] = True
             return {'response': True, 'errorMsg': ''}
-        elif self.nodes[node]['player'] == 0:
+        elif self.nodes[node]['player'] == -1:
             return {'response': True, 'errorMsg': 'Primero debe construirse un poblado'}
         else:
             return {'response': False, 'errorMsg': 'Ya posee el nodo otro jugador'}
@@ -417,17 +417,25 @@ class Board:
         """
         can_build = False
         # Comprueba si ya había una carretera puesta que le pertenezca al jugador
-        for roads in self.nodes[starting_node]['roads']:
-            if roads['nodeID'] == finishing_node:
+        for road in self.nodes[starting_node]['roads']:
+            if road['nodeID'] == finishing_node:
                 # Dejamos de mirar si ya hay una carretera hacia el nodo final
                 return {'response': False, 'errorMsg': 'Ya hay una carretera aquí'}
-            if roads['playerID'] == player:
+            if road['playerID'] == player:
+                can_build = True
+
+        for road in self.nodes[finishing_node]['roads']:
+            if road['nodeID'] == starting_node:
+                # Dejamos de mirar si ya hay una carretera hacia el nodo final
+                return {'response': False, 'errorMsg': 'Ya hay una carretera aquí'}
+            if road['playerID'] == player:
                 can_build = True
 
         # Si le pertenece el nodo inicial o tiene una carretera, deja construir
         if self.nodes[starting_node]['player'] == player or can_build:
             self.nodes[starting_node]['roads'].append({'playerID': player, 'nodeID': finishing_node})
             self.nodes[finishing_node]['roads'].append({'playerID': player, 'nodeID': starting_node})
+
             return {'response': True, 'errorMsg': ''}
         else:
             return {'response': False,
@@ -463,10 +471,8 @@ class Board:
         :param node_id:
         :return:
         """
-        starting_node = self.nodes[node_id]
-        adjacent_ids_array = starting_node['adjacent']
-        for adjacent_id in adjacent_ids_array:
-            if self.nodes[adjacent_id]['player']:
+        for adjacent_id in self.nodes[node_id]['adjacent']:
+            if self.nodes[adjacent_id]['player'] != -1:
                 return False
         return True
 
@@ -476,11 +482,20 @@ class Board:
         :param player_id: int
         :return: [id...]
         """
+        # TODO: puede llegar a haber multiples veces el mismo nodo debido a que un nodo es adyacente multiples veces
+        #  se podría añadir un "and not valid_nodes.has(node['id'])" o como se escriba eso en python
         valid_nodes = []
         for node in self.nodes:
+            # print('foreach node: ')
+            # print(node)
             for road in node['roads']:
-                if road['playerID'] == player_id and self.adyacent_nodes_dont_have_towns(node['id']):
+                if (road['playerID'] == player_id and self.adyacent_nodes_dont_have_towns(node['id']) and
+                        node['player'] == -1):
                     valid_nodes.append(node['id'])
+        print('````````````````````````````')
+        print('valid_town_nodes: ')
+        print(valid_nodes)
+        print('````````````````````````````')
         return valid_nodes
 
     def valid_city_nodes(self, player_id):
@@ -491,8 +506,12 @@ class Board:
         """
         valid_nodes = []
         for node in self.nodes:
-            if node['player'] == player_id:
+            if node['player'] == player_id and not node['hasCity']:
                 valid_nodes.append(node['id'])
+        print('````````````````````````````')
+        print('valid_city_nodes: ')
+        print(valid_nodes)
+        print('````````````````````````````')
         return valid_nodes
 
     def valid_road_nodes(self, player_id):
@@ -507,6 +526,10 @@ class Board:
                 for road in self.nodes[adjacent]['roads']:
                     if road['playerID'] == player_id and road['nodeID'] != node['id']:
                         valid_nodes.append({'startingNode': node['id'], 'finishingNode': adjacent})
+        print('````````````````````````````')
+        print('valid_road_nodes: ')
+        print(valid_nodes)
+        print('````````````````````````````')
         return valid_nodes
 
 # if __name__ == '__main__':

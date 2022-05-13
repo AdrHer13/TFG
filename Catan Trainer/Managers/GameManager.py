@@ -46,7 +46,7 @@ class GameManager:
                 # Se miran los nodos adyacentes
                 for node in terrain['contactingNodes']:
                     # Si tiene jugador, implica que hay pueblo
-                    if self.board.nodes[node]['player'] != 0:
+                    if self.board.nodes[node]['player'] != -1:
                         player = self.bot_manager.players[self.board.nodes[node]['player']]['player']
                         # Si tiene ciudad se dan 2 en lugar de 1 material
 
@@ -60,19 +60,19 @@ class GameManager:
                             player.hand.add_material(terrain['terrainType'], 1)
         return None
 
-    def give_all_resources(self):
-        """
-        Función que entrega materiales a cada uno de los jugadores en función de la tirada de dados
-        :return: void
-        """
-
-        for player in self.bot_manager.players:
-            player['player'].hand.add_material(MaterialConstants.CEREAL, 1)
-            player['player'].hand.add_material(MaterialConstants.MINERAL, 1)
-            player['player'].hand.add_material(MaterialConstants.CLAY, 1)
-            player['player'].hand.add_material(MaterialConstants.WOOD, 1)
-            player['player'].hand.add_material(MaterialConstants.WOOL, 1)
-        return None
+    # def give_all_resources(self):
+    #     """
+    #     Función que entrega materiales a cada uno de los jugadores en función de la tirada de dados
+    #     :return: void
+    #     """
+    #
+    #     for player in self.bot_manager.players:
+    #         player['player'].hand.add_material(MaterialConstants.CEREAL, 1)
+    #         player['player'].hand.add_material(MaterialConstants.MINERAL, 1)
+    #         player['player'].hand.add_material(MaterialConstants.CLAY, 1)
+    #         player['player'].hand.add_material(MaterialConstants.WOOD, 1)
+    #         player['player'].hand.add_material(MaterialConstants.WOOL, 1)
+    #     return None
 
     def trade_with_everyone(self, trade_offer=TradeOffer()):
         """
@@ -236,17 +236,23 @@ class GameManager:
         else:
             return False
 
-    def move_thief(self, terrain, adjacentPlayer):
+    def move_thief(self, terrain, adjacent_player):
         """
         Permite mover al ladrón a la casilla de terreno seleccionada y en caso de que haya un poblado o ciudad de otro
         jugador adyacente a dicha casilla permite robarle un material aleatorio de la mano.
         :param terrain: Número que representa un hexágono en el tablero
-        :param adjacentPlayer: Número de un jugador que esté adyacente al hexágono seleccionado
+        :param adjacent_player: Número de un jugador que esté adyacente al hexágono seleccionado
         :return: void
         """
-        # self.board.move_thief(terrain)
-        self.__steal_from_player__(adjacentPlayer)
-        return
+        response, error_msg = self.board.move_thief(terrain)
+        if response:
+            if adjacent_player != -1:
+                for node in self.board.terrain[terrain]['contactingNodes']:
+                    if self.board.nodes[node]['player'] == adjacent_player:
+                        self.__steal_from_player__(adjacent_player)
+                    else:
+                        error_msg = 'No se ha podido robar al jugador debido a que no está en un nodo adyacente'
+        return {response, error_msg}
 
     def __steal_from_player__(self, player):
         """
@@ -254,4 +260,24 @@ class GameManager:
         :param player: Número que representa a un jugador
         :return: void
         """
-        pass
+        player_obj = self.bot_manager.players[player]['player']
+        actual_player_obj = self.bot_manager.players[self.bot_manager.get_actual_player()]['player']
+        material_array = []
+
+        if player_obj.hand.get_cereal() > 0:
+            material_array.append(MaterialConstants.CEREAL)
+        if player_obj.hand.get_wool() > 0:
+            material_array.append(MaterialConstants.WOOL)
+        if player_obj.hand.get_wood() > 0:
+            material_array.append(MaterialConstants.WOOD)
+        if player_obj.hand.get_clay() > 0:
+            material_array.append(MaterialConstants.CLAY)
+        if player_obj.hand.get_mineral() > 0:
+            material_array.append(MaterialConstants.MINERAL)
+
+        if len(material_array):
+            material_id = material_array[random.randint(0, (len(material_array) - 1))]
+            player_obj.hand.remove_material(material_id, 1)
+            actual_player_obj.hand.add_material(material_id, 1)
+
+        return

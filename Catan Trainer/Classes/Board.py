@@ -413,7 +413,7 @@ class Board:
         :param player: Número que representa al jugador
         :param starting_node: Nodo desde el que se inicia la carretera
         :param finishing_node: Nodo al que llega la carretera. Debe ser adyacente
-        :return: void
+        :return: {bool, string}. Envía si se ha podido construir la carretera y en caso de no haberse podido el porqué
         """
         can_build = False
         # Comprueba si ya había una carretera puesta que le pertenezca al jugador
@@ -447,23 +447,33 @@ class Board:
         Permite mover el ladrón a la casilla de terreno especificada
         Cambia la variable terrain para colocar al ladrón en el terreno correspondiente
         :param terrain: Número que representa un hexágono en el tablero
-        :return: void
+        :return: {bool, string}. Envía si se ha podido move al ladrón y en caso de no haberse podido el porqué
         """
-        for square in self.terrain:
-            if square['hasThief']:
-                square['hasThief'] = False
-                break
+        if self.terrain[terrain]['hasThief']:
+            self.terrain[terrain]['hasThief'] = False
+            # TODO: Cambiar el bucle for por una casilla aleatoria si se equivocan
+            #  ya que no se puede devolver el ladrón al desierto
+            for square in self.terrain:
+                if square['terrainType'] == TerrainConstants.DESERT:
+                    square['hasThief'] = True
+            return {'response': False,
+                    'errorMsg': 'No se puede mover al ladrón a la misma casilla'}
+        else:
+            for square in self.terrain:
+                if square['hasThief']:
+                    square['hasThief'] = False
+                    break
 
-        self.terrain[terrain]['hasThief'] = True
-        return
+            self.terrain[terrain]['hasThief'] = True
+            return {'response': True,
+                    'errorMsg': ''}
 
-    def update_board(self):
-        """
-        Actualiza visualmente el tablero con todos los cambios habidos desde el último update
-        TODO:
-        :return: void
-        """
-        return
+    # def update_board(self):
+    #     """
+    #     Actualiza visualmente el tablero con todos los cambios habidos desde el último update
+    #     :return: void
+    #     """
+    #     return
 
     def adyacent_nodes_dont_have_towns(self, node_id):
         """

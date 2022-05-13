@@ -55,10 +55,19 @@ class Hand:
         Resta amount al material seleccionado
         :param resource: tipo de recurso a añadir
         :param amount: cantidad del material a añadir
-        :return: void
+        :return: true/false?
         """
-        self.add_material(resource, (amount * -1))
-        return
+        if self.get_from_id(resource) >= 1:
+            # print('entra if')
+            # print(str(self.get_from_id(resource)))
+            self.add_material(resource, (amount * -1))
+            # print(str(self.get_from_id(resource)))
+            # print('--------')
+            return True
+        else:
+            # print('else')
+            # TODO: Lanzar excepcion
+            return False
 
     def get_from_id(self, material_id):
         return self.resources.get_from_id(material_id)
@@ -80,6 +89,9 @@ class Hand:
 
     def get_wool(self):
         return self.resources.wool
+
+    def get_total(self):
+        return self.get_cereal() + self.get_mineral() + self.get_clay() + self.get_wood() + self.get_wool()
 
     def __str__(self):
         return 'Hand(' + str(self.resources) + ')'

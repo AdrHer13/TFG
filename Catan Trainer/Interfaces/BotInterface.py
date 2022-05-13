@@ -48,13 +48,35 @@ class BotInterface:
         else:
             return False
 
-    def on_turn_start(self):
+    # def on_turn_start(self):
+    #     """
+    #     Trigger para cuando empieza el turno (muy probablemente innecesarios). Termina cuando hace un return
+    #     :return: void, None
+    #     """
+    #     print('Player on turn start')
+    #     return None
+
+    def on_having_more_than_7_materials(self):
         """
-        Trigger para cuando empieza el turno (muy probablemente innecesarios). Termina cuando hace un return
-        :return: void, None
+        Trigger que se llama cuando se debe descartar materiales. Si no los descarta el bot, los descartará
+        el GameDirector aleatoriamente.
+        :return: Hand()
         """
-        print('Player on turn start')
-        return None
+        return self.hand
+
+    def on_moving_thief(self):
+        """
+        Trigger para cuando sale un 7 en el dado. Esto obliga a mover al ladrón. Si no se hace el GameDirector
+        lo hará de manera aleatoria. Incluyendo robar 1 recurso de cualquier jugador adyacente a la ficha de terreno
+        seleccionada
+        :return: {terrain, player}
+        """
+        terrain = random.randint(0, 18)
+        player = -1
+        for node in self.board.terrain[terrain]['contactingNodes']:
+            if self.board.nodes[node]['player'] != -1:
+                player = self.board.nodes[node]['player']
+        return {'terrain': terrain, 'player': player}
 
     def on_turn_end(self):
         """

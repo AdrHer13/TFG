@@ -1,3 +1,5 @@
+import random
+
 from Classes.Constants import BuildConstants
 from Classes.TradeOffer import TradeOffer
 from Managers.GameManager import GameManager
@@ -21,7 +23,6 @@ class GameDirector:
         :param player: número que representa al jugador
         :return: void
         """
-        # TODO: si sale un 7 deben decidir donde mover al ladrón
         print('----------')
         print('start turn: ' + str(self.game_manager.turn_manager.get_turn()))
         self.game_manager.turn_manager.set_phase(0)
@@ -29,16 +30,46 @@ class GameDirector:
 
         self.game_manager.throw_dice()
         self.game_manager.give_resources()
-        self.game_manager.give_all_resources()
+        # self.game_manager.give_all_resources()
 
         print('Jugador: ' + str(self.game_manager.turn_manager.get_whose_turn_is_it()))
-        print('Resources ActualPlayer: ' + str(self.game_manager.bot_manager.players[player]['player'].hand.resources))
-        print('Resources J1: ' + str(self.game_manager.bot_manager.players[0]['player'].hand.resources))
-        print('Resources J2: ' + str(self.game_manager.bot_manager.players[1]['player'].hand.resources))
-        print('Resources J3: ' + str(self.game_manager.bot_manager.players[2]['player'].hand.resources))
-        print('Resources J4: ' + str(self.game_manager.bot_manager.players[3]['player'].hand.resources))
+        # print('Resources ActualPlayer: ' + str(self.game_manager.bot_manager.players[player]['player'].hand.resources))
+        print('Resources J0: ' + str(self.game_manager.bot_manager.players[0]['player'].hand.resources) + ' | Total: ' + str(self.game_manager.bot_manager.players[0]['player'].hand.get_total()))
+        print('Resources J1: ' + str(self.game_manager.bot_manager.players[1]['player'].hand.resources) + ' | Total: ' + str(self.game_manager.bot_manager.players[1]['player'].hand.get_total()))
+        print('Resources J2: ' + str(self.game_manager.bot_manager.players[2]['player'].hand.resources) + ' | Total: ' + str(self.game_manager.bot_manager.players[2]['player'].hand.get_total()))
+        print('Resources J3: ' + str(self.game_manager.bot_manager.players[3]['player'].hand.resources) + ' | Total: ' + str(self.game_manager.bot_manager.players[3]['player'].hand.get_total()))
 
-        self.game_manager.bot_manager.players[player]['player'].on_turn_start()
+        if self.game_manager.last_dice_roll == 7:
+            for obj in self.game_manager.bot_manager.players:
+                if obj['player'].hand.get_total():
+                    total = obj['player'].hand.get_total()
+                    if total > 7:
+                        max_hand = (total / 2).__ceil__()
+                        new_total = obj['player'].on_having_more_than_7_materials().get_total()
+
+                        # print('Total: ' + str(total))
+                        # print('Mano máxima: ' + str(max_hand))
+                        # print('Debe descartar: ' + str(new_total - max_hand))
+
+                        if new_total > max_hand:
+                            for i in range(0, (new_total - max_hand)):
+                                response = False
+                                while not response:
+                                    response = obj['player'].hand.remove_material(random.randint(0, 4), 1)
+
+            print('Jugador: ' + str(self.game_manager.turn_manager.get_whose_turn_is_it()))
+            # print('Resources ActualPlayer: ' + str(
+            #     self.game_manager.bot_manager.players[player]['player'].hand.resources))
+            print('Resources J0: ' + str(self.game_manager.bot_manager.players[0]['player'].hand.resources) + ' | Total: ' + str(self.game_manager.bot_manager.players[0]['player'].hand.get_total()))
+            print('Resources J1: ' + str(self.game_manager.bot_manager.players[1]['player'].hand.resources) + ' | Total: ' + str(self.game_manager.bot_manager.players[1]['player'].hand.get_total()))
+            print('Resources J2: ' + str(self.game_manager.bot_manager.players[2]['player'].hand.resources) + ' | Total: ' + str(self.game_manager.bot_manager.players[2]['player'].hand.get_total()))
+            print('Resources J3: ' + str(self.game_manager.bot_manager.players[3]['player'].hand.resources) + ' | Total: ' + str(self.game_manager.bot_manager.players[3]['player'].hand.get_total()))
+
+            on_moving_thief = self.game_manager.bot_manager.players[player]['player'].on_moving_thief()
+            self.game_manager.move_thief(on_moving_thief['terrain'], on_moving_thief['player'])
+
+        # LLama al inicio del turno de los jugadores
+        # self.game_manager.bot_manager.players[player]['player'].on_turn_start()
         return
 
     def start_commerce_phase(self, player=-1):

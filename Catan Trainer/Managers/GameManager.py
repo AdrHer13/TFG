@@ -7,6 +7,7 @@ from Classes.Board import Board
 from Classes.Constants import MaterialConstants
 from Classes.Materials import Materials
 from Classes.TradeOffer import TradeOffer
+from Managers.GraphicsManager import GraphicsManager
 from Managers.TurnManager import TurnManager
 from Managers.CommerceManager import CommerceManager
 from Managers.BotManager import BotManager
@@ -21,6 +22,7 @@ class GameManager:
     turn_manager = TurnManager()
     commerce_manager = CommerceManager()
     bot_manager = BotManager()
+    graphics_manager = GraphicsManager()
 
     def __init__(self):
         return

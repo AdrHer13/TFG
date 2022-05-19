@@ -175,6 +175,7 @@ class GameDirector:
         print('----- FIN Puntos de victoria de los jugadores ------')
         self.game_manager.turn_manager.set_phase(3)
         self.game_manager.bot_manager.players[player]['player'].on_turn_end()
+        self.game_manager.graphics_manager.flip()
         return
 
     # def end_phase(self):

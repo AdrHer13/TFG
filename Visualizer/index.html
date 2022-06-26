@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Visualizador</title>
+
+
+    <!-- Stylesheets -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link rel="stylesheet" href="CSS/general.css">
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js" integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <!-- APP -->
+    <div class="container" style="height: 100vh; background: gray;">
+        <!-- Partida -->
+        <div class="row">
+
+            <!-- Col Jugadores -->
+            <div class="col-3">
+                <div style="height: 100px; background: red">
+                    <h1>J1</h1>
+                </div>
+                <div style="height: 100px; background: green">
+                    <h1>J3</h1>
+                </div>
+            </div>
+
+            <!-- Col Partida -->
+            <div class="col-6">
+                <div style="height: 200px">
+                    <h1>Juego</h1>
+                    <!--                    <img src="./Images/startingmap.png" alt="Juego del Catan">-->
+                </div>
+            </div>
+
+            <!-- Col Jugadores -->
+            <div class="col-3">
+                <div style="height: 100px; background: yellow">
+                    <h1>J2</h1>
+                </div>
+                <div style="height: 100px; background: cyan">
+                    <h1>J4</h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controles -->
+        <div class="row">
+            <div class="col-12">
+                <div style="background: purple">
+                    <h1>Controles</h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- Log -->
+        <div class="row">
+            <div class="col-12">
+                <div style="background: pink">
+                    <input type="file" id="get_file" accept=".json">
+                    <h1>Log de la partida</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var game = {}
+        
+        function init() {
+            let input = jQuery('#get_file');
+            input.on('change', function(e) {
+                console.log(e);
+                console.log(input);
+
+
+                var file = document.getElementById("get_file").files[0];
+                if (file) {
+                    var reader = new FileReader();
+                    reader.readAsText(file, "UTF-8");
+                    reader.onload = function(evt) {
+//                        console.log(evt.target.result)
+                        game['json'] = evt.target.result
+//                        document.getElementById("fileContents").innerHTML = evt.target.result;
+                    }
+                    reader.onerror = function(evt) {
+                        console.log('Error al cargar el archivo')
+//                        document.getElementById("fileContents").innerHTML = "error reading file";
+                    }
+                }
+            });
+        }
+
+        window.addEventListener('load', function() {
+
+            init();
+
+        }, false);
+    </script>
+</body></html>

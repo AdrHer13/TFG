@@ -20,7 +20,7 @@ class TraceLoader:
         Función que exporta a formato JSON la variable current_trace
         :return: None
         """
-        with open('../Trace/game.json', 'w') as outfile:
+        with open('../Traces/game.json', 'w') as outfile:
             outfile.write(str(self.current_trace))
         return
 

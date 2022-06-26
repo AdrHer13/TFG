@@ -1,8 +1,10 @@
 import random
 
 from Classes.Constants import BuildConstants
+from Classes.Hand import Hand
 from Classes.TradeOffer import TradeOffer
 from Managers.GameManager import GameManager
+from TraceLoader.TraceLoader import TraceLoader
 
 
 class GameDirector:
@@ -12,6 +14,7 @@ class GameDirector:
     # turn_manager = TurnManager()
     # bot_manager = BotManager()
     game_manager = GameManager()
+    trace_loader = TraceLoader()
 
     def __init__(self):
         return
@@ -21,8 +24,9 @@ class GameDirector:
         """
         Esta función permite iniciar el turno
         :param player: número que representa al jugador
-        :return: void
+        :return: object
         """
+        start_turn_object = {}
         print('----------')
         print('start turn: ' + str(self.game_manager.turn_manager.get_turn()))
         self.game_manager.turn_manager.set_phase(0)
@@ -32,12 +36,16 @@ class GameDirector:
         self.game_manager.give_resources()
         # self.game_manager.give_all_resources()
 
+        start_turn_object['dice'] = self.game_manager.last_dice_roll
+        start_turn_object['actual_player'] = str(self.game_manager.turn_manager.get_whose_turn_is_it())
+
         print('Jugador: ' + str(self.game_manager.turn_manager.get_whose_turn_is_it()))
         # print('Resources ActualPlayer: ' + str(self.game_manager.bot_manager.players[player]['player'].hand.resources))
-        print('Resources J0: ' + str(self.game_manager.bot_manager.players[0]['player'].hand.resources) + ' | Total: ' + str(self.game_manager.bot_manager.players[0]['player'].hand.get_total()))
-        print('Resources J1: ' + str(self.game_manager.bot_manager.players[1]['player'].hand.resources) + ' | Total: ' + str(self.game_manager.bot_manager.players[1]['player'].hand.get_total()))
-        print('Resources J2: ' + str(self.game_manager.bot_manager.players[2]['player'].hand.resources) + ' | Total: ' + str(self.game_manager.bot_manager.players[2]['player'].hand.get_total()))
-        print('Resources J3: ' + str(self.game_manager.bot_manager.players[3]['player'].hand.resources) + ' | Total: ' + str(self.game_manager.bot_manager.players[3]['player'].hand.get_total()))
+
+        for i in range(4):
+            print('Resources J' + str(i) + ': ' + str(
+                self.game_manager.bot_manager.players[i]['player'].hand.resources) + ' | Total: ' + str(
+                self.game_manager.bot_manager.players[i]['player'].hand.get_total()))
 
         if self.game_manager.last_dice_roll == 7:
             for obj in self.game_manager.bot_manager.players:
@@ -57,47 +65,63 @@ class GameDirector:
                                 while not response:
                                     response = obj['player'].hand.remove_material(random.randint(0, 4), 1)
 
-            print('Jugador: ' + str(self.game_manager.turn_manager.get_whose_turn_is_it()))
-            # print('Resources ActualPlayer: ' + str(
-            #     self.game_manager.bot_manager.players[player]['player'].hand.resources))
-            print('Resources J0: ' + str(self.game_manager.bot_manager.players[0]['player'].hand.resources) + ' | Total: ' + str(self.game_manager.bot_manager.players[0]['player'].hand.get_total()))
-            print('Resources J1: ' + str(self.game_manager.bot_manager.players[1]['player'].hand.resources) + ' | Total: ' + str(self.game_manager.bot_manager.players[1]['player'].hand.get_total()))
-            print('Resources J2: ' + str(self.game_manager.bot_manager.players[2]['player'].hand.resources) + ' | Total: ' + str(self.game_manager.bot_manager.players[2]['player'].hand.get_total()))
-            print('Resources J3: ' + str(self.game_manager.bot_manager.players[3]['player'].hand.resources) + ' | Total: ' + str(self.game_manager.bot_manager.players[3]['player'].hand.get_total()))
+            for i in range(4):
+                print('Resources J' + str(i) + ': ' + str(
+                    self.game_manager.bot_manager.players[i]['player'].hand.resources) + ' | Total: ' + str(
+                    self.game_manager.bot_manager.players[i]['player'].hand.get_total()))
 
             on_moving_thief = self.game_manager.bot_manager.players[player]['player'].on_moving_thief()
             self.game_manager.move_thief(on_moving_thief['terrain'], on_moving_thief['player'])
 
+        for i in range(4):
+            start_turn_object['hand_P' + str(i)] =\
+                self.game_manager.bot_manager.players[i]['player'].hand.resources.__to_object__()
+            start_turn_object['total_P' + str(i)] =\
+                str(self.game_manager.bot_manager.players[i]['player'].hand.get_total())
+
         # LLama al inicio del turno de los jugadores
         # self.game_manager.bot_manager.players[player]['player'].on_turn_start()
-        return
+        return start_turn_object
 
     def start_commerce_phase(self, player=-1):
         """
         Esta función permite pasar a la fase de comercio
         :param player: número que representa al jugador
-        :return: void
+        :return: object
         """
+
+        commerce_phase_object = []
+
         # TODO: Comprobar que el trade offer es valido. Es decir, no da más materiales de los que tiene
         print('Start commerce phase: ' + str(self.game_manager.turn_manager.get_turn()))
         self.game_manager.turn_manager.set_phase(1)
         trade_offer = self.game_manager.bot_manager.players[player]['player'].on_commerce_phase()
         if isinstance(trade_offer, TradeOffer):
+            commerce_phase_object.append({'trade_offer': trade_offer.__to_object__(), 'harbor_trade': False})
             if trade_offer:
                 print('Oferta: ' + str(trade_offer))
                 # TODO: comprobar que los materiales de gives sean menores que los materiales del jugador
                 if self.game_manager.bot_manager.players[player]['player'].hand.resources.has_this_more_materials(
                         trade_offer.gives):
+                    commerce_phase_object.append({'inviable': False})
                     print('Puede hacer la oferta')
-                    self.game_manager.trade_with_everyone(trade_offer)
+                    answer_object = self.game_manager.trade_with_everyone(trade_offer)
+                    commerce_phase_object.append(answer_object)
                 else:
+                    commerce_phase_object.append({'inviable': True})
                     # TODO: se queja de que no puede hacerla, le da una segunda oportunidad, en otro fallo
                     #       le salta la fase de comercio
-                    pass
+
+            return commerce_phase_object
+
         elif isinstance(trade_offer, dict):
             print('%%%%%%%%%%%%%%%%%%%%%%%%%%%')
             print('Jugador comercia por puerto')
             print(self.game_manager.bot_manager.players[player]['player'].hand)
+
+            commerce_phase_object.append({'trade_offer': trade_offer, 'harbor_trade': True})
+
+            # TODO: Hacer que tener puerto sea funcional
             response = self.game_manager.commerce_manager.trade_without_harbor(
                 self.game_manager.bot_manager.players[player]['player'], trade_offer['gives'], trade_offer['receives'])
             # self.game_manager.commerce_manager.trade_through_harbor(self.game_manager.bot_manager.actualPlayer,
@@ -105,28 +129,35 @@ class GameDirector:
             # self.game_manager.commerce_manager.trade_through_special_harbor(self.game_manager.bot_manager.actualPlayer,
             #                                                                 trade_offer['gives'],
             #                                                                 trade_offer['receives'])
-            if response:
+            commerce_phase_object.append({'answer': response})
+            if isinstance(response, Hand):
                 self.game_manager.bot_manager.players[player]['player'].hand = response
                 print(self.game_manager.bot_manager.players[player]['player'].hand)
             else:
                 print('pero no tiene materiales suficientes')
             print('%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-            return
+            return commerce_phase_object
         else:
-            return
+            commerce_phase_object.append({'trade_offer': 'None'})
+            return commerce_phase_object
 
-    def start_build_phase(self, player=-1):
+    def start_build_phase(self, player=-1, build_phase_object=None):
         """
         Esta función permite pasar a la fase de construcción
+        :param build_phase_object:
         :param player: número que representa al jugador
         :return: void
         """
+        if build_phase_object is None:
+            build_phase_object = []
         print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
         print('vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv')
         print('start build phase: ' + str(self.game_manager.turn_manager.get_turn()))
+
         self.game_manager.turn_manager.set_phase(2)
         to_build = self.game_manager.bot_manager.players[player]['player'].on_build_phase(self.game_manager.board)
         if isinstance(to_build, dict):
+            build_phase_object.append(to_build)
             built = False
             if to_build['building'] == BuildConstants.TOWN:
                 built = self.game_manager.build_town(player, to_build['nodeID'])
@@ -141,26 +172,31 @@ class GameDirector:
             elif to_build['building'] == BuildConstants.CARD:
                 built = self.game_manager.build_development_card(player)
                 # TODO
-                return
+                return build_phase_object
 
             if isinstance(built, dict):
                 if built['response']:
+                    build_phase_object.append({'finished': True})
                     print('J' + str(player) + ' ha construido algo: ')
                     print(to_build)
                     # Si se ha construido permitir que vuelvan a construir
-                    self.start_build_phase(player)
+                    print(build_phase_object)
+                    return self.start_build_phase(player, build_phase_object)
                 else:
+                    build_phase_object.append({'finished': False})
                     print('J' + str(player) + ' ha fallado en algo: ')
                     print(to_build)
                     print(built['errorMsg'])
                     # TODO: Avisar que no se ha podido construir
-                    return
+                    return build_phase_object
             else:
+                build_phase_object.append({'finished': False})
                 print('No se ha podido construir por falta de materiales')
                 # TODO: Avisar que no se ha podido construir
-                return
+                return build_phase_object
         else:
-            return
+            build_phase_object.append({'building': None})
+            return build_phase_object
 
     def end_turn(self, player=-1):
         """
@@ -170,34 +206,19 @@ class GameDirector:
         """
         print('start end turn: ' + str(self.game_manager.turn_manager.get_turn()))
         print('----- Puntos de victoria de los jugadores: ------')
+
+        end_turn_object = []
+
+        vp = []
         for i in range(4):
+            vp.append({'J' + str(i): str(self.game_manager.bot_manager.players[i]['victoryPoints'])})
             print('J' + str(i) + ': ' + str(self.game_manager.bot_manager.players[i]['victoryPoints']))
         print('----- FIN Puntos de victoria de los jugadores ------')
         self.game_manager.turn_manager.set_phase(3)
         self.game_manager.bot_manager.players[player]['player'].on_turn_end()
-        self.game_manager.graphics_manager.flip()
-        return
 
-    # def end_phase(self):
-    #     # TODO
-    #     # Probablemente innecesario
-    #     print('end phase')
-    #     if self.game_manager.turn_manager.phase == 0:
-    #         self.start_commerce_phase(self.game_manager.turn_manager.get_whose_turn_is_it())
-    #     elif self.game_manager.turn_manager.phase == 1:
-    #         self.start_build_phase(self.game_manager.turn_manager.get_whose_turn_is_it())
-    #     elif self.game_manager.turn_manager.phase == 2:
-    #         self.end_turn(self.game_manager.turn_manager.get_whose_turn_is_it())
-    #     elif self.game_manager.turn_manager.phase == 3:
-    #         if self.game_manager.turn_manager.get_whose_turn_is_it() >= 4:
-    #             self.round_end()
-    #         else:
-    #             self.game_manager.turn_manager.set_whose_turn_is_it(
-    #                 self.game_manager.turn_manager.get_whose_turn_is_it() + 1)
-    #             self.start_turn(self.game_manager.turn_manager.whoseTurnIsIt)
-    #     else:
-    #         pass
-    #     return
+        end_turn_object.append({'victory_points': vp})
+        return end_turn_object
 
     # Round #
     def round_start(self):
@@ -205,21 +226,32 @@ class GameDirector:
         Esta función permite comenzar una ronda nueva
         :return:
         """
+        round_object = []
         print('---------------------')
         print('round start')
-        i = 0
-        while i < 4:
+
+        for i in range(4):
+            turn_array = []
             self.game_manager.turn_manager.set_turn(self.game_manager.turn_manager.get_turn() + 1)
             self.game_manager.turn_manager.set_whose_turn_is_it(i)
 
-            self.start_turn(self.game_manager.turn_manager.get_whose_turn_is_it())
-            self.start_commerce_phase(self.game_manager.turn_manager.get_whose_turn_is_it())
-            self.start_build_phase(self.game_manager.turn_manager.get_whose_turn_is_it())
+            start_turn_object = self.start_turn(self.game_manager.turn_manager.get_whose_turn_is_it())
+            turn_array.append({'start_turn': start_turn_object})
+
+            commerce_phase_object = self.start_commerce_phase(self.game_manager.turn_manager.get_whose_turn_is_it())
+            turn_array.append({'commerce_phase': commerce_phase_object})
+
+            build_phase_object = self.start_build_phase(self.game_manager.turn_manager.get_whose_turn_is_it(), [])
+            turn_array.append({'build_phase': build_phase_object})
+
             print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
             print('vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv')
-            self.end_turn(self.game_manager.turn_manager.get_whose_turn_is_it())
-            i += 1
-        self.round_end()
+            end_turn_object = self.end_turn(self.game_manager.turn_manager.get_whose_turn_is_it())
+            turn_array.append({'end_turn': end_turn_object})
+
+            round_object.append({'turn_P' + str(i): turn_array})
+
+        self.trace_loader.current_trace['round_' + str(self.game_manager.turn_manager.get_round())] = round_object
         return
 
     def round_end(self):
@@ -255,13 +287,21 @@ class GameDirector:
         # self.game_manager.bot_manager.load_bots()
         self.game_manager.board.__init__()
 
+        # Se añade el tablero al setup, para que el intérprete sepa cómo es el tablero
+        setup_object = {
+            'board': {
+                'board_nodes': self.game_manager.board.nodes,
+                'board_terrain': self.game_manager.board.terrain,
+            }
+        }
+
         # TODO: falta comprobar que en los nodos adyacentes no hayan pueblos tampoco
         #   Y que de alguna manera dejen de repartirse los materiales a todas las instancias de la clase en lugar de a 1
         #   Es verdad, se supone que no se pueden seleccionar casillas con puertos de buenas a primeras
 
         # Se le da paso al primer jugador para que ponga un poblado y una aldea
-        i = 0
-        while i <= 3:
+        for i in range(4):
+            setup_object['P' + str(i)] = []
             self.game_manager.bot_manager.set_actual_player(i)
             self.game_manager.turn_manager.set_whose_turn_is_it(i)
             node_id, road_to = self.game_manager.bot_manager.players[i]['player'].on_game_start(self.game_manager.board)
@@ -291,6 +331,8 @@ class GameDirector:
                                                               node_id, road_to)
                 if not response['response']:
                     print(response['errorMsg'])
+                else:
+                    setup_object['P' + str(i)].append({'id': node_id, 'road': road_to})
                 # can_build_road = True
                 # for roads in self.game_manager.board.nodes[node_id]['roads']:
                 #     if road_to == roads['nodeID']:
@@ -312,10 +354,8 @@ class GameDirector:
             else:
                 print("el jugador " + str(self.game_manager.turn_manager.get_whose_turn_is_it()) +
                       " ha intentado poner una carretera en un nodo que no le pertence")
-            i += 1
 
-        i = 3
-        while i >= 0:
+        for i in range(3, -1, -1):
             self.game_manager.bot_manager.set_actual_player(i)
             self.game_manager.turn_manager.set_whose_turn_is_it(i)
             node_id, road_to = self.game_manager.bot_manager.players[i]['player'].on_game_start(self.game_manager.board)
@@ -344,6 +384,8 @@ class GameDirector:
                                                               node_id, road_to)
                 if not response['response']:
                     print(response['errorMsg'])
+                else:
+                    setup_object['P' + str(i)].append({'id': node_id, 'road': road_to})
                 # can_build_road = True
                 # for roads in self.game_manager.board.nodes[node_id]['roads']:
                 #     if road_to == roads['nodeID']:
@@ -364,8 +406,9 @@ class GameDirector:
             else:
                 print("el jugador " + str(self.game_manager.turn_manager.get_whose_turn_is_it()) +
                       " ha intentado poner una carretera en un nodo que no le pertenece")
-            i -= 1
 
+        ######################################################
+        ##       Por si quieres ver el tablero              ##
         ######################################################
         # print('---------------------\n')
         # print('Nodos:')
@@ -385,26 +428,15 @@ class GameDirector:
         #     print('#######################\n')
         # ######################################################
 
+        # print(setup_object)
+        self.trace_loader.current_trace['setup'] = setup_object
         winner = False
         while not winner:
             self.round_start()
             winner = self.round_end()
-        return
-
-    def game_end(self):
-        """
-        Esta función permite acabar una partida empezada
-        :return:
-        """
-        print('game end')
-        return
-
-    def check_for_victory(self):
-        """
-        Esta función comprueba si alguno de los 4 jugadores ha conseguido la condición de victoria
-        :return:
-        """
-        print('check for victory')
+            # winner = True
+        # print(self.trace_loader.current_trace)
+        self.trace_loader.export_to_file()
         return
 
 

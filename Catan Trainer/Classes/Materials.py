@@ -129,5 +129,9 @@ class Materials:
         return 'Materials( Cereal: ' + str(self.cereal) + ', Mineral:' + str(self.mineral) + ', Clay:' + str(
             self.clay) + ', Wood:' + str(self.wood) + ', Wool:' + str(self.wool) + ' )'
 
+    def __to_object__(self):
+        return {'Cereal': str(self.cereal), 'Mineral': str(self.mineral), 'Clay': str(self.clay),
+                'Wood': str(self.wood), 'Wool': str(self.wool)}
+
     def __repr__(self):
         return 'Materials()'

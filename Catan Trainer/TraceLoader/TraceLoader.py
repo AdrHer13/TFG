@@ -1,18 +1,27 @@
-from TraceLoader.Interpreter import Interpreter
+# from TraceLoader.Interpreter import Interpreter
 
 
 class TraceLoader:
     current_trace = {}
-    interpreter = Interpreter()
+    # interpreter = Interpreter()
 
     def __init__(self):
         return
+
+    # def set_trace(self, string):
+    #     self.current_trace += string
+    #     return
+    #
+    # def get_trace(self):
+    #     return self.current_trace
 
     def export_to_file(self):
         """
         Función que exporta a formato JSON la variable current_trace
         :return: None
         """
+        with open('../Trace/game.json', 'w') as outfile:
+            outfile.write(str(self.current_trace))
         return
 
     def import_to_file(self):

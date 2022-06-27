@@ -129,11 +129,13 @@ class GameDirector:
             # self.game_manager.commerce_manager.trade_through_special_harbor(self.game_manager.bot_manager.actualPlayer,
             #                                                                 trade_offer['gives'],
             #                                                                 trade_offer['receives'])
-            commerce_phase_object.append({'answer': response})
             if isinstance(response, Hand):
+                # TODO: solo devolver los materiales y cambiar la mano en el visualizador
+                commerce_phase_object.append({'answer': response.resources.__to_object__()})
                 self.game_manager.bot_manager.players[player]['player'].hand = response
                 print(self.game_manager.bot_manager.players[player]['player'].hand)
             else:
+                commerce_phase_object.append({'answer': response})
                 print('pero no tiene materiales suficientes')
             print('%%%%%%%%%%%%%%%%%%%%%%%%%%%')
             return commerce_phase_object
@@ -289,9 +291,9 @@ class GameDirector:
 
         # Se añade el tablero al setup, para que el intérprete sepa cómo es el tablero
         setup_object = {
-            'board': {
-                'board_nodes': self.game_manager.board.nodes,
-                'board_terrain': self.game_manager.board.terrain,
+            "board": {
+                "board_nodes": self.game_manager.board.nodes,
+                "board_terrain": self.game_manager.board.terrain,
             }
         }
 
@@ -301,7 +303,7 @@ class GameDirector:
 
         # Se le da paso al primer jugador para que ponga un poblado y una aldea
         for i in range(4):
-            setup_object['P' + str(i)] = []
+            setup_object["P" + str(i)] = []
             self.game_manager.bot_manager.set_actual_player(i)
             self.game_manager.turn_manager.set_whose_turn_is_it(i)
             node_id, road_to = self.game_manager.bot_manager.players[i]['player'].on_game_start(self.game_manager.board)
@@ -332,7 +334,7 @@ class GameDirector:
                 if not response['response']:
                     print(response['errorMsg'])
                 else:
-                    setup_object['P' + str(i)].append({'id': node_id, 'road': road_to})
+                    setup_object["P" + str(i)].append({"id": node_id, "road": road_to})
                 # can_build_road = True
                 # for roads in self.game_manager.board.nodes[node_id]['roads']:
                 #     if road_to == roads['nodeID']:
@@ -385,7 +387,7 @@ class GameDirector:
                 if not response['response']:
                     print(response['errorMsg'])
                 else:
-                    setup_object['P' + str(i)].append({'id': node_id, 'road': road_to})
+                    setup_object["P" + str(i)].append({"id": node_id, "road": road_to})
                 # can_build_road = True
                 # for roads in self.game_manager.board.nodes[node_id]['roads']:
                 #     if road_to == roads['nodeID']:
@@ -428,14 +430,11 @@ class GameDirector:
         #     print('#######################\n')
         # ######################################################
 
-        # print(setup_object)
-        self.trace_loader.current_trace['setup'] = setup_object
+        self.trace_loader.current_trace["setup"] = setup_object
         winner = False
         while not winner:
             self.round_start()
             winner = self.round_end()
-            # winner = True
-        # print(self.trace_loader.current_trace)
         self.trace_loader.export_to_file()
         return
 

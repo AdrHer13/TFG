@@ -31,6 +31,8 @@
                     <div>
                         <img src="Images/nouser.png" alt="No user" height="100px">
                         <h1>J1</h1>
+                        <h3 id="puntos_victoria_J1"></h3>
+                        <textarea id="buildings_P1" style="width: 100%"></textarea>
                     </div>
                 </div>
                 <div id="hand_P0" class="hand hand-bottom text-center">
@@ -88,15 +90,17 @@
                     </div>
                 </div>
                 <div style="background: green" class="playerprofile" id="P2">
-                    <h1>J3</h1>
                     <img src="Images/nouser.png" alt="No user" height="100px">
+                    <h1>J3</h1>
+                    <h3 id="puntos_victoria_J3"></h3>
+                    <textarea id="buildings_P3" style="width: 100%"></textarea>
                 </div>
             </div>
 
             <!-- Col Partida -->
             <div class="col-6 mb-5">
                 <div class="gamefield text-center">
-                    <img src="./Images/mapa.png" style="height: 70vh" alt="Juego del Catan">
+                    <img src="./Images/mapa.png" style="height: 45vh; margin-top: 10em" alt="Juego del Catan">
                 </div>
             </div>
 
@@ -105,6 +109,8 @@
                 <div style="background: lightblue" class="playerprofile" id="P1">
                     <img src="Images/nouser.png" alt="No user" height="100px">
                     <h1>J2</h1>
+                    <h3 id="puntos_victoria_J2"></h3>
+                    <textarea id="buildings_P2" style="width: 100%"></textarea>
                 </div>
                 <div id="hand_P1" class="hand hand-bottom text-center">
                     <div class="cereal d-inline-block px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
@@ -161,8 +167,10 @@
                     </div>
                 </div>
                 <div style="background: yellow" class="playerprofile" id="P3">
-                    <h1>J4</h1>
                     <img src="Images/nouser.png" alt="No user" height="100px">
+                    <h1>J4</h1>
+                    <h3 id="puntos_victoria_J4"></h3>
+                    <textarea id="buildings_P4" style="width: 100%"></textarea>
                 </div>
             </div>
         </div>
@@ -184,14 +192,20 @@
                         <div class="row">
                             <div class="col text-center">
                                 <input type="number" class="form-control" id="contador_turnos">
+                                <input type="number" class="form-control" id="contador_fases">
                             </div>
                             <div class="col-2 text-center">
                                 <div class="btn btn-secondary" id="play_btn" data-toggle="tooltip" data-placement="top" title="Play"><i class="fa-solid fa-play"></i></div>
                                 <!--                                <div class="btn btn-secondary" id="double_play_btn" data-toggle="tooltip" data-placement="top" title="Ultra Play"><i class="fa-solid fa-forward"></i></div>-->
                             </div>
                             <div class="col text-center">
-                                <input type="number" class="form-control" id="contador_rondas">
-                                <input type="number" class="form-control" id="contador_fases">
+                                <input type="number" class="form-control" id="contador_rondas" style="display: inline-block; width: 100px">
+                                /
+                                <span id="rondas_maximas"></span>
+                            </div>
+                            <div>
+                                <span id="millis_seleccionados"></span>
+                                <input type="range" min="10" max="1000" value="25" class="slider" id="millis_for_play">
                             </div>
                         </div>
                     </div>
@@ -231,12 +245,7 @@
         var round_obj = {}
         var turn_obj = {}
         var phase_obj = {}
-        
-        var buildings_P1 = []
-        var buildings_P2 = []
-        var buildings_P3 = []
-        var buildings_P4 = []
-        
+
 
         function init_events() {
             let input = jQuery('#get_file');
@@ -259,6 +268,21 @@
                         console.log('Error al cargar el archivo')
                     }
                 }
+
+                for (let i = 1; i < 5; i++) {
+                    let textarea = $('#buildings_P' + i)
+                    textarea.text('')
+                }
+                game_obj = {}
+                round_obj = {}
+                turn_obj = {}
+                phase_obj = {}
+
+
+                jQuery('#puntos_victoria_J1').text(0)
+                jQuery('#puntos_victoria_J2').text(0)
+                jQuery('#puntos_victoria_J3').text(0)
+                jQuery('#puntos_victoria_J4').text(0)
             });
 
 
@@ -268,9 +292,11 @@
         }
 
         function addLogFromJSON() {
-            $('#contador_rondas').val(0).change()
-            $('#contador_turnos').val(0).change()
+            $('#contador_rondas').val(1).change()
+            $('#contador_turnos').val(1).change()
             $('#contador_fases').val(0).change()
+
+            $('#rondas_maximas').text(Object.keys(game_obj['game']).length)
         }
 
         function init_events_with_game_obj() {
@@ -287,36 +313,42 @@
             let fase_previa_btn = jQuery('#fase_previa_btn');
             let fase_siguiente_btn = jQuery('#fase_siguiente_btn');
 
+            let millis_for_play = jQuery('#millis_for_play');
             let play_btn = jQuery('#play_btn');
             let playIntervalNumber = 0;
 
             contador_rondas.off().on('change', function(e) {
-                if (parseInt(contador_rondas.val()) < 0) {
-                    contador_rondas.val(0).change();
+                if (parseInt(contador_rondas.val()) < 1) {
+                    contador_rondas.val(1).change();
+                }
+                if (parseInt(contador_rondas.val()) > Object.keys(game_obj['game']).length) {
+                    contador_rondas.val(Object.keys(game_obj['game']).length).change();
+
+                    play_btn.click()
                 }
 
-                round_obj = game_obj['game']['round_' + contador_rondas.val()];
-                contador_turnos.val(0).change();
+                round_obj = game_obj['game']['round_' + (contador_rondas.val() - 1)];
+                contador_turnos.val(1).change();
             })
             contador_turnos.off().on('change', function(e) {
 
-                if (parseInt(contador_turnos.val()) > 3) {
-                    contador_turnos.val(0).change()
+                if (parseInt(contador_turnos.val()) > 4) {
+                    contador_turnos.val(1).change()
                     contador_rondas.val(parseInt(contador_rondas.val()) + 1).change()
                     return;
                 }
-                if (parseInt(contador_turnos.val()) < 0) {
-                    if (parseInt(contador_rondas.val()) < 0) {
-                        contador_turnos.val(0).change();
+                if (parseInt(contador_turnos.val()) < 1) {
+                    if (parseInt(contador_rondas.val()) < 1) {
+                        contador_turnos.val(1).change();
                     } else {
-                        contador_turnos.val(3).change();
+                        contador_turnos.val(4).change();
                         contador_rondas.val(parseInt(contador_rondas.val()) - 1).change();
                     }
                     return;
                 }
 
                 $('.playerprofile').css('border', 'none')
-                switch (parseInt(contador_turnos.val())) {
+                switch (parseInt(contador_turnos.val()) - 1) {
                     case 0:
                         $('#P0').css('border', '10px solid darkred')
                         break;
@@ -331,24 +363,24 @@
                         break;
                 }
 
-                turn_obj = round_obj['turn_P' + contador_turnos.val()];
-                contador_fases.val(0).change();
+                turn_obj = round_obj['turn_P' + (contador_turnos.val() - 1)];
+                contador_fases.val(1).change();
             })
             contador_fases.off().on('change', function(e) {
 
-                if (parseInt(contador_fases.val()) > 3) {
-                    contador_fases.val(0).change();
+                if (parseInt(contador_fases.val()) > 4) {
+                    contador_fases.val(1).change();
                     contador_turnos.val(parseInt(contador_turnos.val()) + 1).change();
                     return;
                 }
-                if (parseInt(contador_fases.val()) < 0) {
-                    contador_fases.val(3).change();
+                if (parseInt(contador_fases.val()) < 1) {
+                    contador_fases.val(4).change();
                     contador_turnos.val(parseInt(contador_turnos.val()) - 1).change();
                     return;
                 }
 
 
-                switch (parseInt(contador_fases.val())) {
+                switch (parseInt(contador_fases.val()) - 1) {
                     case 0:
                         phase_obj = turn_obj['start_turn'];
                         for (let i = 0; i < 4; i++) {
@@ -364,22 +396,28 @@
                         break;
                     case 2:
                         phase_obj = turn_obj['build_phase'];
-                        for(let i = 0; i < phase_obj.length; i++){
+                        let textarea = $('#buildings_P' + contador_turnos.val())
+                        for (let i = 0; i < phase_obj.length; i++) {
                             let building = phase_obj[i]
-                            if(building['building'] !== null){
-                                switch(building['building']){
+                            if (building['building'] !== null) {
+                                switch (building['building']) {
                                     case 'town':
-                                        if (building['finished'])
-                                            buildings_P1.append({'node': building['node'], 'type': 'T'})
+                                        if (building['finished']) {
+                                            let str = 'node: ' + building['nodeID'] + ' | ' + 'type: ' + 'T' + '\r\n'
+                                            textarea.text(textarea.text() + str)
+                                        }
                                         break;
                                     case 'city':
-                                        if (building['finished'])
-                                            buildings_P1.append({'node': building['node'], 'type': 'C'})
+                                        if (building['finished']) {
+                                            let str = 'node: ' + building['nodeID'] + ' | ' + 'type: ' + 'C' + '\r\n'
+                                            textarea.text(textarea.text() + str)
+                                        }
                                         break;
                                     case 'road':
-                                        alert('road')
-//                                        if (building['finished'])
-//                                            buildings_P1.append({'node': building['node'], 'type': 'T'})
+                                        if (building['finished']) {
+                                            let str = 'node: ' + building['nodeID'] + ' | ' + 'roadTo: ' + building['roadTo'] + ' | ' + 'type: ' + 'R' + '\r\n'
+                                            textarea.text(textarea.text() + str)
+                                        }
                                         break;
                                     case 'card':
                                         break;
@@ -391,10 +429,10 @@
                         break;
                     case 3:
                         phase_obj = turn_obj['end_turn'];
-                        console.log('------------------------')
-                        console.log('Fin de turno: ')
-                        console.log(phase_obj)
-                        console.log('------------------------')
+                        jQuery('#puntos_victoria_J1').text(phase_obj['victory_points']['J0'])
+                        jQuery('#puntos_victoria_J2').text(phase_obj['victory_points']['J1'])
+                        jQuery('#puntos_victoria_J3').text(phase_obj['victory_points']['J2'])
+                        jQuery('#puntos_victoria_J4').text(phase_obj['victory_points']['J3'])
                         break;
 
                 }
@@ -433,6 +471,10 @@
                 //                if (parseInt(contador_fases.val()) == 0){}
                 //TODO
             })
+            
+            millis_for_play.off().on('change', function(e){
+                jQuery('#millis_seleccionados').val(millis_for_play.val());
+            })
 
             play_btn.off().on('click', function(e) {
                 let _this = $(this);
@@ -443,9 +485,12 @@
 
                     _this.attr('title', 'Pause')
 
+                    //                    playIntervalNumber = setInterval(function() {
+                    //                        turno_siguiente_btn.click()
+                    //                    }, 500)
                     playIntervalNumber = setInterval(function() {
-                        turno_siguiente_btn.click()
-                    }, 500)
+                        fase_siguiente_btn.click()
+                    }, millis_for_play.val())
 
                 } else {
                     _this.attr('title', 'Play')

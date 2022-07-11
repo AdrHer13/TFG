@@ -39,6 +39,8 @@ class GameDirector:
         start_turn_object['dice'] = self.game_manager.last_dice_roll
         start_turn_object['actual_player'] = str(self.game_manager.turn_manager.get_whose_turn_is_it())
 
+        start_turn_object['buildings'] = self.game_manager.bot_manager.players[player]['buildings']
+
         print('Jugador: ' + str(self.game_manager.turn_manager.get_whose_turn_is_it()))
         # print('Resources ActualPlayer: ' + str(self.game_manager.bot_manager.players[player]['player'].hand.resources))
 
@@ -74,9 +76,9 @@ class GameDirector:
             self.game_manager.move_thief(on_moving_thief['terrain'], on_moving_thief['player'])
 
         for i in range(4):
-            start_turn_object['hand_P' + str(i)] =\
+            start_turn_object['hand_P' + str(i)] = \
                 self.game_manager.bot_manager.players[i]['player'].hand.resources.__to_object__()
-            start_turn_object['total_P' + str(i)] =\
+            start_turn_object['total_P' + str(i)] = \
                 str(self.game_manager.bot_manager.players[i]['player'].hand.get_total())
 
         # LLama al inicio del turno de los jugadores
@@ -155,11 +157,12 @@ class GameDirector:
         print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
         print('vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv')
         print('start build phase: ' + str(self.game_manager.turn_manager.get_turn()))
+        building_obj = {}
 
         self.game_manager.turn_manager.set_phase(2)
         to_build = self.game_manager.bot_manager.players[player]['player'].on_build_phase(self.game_manager.board)
         if isinstance(to_build, dict):
-            build_phase_object.append(to_build)
+            building_obj = to_build
             built = False
             if to_build['building'] == BuildConstants.TOWN:
                 built = self.game_manager.build_town(player, to_build['nodeID'])
@@ -178,27 +181,32 @@ class GameDirector:
 
             if isinstance(built, dict):
                 if built['response']:
-                    build_phase_object.append({'finished': True})
+                    building_obj['finished'] = True
                     print('J' + str(player) + ' ha construido algo: ')
                     print(to_build)
                     # Si se ha construido permitir que vuelvan a construir
+                    build_phase_object.append(building_obj)
+
+                    self.game_manager.bot_manager.players[player]['buildings'].append(building_obj)
+
                     print(build_phase_object)
                     return self.start_build_phase(player, build_phase_object)
                 else:
-                    build_phase_object.append({'finished': False})
+                    building_obj['finished'] = False
                     print('J' + str(player) + ' ha fallado en algo: ')
                     print(to_build)
                     print(built['errorMsg'])
                     # TODO: Avisar que no se ha podido construir
-                    return build_phase_object
             else:
-                build_phase_object.append({'finished': False})
+                building_obj['finished'] = False
+                building_obj['errorMsg'] = 'Falta de materiales'
                 print('No se ha podido construir por falta de materiales')
                 # TODO: Avisar que no se ha podido construir
-                return build_phase_object
         else:
-            build_phase_object.append({'building': None})
-            return build_phase_object
+            building_obj['building'] = None
+
+        build_phase_object.append(building_obj)
+        return build_phase_object
 
     def end_turn(self, player=-1):
         """
@@ -228,33 +236,33 @@ class GameDirector:
         Esta función permite comenzar una ronda nueva
         :return:
         """
-        round_object = []
+        round_object = {}
         print('---------------------')
         print('round start')
 
         for i in range(4):
-            turn_array = []
+            # TODO: deshacerse del turn_array y sustituirlo por un objeto para ahorrar espacio
+            obj = {}
             self.game_manager.turn_manager.set_turn(self.game_manager.turn_manager.get_turn() + 1)
             self.game_manager.turn_manager.set_whose_turn_is_it(i)
 
             start_turn_object = self.start_turn(self.game_manager.turn_manager.get_whose_turn_is_it())
-            turn_array.append({'start_turn': start_turn_object})
+            obj['start_turn'] = start_turn_object
 
             commerce_phase_object = self.start_commerce_phase(self.game_manager.turn_manager.get_whose_turn_is_it())
-            turn_array.append({'commerce_phase': commerce_phase_object})
+            obj['commerce_phase'] = commerce_phase_object
 
             build_phase_object = self.start_build_phase(self.game_manager.turn_manager.get_whose_turn_is_it(), [])
-            turn_array.append({'build_phase': build_phase_object})
+            obj['build_phase'] = build_phase_object
 
             print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
             print('vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv')
             end_turn_object = self.end_turn(self.game_manager.turn_manager.get_whose_turn_is_it())
-            turn_array.append({'end_turn': end_turn_object})
+            obj['end_turn'] = end_turn_object
 
-            round_object.append({'turn_P' + str(i): turn_array})
+            round_object['turn_P' + str(i)] = obj
 
-        self.trace_loader.current_trace['round_' + str(self.game_manager.turn_manager.get_round())] = round_object
-        return
+        return round_object
 
     def round_end(self):
         """
@@ -430,11 +438,23 @@ class GameDirector:
         #     print('#######################\n')
         # ######################################################
 
-        self.trace_loader.current_trace["setup"] = setup_object
+        game_object = {}
         winner = False
         while not winner:
-            self.round_start()
+            print('#################################')
+            print('#################################')
+            print(self.game_manager.bot_manager.players[0]['buildings'])
+            print(self.game_manager.bot_manager.players[1]['buildings'])
+            print(self.game_manager.bot_manager.players[2]['buildings'])
+            print(self.game_manager.bot_manager.players[3]['buildings'])
+            print('#################################')
+            print('#################################')
+            game_object['round_' + str(self.game_manager.turn_manager.get_round())] = self.round_start()
             winner = self.round_end()
+
+        self.trace_loader.current_trace["setup"] = setup_object
+        self.trace_loader.current_trace["game"] = game_object
+
         self.trace_loader.export_to_file()
         return
 

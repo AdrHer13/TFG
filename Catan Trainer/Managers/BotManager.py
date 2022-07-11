@@ -20,21 +20,25 @@ class BotManager:
                 'id': 0,
                 'victoryPoints': 0,
                 'player': BotInterface(0),
+                'buildings': [],
             },
             {
                 'id': 1,
                 'victoryPoints': 0,
                 'player': BotInterface(1),
+                'buildings': [],
             },
             {
                 'id': 2,
                 'victoryPoints': 0,
                 'player': BotInterface(2),
+                'buildings': [],
             },
             {
                 'id': 3,
                 'victoryPoints': 0,
                 'player': BotInterface(3),
+                'buildings': [],
             }
         ]
         return

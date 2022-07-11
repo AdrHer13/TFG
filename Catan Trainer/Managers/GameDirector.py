@@ -39,8 +39,6 @@ class GameDirector:
         start_turn_object['dice'] = self.game_manager.last_dice_roll
         start_turn_object['actual_player'] = str(self.game_manager.turn_manager.get_whose_turn_is_it())
 
-        start_turn_object['buildings'] = self.game_manager.bot_manager.players[player]['buildings']
-
         print('Jugador: ' + str(self.game_manager.turn_manager.get_whose_turn_is_it()))
         # print('Resources ActualPlayer: ' + str(self.game_manager.bot_manager.players[player]['player'].hand.resources))
 
@@ -186,9 +184,6 @@ class GameDirector:
                     print(to_build)
                     # Si se ha construido permitir que vuelvan a construir
                     build_phase_object.append(building_obj)
-
-                    self.game_manager.bot_manager.players[player]['buildings'].append(building_obj)
-
                     print(build_phase_object)
                     return self.start_build_phase(player, build_phase_object)
                 else:
@@ -217,17 +212,17 @@ class GameDirector:
         print('start end turn: ' + str(self.game_manager.turn_manager.get_turn()))
         print('----- Puntos de victoria de los jugadores: ------')
 
-        end_turn_object = []
+        end_turn_object = {}
 
-        vp = []
+        vp = {}
         for i in range(4):
-            vp.append({'J' + str(i): str(self.game_manager.bot_manager.players[i]['victoryPoints'])})
+            vp['J' + str(i)] = str(self.game_manager.bot_manager.players[i]['victoryPoints'])
             print('J' + str(i) + ': ' + str(self.game_manager.bot_manager.players[i]['victoryPoints']))
         print('----- FIN Puntos de victoria de los jugadores ------')
         self.game_manager.turn_manager.set_phase(3)
         self.game_manager.bot_manager.players[player]['player'].on_turn_end()
 
-        end_turn_object.append({'victory_points': vp})
+        end_turn_object['victory_points'] = vp
         return end_turn_object
 
     # Round #
@@ -441,14 +436,6 @@ class GameDirector:
         game_object = {}
         winner = False
         while not winner:
-            print('#################################')
-            print('#################################')
-            print(self.game_manager.bot_manager.players[0]['buildings'])
-            print(self.game_manager.bot_manager.players[1]['buildings'])
-            print(self.game_manager.bot_manager.players[2]['buildings'])
-            print(self.game_manager.bot_manager.players[3]['buildings'])
-            print('#################################')
-            print('#################################')
             game_object['round_' + str(self.game_manager.turn_manager.get_round())] = self.round_start()
             winner = self.round_end()
 

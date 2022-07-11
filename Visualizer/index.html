@@ -11,9 +11,12 @@
     <link rel="stylesheet" href="CSS/general.css">
 
     <!-- Scripts -->
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js" integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+
+    <script src="https://kit.fontawesome.com/7c89af0f82.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -24,29 +27,142 @@
 
             <!-- Col Jugadores -->
             <div class="col-3">
-                <div style="height: 100px; background: red">
-                    <h1>J1</h1>
+                <div style="background: red" class="playerprofile" id="P0">
+                    <div>
+                        <img src="Images/nouser.png" alt="No user" height="100px">
+                        <h1>J1</h1>
+                    </div>
                 </div>
-                <div style="height: 100px; background: green">
+                <div id="hand_P0" class="hand hand-bottom text-center">
+                    <div class="cereal d-inline-block px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
+                        <i class="fa-solid fa-wheat-awn"></i>
+                        <span>: </span>
+                        <span class="cereal_quantity">0</span>
+                    </div>
+                    <div class="bricks d-inline-block px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
+                        <i class="fa-solid fa-trowel-bricks"></i>
+                        <span>: </span>
+                        <span class="bricks_quantity">0</span>
+                    </div>
+                    <div class="wool d-inline-block px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
+                        <i class="fa-brands fa-cotton-bureau"></i>
+                        <span>: </span>
+                        <span class="wool_quantity">0</span>
+                    </div>
+                    <div class="wood d-inline-block px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
+                        <i class="fa-solid fa-wand-sparkles"></i>
+                        <span>: </span>
+                        <span class="wood_quantity">0</span>
+                    </div>
+                    <div class="ore d-inline-block px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
+                        <i class="fa-solid fa-mountain-sun"></i>
+                        <span>: </span>
+                        <span class="ore_quantity">0</span>
+                    </div>
+                </div>
+                <div id="hand_P2" class="hand hand-top text-center">
+                    <div class="cereal d-inline-block px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
+                        <i class="fa-solid fa-wheat-awn"></i>
+                        <span>: </span>
+                        <span class="cereal_quantity">0</span>
+                    </div>
+                    <div class="bricks d-inline-block px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
+                        <i class="fa-solid fa-trowel-bricks"></i>
+                        <span>: </span>
+                        <span class="bricks_quantity">0</span>
+                    </div>
+                    <div class="wool d-inline-block px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
+                        <i class="fa-brands fa-cotton-bureau"></i>
+                        <span>: </span>
+                        <span class="wool_quantity">0</span>
+                    </div>
+                    <div class="wood d-inline-block px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
+                        <i class="fa-solid fa-wand-sparkles"></i>
+                        <span>: </span>
+                        <span class="wood_quantity">0</span>
+                    </div>
+                    <div class="ore d-inline-block px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
+                        <i class="fa-solid fa-mountain-sun"></i>
+                        <span>: </span>
+                        <span class="ore_quantity">0</span>
+                    </div>
+                </div>
+                <div style="background: green" class="playerprofile" id="P2">
                     <h1>J3</h1>
+                    <img src="Images/nouser.png" alt="No user" height="100px">
                 </div>
             </div>
 
             <!-- Col Partida -->
-            <div class="col-6">
-                <div style="height: 200px">
-                    <h1>Juego</h1>
-                    <!--                    <img src="./Images/startingmap.png" alt="Juego del Catan">-->
+            <div class="col-6 mb-5">
+                <div class="gamefield text-center">
+                    <img src="./Images/mapa.png" style="height: 70vh" alt="Juego del Catan">
                 </div>
             </div>
 
             <!-- Col Jugadores -->
             <div class="col-3">
-                <div style="height: 100px; background: yellow">
+                <div style="background: lightblue" class="playerprofile" id="P1">
+                    <img src="Images/nouser.png" alt="No user" height="100px">
                     <h1>J2</h1>
                 </div>
-                <div style="height: 100px; background: cyan">
+                <div id="hand_P1" class="hand hand-bottom text-center">
+                    <div class="cereal d-inline-block px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
+                        <i class="fa-solid fa-wheat-awn"></i>
+                        <span>: </span>
+                        <span class="cereal_quantity">0</span>
+                    </div>
+                    <div class="bricks d-inline-block px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
+                        <i class="fa-solid fa-trowel-bricks"></i>
+                        <span>: </span>
+                        <span class="bricks_quantity">0</span>
+                    </div>
+                    <div class="wool d-inline-block px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
+                        <i class="fa-brands fa-cotton-bureau"></i>
+                        <span>: </span>
+                        <span class="wool_quantity">0</span>
+                    </div>
+                    <div class="wood d-inline-block px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
+                        <i class="fa-solid fa-wand-sparkles"></i>
+                        <span>: </span>
+                        <span class="wood_quantity">0</span>
+                    </div>
+                    <div class="ore d-inline-block px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
+                        <i class="fa-solid fa-mountain-sun"></i>
+                        <span>: </span>
+                        <span class="ore_quantity">0</span>
+                    </div>
+                </div>
+                <div id="hand_P3" class="hand hand-top text-center">
+                    <div class="cereal d-inline-block px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
+                        <i class="fa-solid fa-wheat-awn"></i>
+                        <span>: </span>
+                        <span class="cereal_quantity">0</span>
+                    </div>
+                    <div class="bricks d-inline-block px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
+                        <i class="fa-solid fa-trowel-bricks"></i>
+                        <span>: </span>
+                        <span class="bricks_quantity">0</span>
+                    </div>
+                    <div class="wool d-inline-block px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
+                        <i class="fa-brands fa-cotton-bureau"></i>
+                        <span>: </span>
+                        <span class="wool_quantity">0</span>
+                    </div>
+                    <div class="wood d-inline-block px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
+                        <i class="fa-solid fa-wand-sparkles"></i>
+                        <span>: </span>
+                        <span class="wood_quantity">0</span>
+                    </div>
+                    <div class="ore d-inline-block px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
+                        <i class="fa-solid fa-mountain-sun"></i>
+                        <span>: </span>
+                        <span class="ore_quantity">0</span>
+                    </div>
+                </div>
+                <div style="background: yellow" class="playerprofile" id="P3">
                     <h1>J4</h1>
+                    <img src="Images/nouser.png" alt="No user" height="100px">
                 </div>
             </div>
         </div>
@@ -54,54 +170,314 @@
         <!-- Controles -->
         <div class="row">
             <div class="col-12">
-                <div style="background: purple">
-                    <h1>Controles</h1>
+                <div style="background: purple" class="row">
+                    <div class="col-1 text-center">
+                        <div class="btn btn-secondary" id="ronda_previa_btn" data-toggle="tooltip" data-placement="top" title="Ronda anterior"><i class="fa-solid fa-angles-left"></i></div>
+                    </div>
+                    <div class="col-1 text-center">
+                        <div class="btn btn-secondary" id="turno_previo_btn" data-toggle="tooltip" data-placement="top" title="Turno anterior"><i class="fa-solid fa-angle-left"></i></div>
+                    </div>
+                    <div class="col-1 text-center">
+                        <div class="btn btn-secondary" id="fase_previa_btn" data-toggle="tooltip" data-placement="top" title="Fase anterior"><i class="fa-solid fa-backward-step"></i></div>
+                    </div>
+                    <div class="col text-center">
+                        <div class="row">
+                            <div class="col text-center">
+                                <input type="number" class="form-control" id="contador_turnos">
+                            </div>
+                            <div class="col-2 text-center">
+                                <div class="btn btn-secondary" id="play_btn" data-toggle="tooltip" data-placement="top" title="Play"><i class="fa-solid fa-play"></i></div>
+                                <!--                                <div class="btn btn-secondary" id="double_play_btn" data-toggle="tooltip" data-placement="top" title="Ultra Play"><i class="fa-solid fa-forward"></i></div>-->
+                            </div>
+                            <div class="col text-center">
+                                <input type="number" class="form-control" id="contador_rondas">
+                                <input type="number" class="form-control" id="contador_fases">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-1 text-center">
+                        <div class="btn btn-secondary" id="fase_siguiente_btn" data-toggle="tooltip" data-placement="top" title="Fase siguiente"><i class="fa-solid fa-forward-step"></i></div>
+                    </div>
+                    <div class="col-1 text-center">
+                        <div class="btn btn-secondary" id="turno_siguiente_btn" data-toggle="tooltip" data-placement="top" title="Turno siguiente"><i class="fa-solid fa-angle-right"></i></div>
+                    </div>
+                    <div class="col-1 text-center">
+                        <div class="btn btn-secondary" id="ronda_siguiente_btn" data-toggle="tooltip" data-placement="top" title="Ronda siguiente"><i class="fa-solid fa-angles-right"></i></div>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!--TODO: Plantear el borrado del log y simplemente imprimirlo por consola. Todo para evitar tener que crear un dump() de Symfony o similar -->
         <!-- Log -->
         <div class="row">
             <div class="col-12">
                 <div style="background: pink">
                     <input type="file" id="get_file" accept=".json">
-                    <h1>Log de la partida</h1>
                 </div>
             </div>
         </div>
+        <!--        <div class="row">-->
+        <!--            <div class="col-12">-->
+        <!--                <div id="log" style="background: white; font-family: monospace; height: 100px">-->
+        <!---->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--        </div>-->
     </div>
 
     <script type="text/javascript">
-        var game = {}
+        var game_obj = {}
+        var round_obj = {}
+        var turn_obj = {}
+        var phase_obj = {}
         
-        function init() {
+        var buildings_P1 = []
+        var buildings_P2 = []
+        var buildings_P3 = []
+        var buildings_P4 = []
+        
+
+        function init_events() {
             let input = jQuery('#get_file');
+            input.on('click', function(e) {
+                input.val('')
+            })
+
             input.on('change', function(e) {
-                console.log(e);
-                console.log(input);
-
-
                 var file = document.getElementById("get_file").files[0];
                 if (file) {
                     var reader = new FileReader();
                     reader.readAsText(file, "UTF-8");
                     reader.onload = function(evt) {
-//                        console.log(evt.target.result)
-                        game['json'] = evt.target.result
-//                        document.getElementById("fileContents").innerHTML = evt.target.result;
+                        game_obj = JSON.parse(evt.target.result);
+
+                        init_events_with_game_obj()
+                        addLogFromJSON()
                     }
                     reader.onerror = function(evt) {
                         console.log('Error al cargar el archivo')
-//                        document.getElementById("fileContents").innerHTML = "error reading file";
                     }
                 }
             });
+
+
+            $(function() {
+                $('[data-toggle="tooltip"]').tooltip()
+            })
+        }
+
+        function addLogFromJSON() {
+            $('#contador_rondas').val(0).change()
+            $('#contador_turnos').val(0).change()
+            $('#contador_fases').val(0).change()
+        }
+
+        function init_events_with_game_obj() {
+            let contador_rondas = jQuery('#contador_rondas');
+            let contador_turnos = jQuery('#contador_turnos');
+            let contador_fases = jQuery('#contador_fases');
+
+            let ronda_previa_btn = jQuery('#ronda_previa_btn');
+            let ronda_siguiente_btn = jQuery('#ronda_siguiente_btn');
+
+            let turno_previo_btn = jQuery('#turno_previo_btn');
+            let turno_siguiente_btn = jQuery('#turno_siguiente_btn');
+
+            let fase_previa_btn = jQuery('#fase_previa_btn');
+            let fase_siguiente_btn = jQuery('#fase_siguiente_btn');
+
+            let play_btn = jQuery('#play_btn');
+            let playIntervalNumber = 0;
+
+            contador_rondas.off().on('change', function(e) {
+                if (parseInt(contador_rondas.val()) < 0) {
+                    contador_rondas.val(0).change();
+                }
+
+                round_obj = game_obj['game']['round_' + contador_rondas.val()];
+                contador_turnos.val(0).change();
+            })
+            contador_turnos.off().on('change', function(e) {
+
+                if (parseInt(contador_turnos.val()) > 3) {
+                    contador_turnos.val(0).change()
+                    contador_rondas.val(parseInt(contador_rondas.val()) + 1).change()
+                    return;
+                }
+                if (parseInt(contador_turnos.val()) < 0) {
+                    if (parseInt(contador_rondas.val()) < 0) {
+                        contador_turnos.val(0).change();
+                    } else {
+                        contador_turnos.val(3).change();
+                        contador_rondas.val(parseInt(contador_rondas.val()) - 1).change();
+                    }
+                    return;
+                }
+
+                $('.playerprofile').css('border', 'none')
+                switch (parseInt(contador_turnos.val())) {
+                    case 0:
+                        $('#P0').css('border', '10px solid darkred')
+                        break;
+                    case 1:
+                        $('#P1').css('border', '10px solid blue')
+                        break;
+                    case 2:
+                        $('#P2').css('border', '10px solid darkgreen')
+                        break;
+                    case 3:
+                        $('#P3').css('border', '10px solid orange')
+                        break;
+                }
+
+                turn_obj = round_obj['turn_P' + contador_turnos.val()];
+                contador_fases.val(0).change();
+            })
+            contador_fases.off().on('change', function(e) {
+
+                if (parseInt(contador_fases.val()) > 3) {
+                    contador_fases.val(0).change();
+                    contador_turnos.val(parseInt(contador_turnos.val()) + 1).change();
+                    return;
+                }
+                if (parseInt(contador_fases.val()) < 0) {
+                    contador_fases.val(3).change();
+                    contador_turnos.val(parseInt(contador_turnos.val()) - 1).change();
+                    return;
+                }
+
+
+                switch (parseInt(contador_fases.val())) {
+                    case 0:
+                        phase_obj = turn_obj['start_turn'];
+                        for (let i = 0; i < 4; i++) {
+                            changeHandObject(i);
+                        }
+                        break;
+                    case 1:
+                        phase_obj = turn_obj['commerce_phase'];
+                        console.log('------------------------')
+                        console.log('Fase de comercio: ')
+                        console.log(phase_obj)
+                        console.log('------------------------')
+                        break;
+                    case 2:
+                        phase_obj = turn_obj['build_phase'];
+                        for(let i = 0; i < phase_obj.length; i++){
+                            let building = phase_obj[i]
+                            if(building['building'] !== null){
+                                switch(building['building']){
+                                    case 'town':
+                                        if (building['finished'])
+                                            buildings_P1.append({'node': building['node'], 'type': 'T'})
+                                        break;
+                                    case 'city':
+                                        if (building['finished'])
+                                            buildings_P1.append({'node': building['node'], 'type': 'C'})
+                                        break;
+                                    case 'road':
+                                        alert('road')
+//                                        if (building['finished'])
+//                                            buildings_P1.append({'node': building['node'], 'type': 'T'})
+                                        break;
+                                    case 'card':
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                        }
+                        break;
+                    case 3:
+                        phase_obj = turn_obj['end_turn'];
+                        console.log('------------------------')
+                        console.log('Fin de turno: ')
+                        console.log(phase_obj)
+                        console.log('------------------------')
+                        break;
+
+                }
+            })
+
+
+            //-------------------------------------------------
+            ronda_previa_btn.off().on('click', function(e) {
+                let value = parseInt(contador_rondas.val())
+                contador_rondas.val(value - 1).change()
+            })
+            ronda_siguiente_btn.off().on('click', function(e) {
+                let value = parseInt(contador_rondas.val())
+                contador_rondas.val(value + 1).change()
+            })
+
+            //-------------------------------------------------
+            turno_previo_btn.off().on('click', function(e) {
+                let value = parseInt(contador_turnos.val())
+                contador_turnos.val(value - 1).change()
+            })
+            turno_siguiente_btn.off().on('click', function(e) {
+                let value = parseInt(contador_turnos.val())
+                contador_turnos.val(value + 1).change()
+            })
+
+            //-------------------------------------------------
+            fase_previa_btn.off().on('click', function(e) {
+                let value = parseInt(contador_fases.val())
+                contador_fases.val(value - 1).change()
+            })
+            fase_siguiente_btn.off().on('click', function(e) {
+                let value = parseInt(contador_fases.val())
+                contador_fases.val(value + 1).change()
+
+                //                if (parseInt(contador_fases.val()) == 0){}
+                //TODO
+            })
+
+            play_btn.off().on('click', function(e) {
+                let _this = $(this);
+                let _i = _this.find('i');
+
+                if (_i.hasClass('fa-play')) {
+                    _i.removeClass('fa-play').addClass('fa-pause');
+
+                    _this.attr('title', 'Pause')
+
+                    playIntervalNumber = setInterval(function() {
+                        turno_siguiente_btn.click()
+                    }, 500)
+
+                } else {
+                    _this.attr('title', 'Play')
+
+                    _i.removeClass('fa-pause').addClass('fa-play');
+                    clearInterval(playIntervalNumber)
+                }
+
+                $(function() {
+                    _this.tooltip('dispose')
+                    _this.tooltip()
+                })
+            })
+        }
+
+        function changeHandObject(player) {
+            //TODO: Debería de alguna manera mostrar que materiales se han actualizado. Si son iguales no deberían de recalcarse
+            hand_obj = phase_obj['hand_P' + player];
+            $('#hand_P' + player + ' .cereal_quantity').text(hand_obj['Cereal']).change();
+            $('#hand_P' + player + ' .bricks_quantity').text(hand_obj['Clay']).change();
+            $('#hand_P' + player + ' .wood_quantity').text(hand_obj['Wood']).change();
+            $('#hand_P' + player + ' .wool_quantity').text(hand_obj['Wool']).change();
+            $('#hand_P' + player + ' .ore_quantity').text(hand_obj['Mineral']).change();
         }
 
         window.addEventListener('load', function() {
 
-            init();
+            init_events();
 
         }, false);
+
     </script>
-</body></html>
+</body>
+
+</html>

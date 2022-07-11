@@ -1,0 +1,25 @@
+.playerprofile {
+    height: 35vh;
+}
+
+.gamefield {
+    height: 70vh;
+}
+
+.hand {
+    background: white;
+}
+
+.hand-top {
+    padding-top: 1em;
+    padding-bottom: 0.5em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+.hand-bottom {
+    padding-top: 0.5em;
+    padding-bottom: 1em;
+    border-bottom: 1px solid black;
+    border-top: 1px solid black;
+}

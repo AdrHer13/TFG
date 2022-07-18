@@ -97,7 +97,8 @@ class GameManager:
             response = receiver['player'].on_trade_offer(trade_offer)
 
             if isinstance(response, TradeOffer):
-                player_response['P' + str(receiver['id'])] = response.__to_object__()
+                player_response['player'] = 'P' + str(receiver['id'] + 1)
+                player_response['response'] = response.__to_object__()
 
                 # TODO: usar recursividad o una función externa que pueda usarse recursivamente para establecer limites
                 #       arbitrarios
@@ -106,12 +107,14 @@ class GameManager:
                 response_from_giver = giver.on_trade_offer(response)
 
                 if isinstance(response_from_giver, TradeOffer):
-                    player_response['P' + str(self.turn_manager.whoseTurnIsIt) + '_answer'] = response_from_giver.__to_object__()
+                    # TODO: Lo lógico sería poner la contraoferta del primer jugador, pero debido a que no es recursivo aún
+                    #       simplemente se pone True porque es como se está comportando
+                    player_response['giver_answer'] = True  # response_from_giver.__to_object__()
                     # response_from_giver = False
                     # TODO: cambiar por una funcion recursiva
                     response_from_giver = True
                 else:
-                    player_response['P' + str(self.turn_manager.whoseTurnIsIt) + '_answer'] = response_from_giver
+                    player_response['giver_answer'] = response_from_giver
 
                 if response_from_giver:
                     print('J' + str(self.turn_manager.whoseTurnIsIt) + ' ha aceptado')
@@ -125,7 +128,8 @@ class GameManager:
                 else:
                     print('J' + str(self.turn_manager.whoseTurnIsIt) + ' ha negado')
             else:
-                player_response['P' + str(receiver['id'])] = response
+                player_response['player'] = 'P' + str(receiver['id'] + 1)
+                player_response['response'] = response
 
                 # En caso de que no haya contraoferta, o han aceptado o han denegado.
                 if response:

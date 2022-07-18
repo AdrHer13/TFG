@@ -100,7 +100,7 @@
             <!-- Col Partida -->
             <div class="col-6 mb-5">
                 <div class="gamefield text-center">
-                    <img src="./Images/mapa.png" style="height: 45vh; margin-top: 10em" alt="Juego del Catan">
+                    <img src="./Images/mapa.png" style="height: 57vh; margin-top: 5em" alt="Juego del Catan">
                 </div>
             </div>
 
@@ -259,6 +259,7 @@
 
                         init_events_with_game_obj()
                         addLogFromJSON()
+                        addSetupBuildings()
                     }
                     reader.onerror = function(evt) {
                         console.log('Error al cargar el archivo')
@@ -293,6 +294,20 @@
             $('#contador_fases').val(0).change()
 
             $('#rondas_maximas').text(Object.keys(game_obj['game']).length)
+        }
+
+        function addSetupBuildings() {
+            setup_obj = game_obj['setup'];
+
+            for (let i = 0; i < 4; i++) {
+                let textarea = $('#buildings_P' + (i + 1))
+                for (let j = 0; j < setup_obj['P' + i].length; j++) {
+                    let str = 'node: ' + setup_obj['P' + i][j]['id'] + ' | ' + 'type: ' + 'T' + '\r\n'
+                    str += 'node: ' + setup_obj['P' + i][j]['id'] + ' | ' + 'roadTo: ' + setup_obj['P' + i][j]['road'] + ' | ' + 'type: ' + 'R' + '\r\n'
+
+                    textarea.text(textarea.text() + str)
+                }
+            }
         }
 
         function init_events_with_game_obj() {
@@ -465,10 +480,6 @@
                             }
 
                         }
-                        console.log('------------------------')
-                        console.log('Fase de comercio: ')
-                        console.log(phase_obj)
-                        console.log('------------------------')
                         break;
                     case 2:
                         phase_obj = turn_obj['build_phase'];

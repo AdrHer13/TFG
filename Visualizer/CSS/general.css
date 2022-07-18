@@ -2,6 +2,10 @@ h1, h3{
     display: inline-block
 }
 
+.content {
+    padding: 0 1em 0 1em;
+}
+
 .playerprofile {
     height: 35vh;
 }
@@ -26,4 +30,17 @@ h1, h3{
     padding-bottom: 1em;
     border-bottom: 1px solid black;
     border-top: 1px solid black;
+}
+
+.gives, .receives {
+    margin: 0;
+    margin-left: 5em;
+}
+
+.counteroffer_gives, .counteroffer_receives, .counteroffer_answer {
+    margin-left: 5em;
+}
+
+#controles .col,.col-1 {
+    background: purple;
 }

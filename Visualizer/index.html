@@ -21,7 +21,7 @@
 
 <body>
     <!-- APP -->
-    <div class="container" style="height: 100vh; background: gray;">
+    <div class="content" style="height: 100vh; background: gray;">
         <!-- Partida -->
         <div class="row">
 
@@ -176,49 +176,45 @@
         </div>
 
         <!-- Controles -->
-        <div class="row">
-            <div class="col-12">
-                <div style="background: purple" class="row">
-                    <div class="col-1 text-center">
-                        <div class="btn btn-secondary" id="ronda_previa_btn" data-toggle="tooltip" data-placement="top" title="Ronda anterior"><i class="fa-solid fa-angles-left"></i></div>
+        <div class="row" id="controles">
+            <div class="col-1 text-center">
+                <div class="btn btn-secondary" id="ronda_previa_btn" data-toggle="tooltip" data-placement="top" title="Ronda anterior"><i class="fa-solid fa-angles-left"></i></div>
+            </div>
+            <div class="col-1 text-center">
+                <div class="btn btn-secondary" id="turno_previo_btn" data-toggle="tooltip" data-placement="top" title="Turno anterior"><i class="fa-solid fa-angle-left"></i></div>
+            </div>
+            <div class="col-1 text-center">
+                <div class="btn btn-secondary" id="fase_previa_btn" data-toggle="tooltip" data-placement="top" title="Fase anterior"><i class="fa-solid fa-backward-step"></i></div>
+            </div>
+            <div class="col text-center">
+                <div class="row">
+                    <div class="col text-center">
+                        <input type="number" class="form-control" id="contador_turnos">
+                        <input type="number" class="form-control" id="contador_fases">
                     </div>
-                    <div class="col-1 text-center">
-                        <div class="btn btn-secondary" id="turno_previo_btn" data-toggle="tooltip" data-placement="top" title="Turno anterior"><i class="fa-solid fa-angle-left"></i></div>
-                    </div>
-                    <div class="col-1 text-center">
-                        <div class="btn btn-secondary" id="fase_previa_btn" data-toggle="tooltip" data-placement="top" title="Fase anterior"><i class="fa-solid fa-backward-step"></i></div>
+                    <div class="col-2 text-center">
+                        <div class="btn btn-secondary" id="play_btn" data-toggle="tooltip" data-placement="top" title="Play"><i class="fa-solid fa-play"></i></div>
+                        <!--                                <div class="btn btn-secondary" id="double_play_btn" data-toggle="tooltip" data-placement="top" title="Ultra Play"><i class="fa-solid fa-forward"></i></div>-->
                     </div>
                     <div class="col text-center">
-                        <div class="row">
-                            <div class="col text-center">
-                                <input type="number" class="form-control" id="contador_turnos">
-                                <input type="number" class="form-control" id="contador_fases">
-                            </div>
-                            <div class="col-2 text-center">
-                                <div class="btn btn-secondary" id="play_btn" data-toggle="tooltip" data-placement="top" title="Play"><i class="fa-solid fa-play"></i></div>
-                                <!--                                <div class="btn btn-secondary" id="double_play_btn" data-toggle="tooltip" data-placement="top" title="Ultra Play"><i class="fa-solid fa-forward"></i></div>-->
-                            </div>
-                            <div class="col text-center">
-                                <input type="number" class="form-control" id="contador_rondas" style="display: inline-block; width: 100px">
-                                /
-                                <span id="rondas_maximas"></span>
-                            </div>
-                            <div>
-                                <span id="millis_seleccionados"></span>
-                                <input type="range" min="10" max="1000" value="25" class="slider" id="millis_for_play">
-                            </div>
-                        </div>
+                        <input type="number" class="form-control" id="contador_rondas" style="display: inline-block; width: 100px">
+                        /
+                        <span id="rondas_maximas"></span>
                     </div>
-                    <div class="col-1 text-center">
-                        <div class="btn btn-secondary" id="fase_siguiente_btn" data-toggle="tooltip" data-placement="top" title="Fase siguiente"><i class="fa-solid fa-forward-step"></i></div>
-                    </div>
-                    <div class="col-1 text-center">
-                        <div class="btn btn-secondary" id="turno_siguiente_btn" data-toggle="tooltip" data-placement="top" title="Turno siguiente"><i class="fa-solid fa-angle-right"></i></div>
-                    </div>
-                    <div class="col-1 text-center">
-                        <div class="btn btn-secondary" id="ronda_siguiente_btn" data-toggle="tooltip" data-placement="top" title="Ronda siguiente"><i class="fa-solid fa-angles-right"></i></div>
+                    <div>
+                        <span id="millis_seleccionados"></span>
+                        <input type="range" min="10" max="1000" value="25" class="slider" id="millis_for_play">
                     </div>
                 </div>
+            </div>
+            <div class="col-1 text-center">
+                <div class="btn btn-secondary" id="fase_siguiente_btn" data-toggle="tooltip" data-placement="top" title="Fase siguiente"><i class="fa-solid fa-forward-step"></i></div>
+            </div>
+            <div class="col-1 text-center">
+                <div class="btn btn-secondary" id="turno_siguiente_btn" data-toggle="tooltip" data-placement="top" title="Turno siguiente"><i class="fa-solid fa-angle-right"></i></div>
+            </div>
+            <div class="col-1 text-center">
+                <div class="btn btn-secondary" id="ronda_siguiente_btn" data-toggle="tooltip" data-placement="top" title="Ronda siguiente"><i class="fa-solid fa-angles-right"></i></div>
             </div>
         </div>
 
@@ -231,13 +227,13 @@
                 </div>
             </div>
         </div>
-        <!--        <div class="row">-->
-        <!--            <div class="col-12">-->
-        <!--                <div id="log" style="background: white; font-family: monospace; height: 100px">-->
-        <!---->
-        <!--                </div>-->
-        <!--            </div>-->
-        <!--        </div>-->
+        <div class="row">
+            <div class="col-12">
+                <div id="log" style="background: white; font-family: monospace; height: 100px">
+
+                </div>
+            </div>
+        </div>
     </div>
 
     <script type="text/javascript">
@@ -389,6 +385,86 @@
                         break;
                     case 1:
                         phase_obj = turn_obj['commerce_phase'];
+
+                        let log = jQuery('#log');
+                        log.empty();
+
+                        let html = '';
+
+
+                        for (let i = 0; i < phase_obj.length; i++) {
+                            if (phase_obj[i]['trade_offer'] !== 'None' && !phase_obj[i]['inviable']) {
+                                if (phase_obj[i]['harbor_trade']) {
+                                    // TODO:
+                                } else {
+
+                                    html += '<div class="offer"><p>';
+                                    html += '<span>P' + contador_turnos.val() + ': Offer</span>';
+                                    html += '<br><span class="gives">';
+                                    html += 'Gives: ' + 'Cereal: ' + phase_obj[i]['trade_offer']['gives']['cereal'] + ' | ';
+                                    html += 'Mineral: ' + phase_obj[i]['trade_offer']['gives']['mineral'] + ' | ';
+                                    html += 'Wool: ' + phase_obj[i]['trade_offer']['gives']['wool'] + ' | ';
+                                    html += 'Wood: ' + phase_obj[i]['trade_offer']['gives']['wood'] + ' | ';
+                                    html += 'Clay: ' + phase_obj[i]['trade_offer']['gives']['clay'] + '</span>';
+
+                                    html += '<br><span class="receives">';
+                                    html += 'Receives: ' + 'Cereal: ' + phase_obj[i]['trade_offer']['receives']['cereal'] + ' | ';
+                                    html += 'Mineral: ' + phase_obj[i]['trade_offer']['receives']['mineral'] + ' | ';
+                                    html += 'Wool: ' + phase_obj[i]['trade_offer']['receives']['wool'] + ' | ';
+                                    html += 'Wood: ' + phase_obj[i]['trade_offer']['receives']['wood'] + ' | ';
+                                    html += 'Clay: ' + phase_obj[i]['trade_offer']['receives']['clay'] + '</span>';
+                                    html += '</p></div>';
+
+                                    html += '<div class="answers">';
+
+                                    for (let j = 0; j < phase_obj[i]['answers'].length; j++) {
+                                        html += '<div><p>';
+                                        html += '<span>' + phase_obj[i]['answers'][j]['player'];
+                                        if (phase_obj[i]['answers'][j]['response'] == true) {
+                                            if (phase_obj[i]['answers'][j]['completed']) {
+                                                html += ': true </span>';
+                                            } else {
+                                                html += ': true | Cannot be completed (lack of materials)</span>';
+                                            }
+                                        } else if (phase_obj[i]['answers'][j]['response'] == false) {
+                                            html += ': false </span>';
+                                        } else {
+                                            html += ': counteroffer </span>';
+                                            html += '<br><span class="counteroffer_gives">'
+                                            html += 'Gives: ' + 'Cereal: ' + phase_obj[i]['answers'][j]['response']['gives']['cereal'] + ' | ';
+                                            html += 'Mineral: ' + phase_obj[i]['answers'][j]['response']['gives']['mineral'] + ' | ';
+                                            html += 'Wool: ' + phase_obj[i]['answers'][j]['response']['gives']['wool'] + ' | ';
+                                            html += 'Wood: ' + phase_obj[i]['answers'][j]['response']['gives']['wood'] + ' | ';
+                                            html += 'Clay: ' + phase_obj[i]['answers'][j]['response']['gives']['clay'] + '</span>';
+                                            html += '<br><span class="counteroffer_receives">'
+                                            html += 'Gives: ' + 'Cereal: ' + phase_obj[i]['answers'][j]['response']['gives']['cereal'] + ' | ';
+                                            html += 'Mineral: ' + phase_obj[i]['answers'][j]['response']['gives']['mineral'] + ' | ';
+                                            html += 'Wool: ' + phase_obj[i]['answers'][j]['response']['gives']['wool'] + ' | ';
+                                            html += 'Wood: ' + phase_obj[i]['answers'][j]['response']['gives']['wood'] + ' | ';
+                                            html += 'Clay: ' + phase_obj[i]['answers'][j]['response']['gives']['clay'] + '</span>';
+
+                                            html += '<br><span class="counteroffer_answer">P' + contador_turnos.val();
+                                            if (phase_obj[i]['answers'][j]['giver_answer']) {
+                                                if (phase_obj[i]['answers'][j]['completed']) {
+                                                    html += ': true </span>';
+                                                } else {
+                                                    html += ': true | Cannot be completed (lack of materials)</span>';
+                                                }
+                                            } else {
+                                                html += ': false </span>';
+                                            }
+                                        }
+
+                                        html += '</p></div>'
+                                    }
+
+                                    html += '</div>'
+                                }
+
+                                log.append(html)
+                            }
+
+                        }
                         console.log('------------------------')
                         console.log('Fase de comercio: ')
                         console.log(phase_obj)
@@ -471,8 +547,8 @@
                 //                if (parseInt(contador_fases.val()) == 0){}
                 //TODO
             })
-            
-            millis_for_play.off().on('change', function(e){
+
+            millis_for_play.off().on('change', function(e) {
                 jQuery('#millis_seleccionados').val(millis_for_play.val());
             })
 
@@ -509,11 +585,11 @@
         function changeHandObject(player) {
             //TODO: Debería de alguna manera mostrar que materiales se han actualizado. Si son iguales no deberían de recalcarse
             hand_obj = phase_obj['hand_P' + player];
-            $('#hand_P' + player + ' .cereal_quantity').text(hand_obj['Cereal']).change();
-            $('#hand_P' + player + ' .bricks_quantity').text(hand_obj['Clay']).change();
-            $('#hand_P' + player + ' .wood_quantity').text(hand_obj['Wood']).change();
-            $('#hand_P' + player + ' .wool_quantity').text(hand_obj['Wool']).change();
-            $('#hand_P' + player + ' .ore_quantity').text(hand_obj['Mineral']).change();
+            $('#hand_P' + player + ' .cereal_quantity').text(hand_obj['cereal']).change();
+            $('#hand_P' + player + ' .bricks_quantity').text(hand_obj['clay']).change();
+            $('#hand_P' + player + ' .wood_quantity').text(hand_obj['wood']).change();
+            $('#hand_P' + player + ' .wool_quantity').text(hand_obj['wool']).change();
+            $('#hand_P' + player + ' .ore_quantity').text(hand_obj['mineral']).change();
         }
 
         window.addEventListener('load', function() {

@@ -22,6 +22,7 @@ class GameManager:
     turn_manager = TurnManager()
     commerce_manager = CommerceManager()
     bot_manager = BotManager()
+
     # graphics_manager = GraphicsManager()
 
     def __init__(self):
@@ -92,10 +93,11 @@ class GameManager:
 
         giver = self.bot_manager.players[self.turn_manager.whoseTurnIsIt]['player']
         for receiver in receivers:
+            player_response = {}
             response = receiver['player'].on_trade_offer(trade_offer)
 
             if isinstance(response, TradeOffer):
-                answer_object.append({'P' + str(receiver['id']): response.__to_object__()})
+                player_response['P' + str(receiver['id'])] = response.__to_object__()
 
                 # TODO: usar recursividad o una función externa que pueda usarse recursivamente para establecer limites
                 #       arbitrarios
@@ -104,32 +106,38 @@ class GameManager:
                 response_from_giver = giver.on_trade_offer(response)
 
                 if isinstance(response_from_giver, TradeOffer):
-                    answer_object.append({'P0_answer': response_from_giver.__to_object__()})
+                    player_response['P' + str(self.turn_manager.whoseTurnIsIt) + '_answer'] = response_from_giver.__to_object__()
                     # response_from_giver = False
                     # TODO: cambiar por una funcion recursiva
                     response_from_giver = True
                 else:
-                    answer_object.append({'P0_answer': response_from_giver})
+                    player_response['P' + str(self.turn_manager.whoseTurnIsIt) + '_answer'] = response_from_giver
 
                 if response_from_giver:
                     print('J' + str(self.turn_manager.whoseTurnIsIt) + ' ha aceptado')
                     done = self.trade_with_player(response, receiver['player'], giver)
                     if done:
+                        player_response['completed'] = True
+                        answer_object.append(player_response)
                         return answer_object
+                    else:
+                        player_response['completed'] = False
                 else:
                     print('J' + str(self.turn_manager.whoseTurnIsIt) + ' ha negado')
             else:
-                answer_object.append({'P' + str(receiver['id']): response})
+                player_response['P' + str(receiver['id'])] = response
 
                 # En caso de que no haya contraoferta, o han aceptado o han denegado.
                 if response:
                     print('J' + str(receiver['id']) + ' ha aceptado')
                     done = self.trade_with_player(trade_offer, giver, receiver['player'])
-                    answer_object.append({'completed': done})
+                    player_response['completed'] = done
                     if done:
+                        answer_object.append(player_response)
                         return answer_object
                 else:
                     print('J' + str(receiver['id']) + ' ha denegado')
+            answer_object.append(player_response)
         return answer_object
 
     def trade_with_player(self, trade_offer=None, giver=None, receiver=None):

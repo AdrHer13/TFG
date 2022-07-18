@@ -83,43 +83,50 @@ class GameDirector:
         # self.game_manager.bot_manager.players[player]['player'].on_turn_start()
         return start_turn_object
 
-    def start_commerce_phase(self, player=-1):
+    def start_commerce_phase(self, player=-1, commerce_phase_array=None):
         """
         Esta función permite pasar a la fase de comercio
+        :param commerce_phase_array:
         :param player: número que representa al jugador
         :return: object
+        TODO: He creado el array únicamente para poder hacerlo recursivo, dado que tecnicamente un jugador debe de
+                poder hacer X cantidad de comercios
         """
-
-        commerce_phase_object = []
+        if commerce_phase_array is None:
+            commerce_phase_array = []
+        commerce_phase_object = {}
 
         # TODO: Comprobar que el trade offer es valido. Es decir, no da más materiales de los que tiene
         print('Start commerce phase: ' + str(self.game_manager.turn_manager.get_turn()))
         self.game_manager.turn_manager.set_phase(1)
         trade_offer = self.game_manager.bot_manager.players[player]['player'].on_commerce_phase()
         if isinstance(trade_offer, TradeOffer):
-            commerce_phase_object.append({'trade_offer': trade_offer.__to_object__(), 'harbor_trade': False})
+            commerce_phase_object['trade_offer'] = trade_offer.__to_object__()
+            commerce_phase_object['harbor_trade'] = False
             if trade_offer:
                 print('Oferta: ' + str(trade_offer))
                 # TODO: comprobar que los materiales de gives sean menores que los materiales del jugador
                 if self.game_manager.bot_manager.players[player]['player'].hand.resources.has_this_more_materials(
                         trade_offer.gives):
-                    commerce_phase_object.append({'inviable': False})
+                    commerce_phase_object['inviable'] = False
                     print('Puede hacer la oferta')
                     answer_object = self.game_manager.trade_with_everyone(trade_offer)
-                    commerce_phase_object.append(answer_object)
+                    commerce_phase_object['answers'] = answer_object
                 else:
-                    commerce_phase_object.append({'inviable': True})
+                    commerce_phase_object['inviable'] = True
                     # TODO: se queja de que no puede hacerla, le da una segunda oportunidad, en otro fallo
                     #       le salta la fase de comercio
 
-            return commerce_phase_object
+            commerce_phase_array.append(commerce_phase_object)
+            return commerce_phase_array
 
         elif isinstance(trade_offer, dict):
             print('%%%%%%%%%%%%%%%%%%%%%%%%%%%')
             print('Jugador comercia por puerto')
             print(self.game_manager.bot_manager.players[player]['player'].hand)
 
-            commerce_phase_object.append({'trade_offer': trade_offer, 'harbor_trade': True})
+            commerce_phase_object['trade_offer'] = trade_offer
+            commerce_phase_object['harbor_trade'] = True
 
             # TODO: Hacer que tener puerto sea funcional
             response = self.game_manager.commerce_manager.trade_without_harbor(
@@ -131,17 +138,19 @@ class GameDirector:
             #                                                                 trade_offer['receives'])
             if isinstance(response, Hand):
                 # TODO: solo devolver los materiales y cambiar la mano en el visualizador
-                commerce_phase_object.append({'answer': response.resources.__to_object__()})
+                commerce_phase_object['answer'] = response.resources.__to_object__()
                 self.game_manager.bot_manager.players[player]['player'].hand = response
                 print(self.game_manager.bot_manager.players[player]['player'].hand)
             else:
-                commerce_phase_object.append({'answer': response})
+                commerce_phase_object['answer'] = response
                 print('pero no tiene materiales suficientes')
             print('%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-            return commerce_phase_object
+            commerce_phase_array.append(commerce_phase_object)
+            return commerce_phase_array
         else:
-            commerce_phase_object.append({'trade_offer': 'None'})
-            return commerce_phase_object
+            commerce_phase_object['trade_offer'] = 'None'
+            commerce_phase_array.append(commerce_phase_object)
+            return commerce_phase_array
 
     def start_build_phase(self, player=-1, build_phase_object=None):
         """
@@ -244,7 +253,7 @@ class GameDirector:
             start_turn_object = self.start_turn(self.game_manager.turn_manager.get_whose_turn_is_it())
             obj['start_turn'] = start_turn_object
 
-            commerce_phase_object = self.start_commerce_phase(self.game_manager.turn_manager.get_whose_turn_is_it())
+            commerce_phase_object = self.start_commerce_phase(self.game_manager.turn_manager.get_whose_turn_is_it(), [])
             obj['commerce_phase'] = commerce_phase_object
 
             build_phase_object = self.start_build_phase(self.game_manager.turn_manager.get_whose_turn_is_it(), [])

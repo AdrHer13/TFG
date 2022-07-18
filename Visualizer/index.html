@@ -99,6 +99,7 @@
 
             <!-- Col Partida -->
             <div class="col-6 mb-5">
+                <div id="diceroll">Diceroll: 0</div>
                 <div class="gamefield text-center">
                     <img src="./Images/mapa.png" style="height: 57vh; margin-top: 5em" alt="Juego del Catan">
                 </div>
@@ -394,6 +395,9 @@
                 switch (parseInt(contador_fases.val()) - 1) {
                     case 0:
                         phase_obj = turn_obj['start_turn'];
+                        
+                        let diceroll_div = jQuery('#diceroll');
+                        diceroll_div.text('Diceroll: ' + phase_obj['dice']);
                         for (let i = 0; i < 4; i++) {
                             changeHandObject(i);
                         }

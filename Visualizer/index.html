@@ -27,7 +27,7 @@
 
             <!-- Col Jugadores -->
             <div class="col-3">
-                <div style="background: red" class="playerprofile" id="P0">
+                <div style="background: lightcoral" class="playerprofile" id="P0">
                     <div>
                         <img src="Images/nouser.png" alt="No user" height="100px">
                         <h1>J1</h1>
@@ -89,7 +89,7 @@
                         <span class="ore_quantity">0</span>
                     </div>
                 </div>
-                <div style="background: green" class="playerprofile" id="P2">
+                <div style="background: lightgreen" class="playerprofile" id="P2">
                     <img src="Images/nouser.png" alt="No user" height="100px">
                     <h1>J3</h1>
                     <h3 id="puntos_victoria_J3"></h3>
@@ -100,8 +100,398 @@
             <!-- Col Partida -->
             <div class="col-6 mb-5">
                 <div id="diceroll">Diceroll: 0</div>
-                <div class="gamefield text-center">
-                    <img src="./Images/mapa.png" style="height: 57vh; margin-top: 5em" alt="Juego del Catan">
+                <div class="gamefield text-center" style="background: gray;">
+                    <div class="terrain_pieces">
+                        <div class="terrain" id="terrain_0" style="top: 55px; left: 165px; background: green;"></div>
+                        <div class="terrain" id="terrain_1" style="top: 55px; left: 320px; background: greenyellow;"></div>
+                        <div class="terrain" id="terrain_2" style="top: 55px; left: 475px; background: yellow;"></div>
+
+                        <div class="terrain" id="terrain_3" style="top: 135px; left: 85px; background: brown;"></div>
+                        <div class="terrain" id="terrain_4" style="top: 135px; left: 240px; background: lightgray;"></div>
+                        <div class="terrain" id="terrain_5" style="top: 135px; left: 395px; background: brown;"></div>
+                        <div class="terrain" id="terrain_6" style="top: 135px; left: 555px; background: greenyellow;"></div>
+
+                        <div class="terrain" id="terrain_7" style="top: 215px; left: 5px; background: orange;">X</div>
+                        <div class="terrain" id="terrain_8" style="top: 215px; left: 165px; background: green;"></div>
+                        <div class="terrain" id="terrain_9" style="top: 215px; left: 320px; background: yellow;"></div>
+                        <div class="terrain" id="terrain_10" style="top: 215px; left: 475px; background: green;"></div>
+                        <div class="terrain" id="terrain_11" style="top: 215px; left: 635px; background: yellow;"></div>
+
+                        <div class="terrain" id="terrain_12" style="top: 295px; left: 85px; background: brown;"></div>
+                        <div class="terrain" id="terrain_13" style="top: 295px; left: 240px; background: greenyellow;"></div>
+                        <div class="terrain" id="terrain_14" style="top: 295px; left: 395px; background: greenyellow;"></div>
+                        <div class="terrain" id="terrain_15" style="top: 295px; left: 555px; background: lightgray;"></div>
+
+                        <div class="terrain" id="terrain_16" style="top: 375px; left: 165px; background: lightgray;"></div>
+                        <div class="terrain" id="terrain_17" style="top: 375px; left: 320px; background: yellow;"></div>
+                        <div class="terrain" id="terrain_18" style="top: 375px; left: 475px; background: green;"></div>
+                    </div>
+                    <div class="row" style="padding-top: 3em;">
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col node" id="node_0"></div>
+                        <div class="col road" id="road_0_1"></div>
+
+                        <div class="col node" id="node_1"></div>
+                        <div class="col road" id="road_1_2"></div>
+
+                        <div class="col node" id="node_2"></div>
+                        <div class="col road" id="road_2_3"></div>
+
+                        <div class="col node" id="node_3"></div>
+                        <div class="col road" id="road_3_4"></div>
+
+                        <div class="col node" id="node_4"></div>
+                        <div class="col road" id="road_4_5"></div>
+
+                        <div class="col node" id="node_5"></div>
+                        <div class="col road" id="road_5_6"></div>
+
+                        <div class="col node" id="node_6"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                    </div>
+                    <div class="row roads">
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="vertical_road" id="road_0_8"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="vertical_road" id="road_2_10"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="vertical_road" id="road_4_12"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="vertical_road" id="road_6_14"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col node" id="node_7"></div>
+                        <div class="col road" id="road_7_8"></div>
+
+                        <div class="col node" id="node_8"></div>
+                        <div class="col road" id="road_8_9"></div>
+
+                        <div class="col node" id="node_9"></div>
+                        <div class="col road" id="road_9_10"></div>
+
+                        <div class="col node" id="node_10"></div>
+                        <div class="col road" id="road_10_11"></div>
+
+                        <div class="col node" id="node_11"></div>
+                        <div class="col road" id="road_11_12"></div>
+
+                        <div class="col node" id="node_12"></div>
+                        <div class="col road" id="road_12_13"></div>
+
+                        <div class="col node" id="node_13"></div>
+                        <div class="col road" id="road_13_14"></div>
+
+                        <div class="col node" id="node_14"></div>
+                        <div class="col road" id="road_14_15"></div>
+
+                        <div class="col node" id="node_15"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                    </div>
+                    <div class="row roads">
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="vertical_road" id="road_7_17"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="vertical_road" id="road_9_19"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="vertical_road" id="road_11_21"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="vertical_road" id="road_13_23"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="vertical_road" id="road_15_25"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col node" id="node_16"></div>
+                        <div class="col road" id="road_16_17"></div>
+
+                        <div class="col node" id="node_17"></div>
+                        <div class="col road" id="road_17_18"></div>
+
+                        <div class="col node" id="node_18"></div>
+                        <div class="col road" id="road_18_19"></div>
+
+                        <div class="col node" id="node_19"></div>
+                        <div class="col road" id="road_19_20"></div>
+
+                        <div class="col node" id="node_20"></div>
+                        <div class="col road" id="road_20_21"></div>
+
+                        <div class="col node" id="node_21"></div>
+                        <div class="col road" id="road_21_22"></div>
+
+                        <div class="col node" id="node_22"></div>
+                        <div class="col road" id="road_22_23"></div>
+
+                        <div class="col node" id="node_23"></div>
+                        <div class="col road" id="road_23_24"></div>
+
+                        <div class="col node" id="node_24"></div>
+                        <div class="col road" id="road_24_25"></div>
+
+                        <div class="col node" id="node_25"></div>
+                        <div class="col road" id="road_25_26"></div>
+
+                        <div class="col node" id="node_26"></div>
+                    </div>
+
+                    <div class="row roads">
+                        <div class="vertical_road" id="road_16_27"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="vertical_road" id="road_18_29"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="vertical_road" id="road_20_31"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="vertical_road" id="road_22_33"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="vertical_road" id="road_24_35"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="vertical_road" id="road_26_37"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col node" id="node_27"></div>
+                        <div class="col road" id="road_27_28"></div>
+
+                        <div class="col node" id="node_28"></div>
+                        <div class="col road" id="road_28_29"></div>
+
+                        <div class="col node" id="node_29"></div>
+                        <div class="col road" id="road_29_30"></div>
+
+                        <div class="col node" id="node_30"></div>
+                        <div class="col road" id="road_30_31"></div>
+
+                        <div class="col node" id="node_31"></div>
+                        <div class="col road" id="road_31_32"></div>
+
+                        <div class="col node" id="node_32"></div>
+                        <div class="col road" id="road_32_33"></div>
+
+                        <div class="col node" id="node_33"></div>
+                        <div class="col road" id="road_33_34"></div>
+
+                        <div class="col node" id="node_34"></div>
+                        <div class="col road" id="road_34_35"></div>
+
+                        <div class="col node" id="node_35"></div>
+                        <div class="col road" id="road_35_36"></div>
+
+                        <div class="col node" id="node_36"></div>
+                        <div class="col road" id="road_36_37"></div>
+
+                        <div class="col node" id="node_37"></div>
+                    </div>
+                    <div class="row roads">
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="vertical_road" id="road_28_38"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="vertical_road" id="road_30_40"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="vertical_road" id="road_32_42"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="vertical_road" id="road_34_44"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="vertical_road" id="road_36_46"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col node" id="node_38"></div>
+                        <div class="col road" id="road_38_39"></div>
+
+                        <div class="col node" id="node_39"></div>
+                        <div class="col road" id="road_39_40"></div>
+
+                        <div class="col node" id="node_40"></div>
+                        <div class="col road" id="road_40_41"></div>
+
+                        <div class="col node" id="node_41"></div>
+                        <div class="col road" id="road_41_42"></div>
+
+                        <div class="col node" id="node_42"></div>
+                        <div class="col road" id="road_42_43"></div>
+
+                        <div class="col node" id="node_43"></div>
+                        <div class="col road" id="road_43_44"></div>
+
+                        <div class="col node" id="node_44"></div>
+                        <div class="col road" id="road_44_45"></div>
+
+                        <div class="col node" id="node_45"></div>
+                        <div class="col road" id="road_45_46"></div>
+
+                        <div class="col node" id="node_46"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                    </div>
+                    <div class="row roads">
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="vertical_road" id="road_39_47"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="vertical_road" id="road_41_49"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="vertical_road" id="road_43_51"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="vertical_road" id="road_45_53"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col node" id="node_47"></div>
+                        <div class="col road" id="road_47_48"></div>
+
+                        <div class="col node" id="node_48"></div>
+                        <div class="col road" id="road_48_49"></div>
+
+                        <div class="col node" id="node_49"></div>
+                        <div class="col road" id="road_49_50"></div>
+
+                        <div class="col node" id="node_50"></div>
+                        <div class="col road" id="road_50_51"></div>
+
+                        <div class="col node" id="node_51"></div>
+                        <div class="col road" id="road_51_52"></div>
+
+                        <div class="col node" id="node_52"></div>
+                        <div class="col road" id="road_52_53"></div>
+
+                        <div class="col node" id="node_53"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                        <div class="col filler_road"></div>
+
+                        <div class="col filler_node"></div>
+                    </div>
+
+                    <!--                    <img src="./Images/mapa.png" style="height: 57vh; margin-top: 5em" alt="Juego del Catan">-->
                 </div>
             </div>
 
@@ -167,7 +557,7 @@
                         <span class="ore_quantity">0</span>
                     </div>
                 </div>
-                <div style="background: yellow" class="playerprofile" id="P3">
+                <div style="background: lightyellow" class="playerprofile" id="P3">
                     <img src="Images/nouser.png" alt="No user" height="100px">
                     <h1>J4</h1>
                     <h3 id="puntos_victoria_J4"></h3>
@@ -260,7 +650,7 @@
 
                         init_events_with_game_obj()
                         addLogFromJSON()
-                        addSetupBuildings()
+                        setup()
                     }
                     reader.onerror = function(evt) {
                         console.log('Error al cargar el archivo')
@@ -296,21 +686,38 @@
 
             $('#rondas_maximas').text(Object.keys(game_obj['game']).length)
         }
-
+        
         function addSetupBuildings() {
             setup_obj = game_obj['setup'];
 
             for (let i = 0; i < 4; i++) {
                 let textarea = $('#buildings_P' + (i + 1))
                 for (let j = 0; j < setup_obj['P' + i].length; j++) {
-                    let str = 'node: ' + setup_obj['P' + i][j]['id'] + ' | ' + 'type: ' + 'T' + '\r\n'
-                    str += 'node: ' + setup_obj['P' + i][j]['id'] + ' | ' + 'roadTo: ' + setup_obj['P' + i][j]['road'] + ' | ' + 'type: ' + 'R' + '\r\n'
+                    let node = jQuery('#node_' + setup_obj['P' + i][j]['id']);
+                    let road = '';
+                    if (setup_obj['P' + i][j]['id'] < setup_obj['P' + i][j]['road']) {
+                        road = jQuery('#road_' + setup_obj['P' + i][j]['id'] + '_' + setup_obj['P' + i][j]['road']);
+                    } else {
+                        road = jQuery('#road_' + setup_obj['P' + i][j]['road'] + '_' + setup_obj['P' + i][j]['id']);
+                    }
 
-                    textarea.text(textarea.text() + str)
+                    let str = 'node: ' + setup_obj['P' + i][j]['id'] + ' | ' + 'type: ' + 'T' + '\r\n';
+                    str += 'node: ' + setup_obj['P' + i][j]['id'] + ' | ' + 'roadTo: ' + setup_obj['P' + i][j]['road'] + ' | ' + 'type: ' + 'R' + '\r\n';
+
+                    textarea.text(textarea.text() + str);
+
+                    paint_it_player_color(i, node);
+                    paint_it_player_color(i, road);
                 }
             }
         }
-
+        
+        function terrainSetup(){
+            setup_obj = game_obj['setup'];
+            
+            
+        }
+        
         function init_events_with_game_obj() {
             let contador_rondas = jQuery('#contador_rondas');
             let contador_turnos = jQuery('#contador_turnos');
@@ -362,16 +769,16 @@
                 $('.playerprofile').css('border', 'none')
                 switch (parseInt(contador_turnos.val()) - 1) {
                     case 0:
-                        $('#P0').css('border', '10px solid darkred')
+                        $('#P0').css('border', '10px solid red')
                         break;
                     case 1:
                         $('#P1').css('border', '10px solid blue')
                         break;
                     case 2:
-                        $('#P2').css('border', '10px solid darkgreen')
+                        $('#P2').css('border', '10px solid green')
                         break;
                     case 3:
-                        $('#P3').css('border', '10px solid orange')
+                        $('#P3').css('border', '10px solid yellow')
                         break;
                 }
 
@@ -395,7 +802,7 @@
                 switch (parseInt(contador_fases.val()) - 1) {
                     case 0:
                         phase_obj = turn_obj['start_turn'];
-                        
+
                         let diceroll_div = jQuery('#diceroll');
                         diceroll_div.text('Diceroll: ' + phase_obj['dice']);
                         for (let i = 0; i < 4; i++) {
@@ -456,11 +863,11 @@
                                             html += 'Wood: ' + phase_obj[i]['answers'][j]['response']['gives']['wood'] + ' | ';
                                             html += 'Clay: ' + phase_obj[i]['answers'][j]['response']['gives']['clay'] + '</span>';
                                             html += '<br><span class="counteroffer_receives">'
-                                            html += 'Gives: ' + 'Cereal: ' + phase_obj[i]['answers'][j]['response']['gives']['cereal'] + ' | ';
-                                            html += 'Mineral: ' + phase_obj[i]['answers'][j]['response']['gives']['mineral'] + ' | ';
-                                            html += 'Wool: ' + phase_obj[i]['answers'][j]['response']['gives']['wool'] + ' | ';
-                                            html += 'Wood: ' + phase_obj[i]['answers'][j]['response']['gives']['wood'] + ' | ';
-                                            html += 'Clay: ' + phase_obj[i]['answers'][j]['response']['gives']['clay'] + '</span>';
+                                            html += 'Receives: ' + 'Cereal: ' + phase_obj[i]['answers'][j]['response']['receives']['cereal'] + ' | ';
+                                            html += 'Mineral: ' + phase_obj[i]['answers'][j]['response']['receives']['mineral'] + ' | ';
+                                            html += 'Wool: ' + phase_obj[i]['answers'][j]['response']['receives']['wool'] + ' | ';
+                                            html += 'Wood: ' + phase_obj[i]['answers'][j]['response']['receives']['wood'] + ' | ';
+                                            html += 'Clay: ' + phase_obj[i]['answers'][j]['response']['receives']['clay'] + '</span>';
 
                                             html += '<br><span class="counteroffer_answer">P' + contador_turnos.val();
                                             if (phase_obj[i]['answers'][j]['giver_answer']) {
@@ -493,19 +900,36 @@
                             if (building['building'] !== null) {
                                 switch (building['building']) {
                                     case 'town':
+                                        console.log('town')
                                         if (building['finished']) {
+                                            let node = jQuery('#node_' + building['nodeID'])
+                                            paint_it_player_color((parseInt(contador_turnos.val()) - 1), node);
+
                                             let str = 'node: ' + building['nodeID'] + ' | ' + 'type: ' + 'T' + '\r\n'
                                             textarea.text(textarea.text() + str)
+
                                         }
                                         break;
                                     case 'city':
+                                        console.log('city')
                                         if (building['finished']) {
+                                            let node = jQuery('#node_' + building['nodeID'])
+                                            node.text('C');
+
                                             let str = 'node: ' + building['nodeID'] + ' | ' + 'type: ' + 'C' + '\r\n'
                                             textarea.text(textarea.text() + str)
                                         }
                                         break;
                                     case 'road':
+                                        console.log('road')
                                         if (building['finished']) {
+                                            let road = '';
+                                            if (building['nodeID'] < building['roadTo']) {
+                                                road = jQuery('#road_' + building['nodeID'] + '_' + building['roadTo']);
+                                            } else {
+                                                road = jQuery('#road_' + building['roadTo'] + '_' + building['nodeID']);
+                                            }
+                                            paint_it_player_color((parseInt(contador_turnos.val()) - 1), road);
                                             let str = 'node: ' + building['nodeID'] + ' | ' + 'roadTo: ' + building['roadTo'] + ' | ' + 'type: ' + 'R' + '\r\n'
                                             textarea.text(textarea.text() + str)
                                         }
@@ -520,10 +944,18 @@
                         break;
                     case 3:
                         phase_obj = turn_obj['end_turn'];
-                        jQuery('#puntos_victoria_J1').text(phase_obj['victory_points']['J0'])
-                        jQuery('#puntos_victoria_J2').text(phase_obj['victory_points']['J1'])
-                        jQuery('#puntos_victoria_J3').text(phase_obj['victory_points']['J2'])
-                        jQuery('#puntos_victoria_J4').text(phase_obj['victory_points']['J3'])
+                        let winner = '';
+
+                        for (let i = 0; i < 4; i++) {
+                            jQuery('#puntos_victoria_J' + (i + 1)).text(phase_obj['victory_points']['J' + i])
+                            if (parseInt(phase_obj['victory_points']['J' + i]) >= 10) {
+                                winner = 'J' + (i + 1) + ' GANA'
+                            }
+                        }
+
+                        if (winner !== '' && contador_turnos.val() >= 4) {
+                            alert(winner);
+                        }
                         break;
 
                 }
@@ -607,10 +1039,38 @@
             $('#hand_P' + player + ' .ore_quantity').text(hand_obj['mineral']).change();
         }
 
+        // utilities
+        function paint_it_player_color(player, object_to_paint) {
+            object_to_paint = jQuery(object_to_paint);
+            switch (player) {
+                case 0:
+                    object_to_paint.css('background', 'lightcoral');
+                    break;
+                case 1:
+                    object_to_paint.css('background', 'lightblue');
+                    break;
+                case 2:
+                    object_to_paint.css('background', 'lightgreen');
+                    break;
+                case 3:
+                    object_to_paint.css('background', 'lightyellow');
+                    break;
+                default:
+                    console.log('Jugador: ' + player)
+                    alert('Caso ilegal')
+                    break;
+            }
+        }
+
+        
+        function setup(){
+            terrainSetup();
+            addSetupBuildings();
+        }
+        
+        // init()
         window.addEventListener('load', function() {
-
             init_events();
-
         }, false);
 
     </script>

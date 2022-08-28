@@ -46,8 +46,8 @@ class Hand:
                 # print('add_wool')
                 self.resources.add_wool(amount)
                 pass
-            else:
-                print('add_desert')
+            # else:
+            #     print('add_desert')
         return
 
     def remove_material(self, resource, amount):

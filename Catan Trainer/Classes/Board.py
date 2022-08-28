@@ -3,7 +3,6 @@ from Classes.Utilities import is_even
 
 
 class Board:
-    # TODO: Como todas las variables son propiedades estáticas, si la cambias en un lado se cambia en todos los lados
     """
     Clase que representa una instancia del tablero.
 
@@ -72,6 +71,7 @@ class Board:
                 j += 1
         else:
             self.terrain = terrain
+
 
         ### Código para comprobar que el tablero se inicializa con los adyacentes correctos
         # print('Nodos:')
@@ -485,6 +485,13 @@ class Board:
             if self.nodes[adjacent_id]['player'] != -1:
                 return False
         return True
+
+    def is_it_a_coastal_node(self, node_id):
+        coastal_nodes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 14, 15, 16, 17, 25, 26, 27, 28, 36, 37, 38, 39, 45, 46, 47, 48, 49, 50, 51, 52, 53]
+        if node_id in coastal_nodes:
+            return True
+        else:
+            return False
 
     def valid_town_nodes(self, player_id):
         """

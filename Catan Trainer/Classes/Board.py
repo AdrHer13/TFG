@@ -541,7 +541,7 @@ class Board:
         for node in self.nodes:
             for adjacent in node['adjacent']:
                 for road in self.nodes[adjacent]['roads']:
-                    if road['playerID'] == player_id and road['nodeID'] != node['id']:
+                    if road['playerID'] == player_id and road['nodeID'] != node['id'] and (node['player'] == player_id or node['player'] == -1):
                         valid_nodes.append({'startingNode': node['id'], 'finishingNode': adjacent})
         print('````````````````````````````')
         print('valid_road_nodes: ')

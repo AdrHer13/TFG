@@ -303,85 +303,82 @@ class GameManager:
 
         return
 
-    def on_game_start_built_nodes_and_roads(self, i, count):
+    def on_game_start_built_nodes_and_roads(self, player):
         """
         Función que te permite poner un pueblo y una carretera. Te las pone automáticamente si no pones un nodo válido
-        :param i: contador externo que indica a qué jugador le toca
+        :param player: contador externo que indica a qué jugador le toca
         :param count: contador interno que lleva la cuenta de cuantas veces han intentado poner un nodo
         :return: node_id, road_to
         """
 
-        node_id, road_to = self.bot_manager.players[i]['player'].on_game_start(self.board)
-        # parte nodos
-        if count >= 2:
-            illegal = True
-            random_node_id = 0
-            while illegal:
-                # TODO: Plantear si es mejor sustituir el randint por un bucle ascendente que vaya probando cada nodo
-                #       Alt: Conseguir una lista con todos los nodos viables y elegir uno aleatorio
-                random_node_id = random.randint(0, 53)
-                if (self.board.nodes[random_node_id]['player'] == -1 and
-                        self.board.adyacent_nodes_dont_have_towns(random_node_id) and
-                        not self.board.is_it_a_coastal_node(random_node_id)):
-                    illegal = False
-                else:
-                    illegal = True
+        for count in range(3):
+            if count < 2:
+                node_id, road_to = self.bot_manager.players[player]['player'].on_game_start(self.board)
 
-            terrain_ids = self.board.nodes[random_node_id]['contactingTerrain']
-            materials = []
-            for ter_id in terrain_ids:
-                materials.append(self.board.terrain[ter_id]['terrainType'])
+                if (self.board.nodes[node_id]['player'] == -1
+                        and self.board.adyacent_nodes_dont_have_towns(node_id)
+                        and not self.board.is_it_a_coastal_node(node_id)):
 
-            self.board.nodes[random_node_id]['player'] = self.turn_manager.get_whose_turn_is_it()
-            self.bot_manager.players[i]['player'].hand.add_material(materials, 1)
-            self.bot_manager.players[i]['victoryPoints'] += 1
+                    # print('______________________')
+                    # print('NODO: ' + str(node_id))
 
-            illegal = True
-            while illegal:
-                possible_roads = self.board.nodes[random_node_id]['adjacent']
-                random_road_to = possible_roads[random.randint(0, len(possible_roads) - 1)]
+                    terrain_ids = self.board.nodes[node_id]['contactingTerrain']
+                    materials = []
+                    for ter_id in terrain_ids:
+                        materials.append(self.board.terrain[ter_id]['terrainType'])
+                    self.board.nodes[node_id]['player'] = self.turn_manager.get_whose_turn_is_it()
+                    # print('Materiales del nodo de J' + str(self.board.nodes[node_id]['player']))
+                    # print(materials)
+                    self.bot_manager.players[player]['player'].hand.add_material(materials, 1)
+                    self.bot_manager.players[player]['victoryPoints'] += 1
 
-                response = self.board.build_road(self.turn_manager.get_whose_turn_is_it(), random_node_id,
-                                                 random_road_to)
-                if response['response']:
-                    print('random_node_id: ' + str(random_node_id) + ' | random_road_to: ' + str(random_road_to))
-                    return random_node_id, random_road_to
-                else:
-                    illegal = True
-                    print(response['errorMsg'])
+                    # Parte carreteras
+                    if self.board.nodes[node_id]['player'] == self.turn_manager.get_whose_turn_is_it():
+                        response = self.board.build_road(self.turn_manager.get_whose_turn_is_it(), node_id, road_to)
+                        if not response['response']:
+                            print(response['errorMsg'])
+                        else:
+                            print('J' + str(self.turn_manager.get_whose_turn_is_it()))
+                            print('actual_node_id: ' + str(node_id) + ' | actual_road_to: ' + str(road_to))
+                            return node_id, road_to
+                    else:
+                        print("el jugador " + str(self.turn_manager.get_whose_turn_is_it()) +
+                              " ha intentado poner una carretera en un nodo que no le pertenece: " + str(road_to))
 
-            return node_id, road_to
-
-        elif self.board.nodes[node_id]['player'] == -1 and self.board.adyacent_nodes_dont_have_towns(node_id) and \
-                not self.board.is_it_a_coastal_node(node_id):
-
-            print('______________________')
-            print('NODO: ' + str(node_id))
-
-            terrain_ids = self.board.nodes[node_id]['contactingTerrain']
-            materials = []
-            for ter_id in terrain_ids:
-                materials.append(self.board.terrain[ter_id]['terrainType'])
-            self.board.nodes[node_id]['player'] = self.turn_manager.get_whose_turn_is_it()
-            print('Materiales del nodo de J' + str(self.board.nodes[node_id]['player']))
-            print(materials)
-            self.bot_manager.players[i]['player'].hand.add_material(materials, 1)
-            self.bot_manager.players[i]['victoryPoints'] += 1
-
-            # Parte carreteras
-            if self.board.nodes[node_id]['player'] == self.turn_manager.get_whose_turn_is_it():
-                response = self.board.build_road(self.turn_manager.get_whose_turn_is_it(), node_id, road_to)
-                if not response['response']:
-                    print(response['errorMsg'])
-                    # count += 1
-                    # node_id, road_to = self.on_game_start_built_nodes_and_roads(i, count)
-                else:
-                    print('actual_node_id: ' + str(node_id) + ' | actual_road_to: ' + str(road_to))
-                    return node_id, road_to
             else:
-                print("el jugador " + str(self.turn_manager.get_whose_turn_is_it()) +
-                      " ha intentado poner una carretera en un nodo que no le pertenece: " + str(road_to))
-                # count += 1
-                # node_id, road_to = self.on_game_start_built_nodes_and_roads(i, count)
+                illegal = True
+                random_node_id = 0
+                while illegal:
+                    # TODO: Plantear si es mejor sustituir el randint por un bucle ascendente que vaya probando cada nodo
+                    #       Alt: Conseguir una lista con todos los nodos viables y elegir uno aleatorio
+                    random_node_id = random.randint(0, 53)
+                    if (self.board.nodes[random_node_id]['player'] == -1 and
+                            self.board.adyacent_nodes_dont_have_towns(random_node_id) and
+                            not self.board.is_it_a_coastal_node(random_node_id)):
+                        illegal = False
+                    else:
+                        illegal = True
 
-        return node_id, road_to
+                terrain_ids = self.board.nodes[random_node_id]['contactingTerrain']
+                materials = []
+                for ter_id in terrain_ids:
+                    materials.append(self.board.terrain[ter_id]['terrainType'])
+
+                self.board.nodes[random_node_id]['player'] = self.turn_manager.get_whose_turn_is_it()
+                self.bot_manager.players[player]['player'].hand.add_material(materials, 1)
+                self.bot_manager.players[player]['victoryPoints'] += 1
+
+                illegal = True
+                while illegal:
+                    possible_roads = self.board.nodes[random_node_id]['adjacent']
+                    random_road_to = possible_roads[random.randint(0, len(possible_roads) - 1)]
+
+                    response = self.board.build_road(self.turn_manager.get_whose_turn_is_it(), random_node_id,
+                                                     random_road_to)
+                    if response['response']:
+                        print('J' + str(self.turn_manager.get_whose_turn_is_it()))
+                        print('random_node_id: ' + str(random_node_id) + ' | random_road_to: ' + str(random_road_to))
+                        return random_node_id, random_road_to
+                    else:
+                        illegal = True
+                        print(response['errorMsg'])

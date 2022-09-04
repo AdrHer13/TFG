@@ -66,7 +66,8 @@ class Hand:
             return True
         else:
             # print('else')
-            # TODO: Lanzar excepcion
+            # TODO: comprobar por qué la excepción se lanza cuando alguien tiene 1 material pese a estar como válido si es >=1
+            # raise Exception("Cantidad de materiales negativa. Cancelando partida")
             return False
 
     def get_from_id(self, material_id):

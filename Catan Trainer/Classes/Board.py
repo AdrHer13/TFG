@@ -1,3 +1,5 @@
+import random
+
 from Classes.Constants import HarborConstants, TerrainConstants
 from Classes.Utilities import is_even
 
@@ -71,7 +73,6 @@ class Board:
                 j += 1
         else:
             self.terrain = terrain
-
 
         ### Código para comprobar que el tablero se inicializa con los adyacentes correctos
         # print('Nodos:')
@@ -451,14 +452,14 @@ class Board:
         """
         if self.terrain[terrain]['hasThief']:
             self.terrain[terrain]['hasThief'] = False
-            # TODO: Cambiar el bucle for por una casilla aleatoria si se equivocan
-            #  ya que no se puede devolver el ladrón al desierto
-            for square in self.terrain:
-                if square['terrainType'] == TerrainConstants.DESERT:
-                    square['hasThief'] = True
+
+            rand_terrain = random.randint(0, 18)
+            self.terrain[rand_terrain]['hasThief'] = True
             return {'response': False,
-                    'errorMsg': 'No se puede mover al ladrón a la misma casilla'}
+                    'errorMsg': 'No se puede mover al ladrón a la misma casilla',
+                    'terrainId': rand_terrain}
         else:
+            # Quitamos el ladrón del terreno que lo posea
             for square in self.terrain:
                 if square['hasThief']:
                     square['hasThief'] = False
@@ -466,7 +467,8 @@ class Board:
 
             self.terrain[terrain]['hasThief'] = True
             return {'response': True,
-                    'errorMsg': ''}
+                    'errorMsg': '',
+                    'terrainId': terrain}
 
     # def update_board(self):
     #     """
@@ -487,7 +489,8 @@ class Board:
         return True
 
     def is_it_a_coastal_node(self, node_id):
-        coastal_nodes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 14, 15, 16, 17, 25, 26, 27, 28, 36, 37, 38, 39, 45, 46, 47, 48, 49, 50, 51, 52, 53]
+        coastal_nodes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 14, 15, 16, 17, 25, 26, 27, 28, 36, 37, 38, 39, 45, 46, 47, 48, 49,
+                         50, 51, 52, 53]
         if node_id in coastal_nodes:
             return True
         else:
@@ -495,19 +498,19 @@ class Board:
 
     def valid_town_nodes(self, player_id):
         """
-        Devuelve un array de las ids de los nodos válidos donde el jugador puede poner un pueblo
+        Devuelve un array de las ids de los nodos válidos donde el jugador puede poner un pueblo. Deberían de no haber IDs repetidas
         :param player_id: int
         :return: [id...]
         """
-        # TODO: puede llegar a haber multiples veces el mismo nodo debido a que un nodo es adyacente multiples veces
-        #  se podría añadir un "and not valid_nodes.has(node['id'])" o como se escriba eso en python
         valid_nodes = []
         for node in self.nodes:
             # print('foreach node: ')
             # print(node)
             for road in node['roads']:
-                if (road['playerID'] == player_id and self.adyacent_nodes_dont_have_towns(node['id']) and
-                        node['player'] == -1):
+                if (road['playerID'] == player_id
+                        and self.adyacent_nodes_dont_have_towns(node['id'])
+                        and node['player'] == -1
+                        and node['id'] not in valid_nodes):
                     valid_nodes.append(node['id'])
         print('````````````````````````````')
         print('valid_town_nodes: ')
@@ -541,7 +544,8 @@ class Board:
         for node in self.nodes:
             for adjacent in node['adjacent']:
                 for road in self.nodes[adjacent]['roads']:
-                    if road['playerID'] == player_id and road['nodeID'] != node['id'] and (node['player'] == player_id or node['player'] == -1):
+                    if road['playerID'] == player_id and road['nodeID'] != node['id'] and (
+                            node['player'] == player_id or node['player'] == -1):
                         valid_nodes.append({'startingNode': node['id'], 'finishingNode': adjacent})
         print('````````````````````````````')
         print('valid_road_nodes: ')

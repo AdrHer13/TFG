@@ -265,15 +265,19 @@ class GameManager:
         :param adjacent_player: Número de un jugador que esté adyacente al hexágono seleccionado
         :return: void
         """
-        response, error_msg = self.board.move_thief(terrain)
-        if response:
+        move_thief_obj = self.board.move_thief(terrain)
+        move_thief_obj['robbedPlayer'] = -1
+        move_thief_obj['stolenMaterialId'] = -1
+        if move_thief_obj['response']:
             if adjacent_player != -1:
-                for node in self.board.terrain[terrain]['contactingNodes']:
+                for node in self.board.terrain[move_thief_obj['terrainId']]['contactingNodes']:
                     if self.board.nodes[node]['player'] == adjacent_player:
-                        self.__steal_from_player__(adjacent_player)
+                        move_thief_obj['stolenMaterialId'] = self.__steal_from_player__(adjacent_player)
+                        move_thief_obj['robbedPlayer'] = adjacent_player
+                        break
                     else:
-                        error_msg = 'No se ha podido robar al jugador debido a que no está en un nodo adyacente'
-        return {response, error_msg}
+                        move_thief_obj['errorMsg'] = 'No se ha podido robar al jugador debido a que no está en un nodo adyacente'
+        return move_thief_obj
 
     def __steal_from_player__(self, player):
         """
@@ -300,8 +304,8 @@ class GameManager:
             material_id = material_array[random.randint(0, (len(material_array) - 1))]
             player_obj.hand.remove_material(material_id, 1)
             actual_player_obj.hand.add_material(material_id, 1)
-
-        return
+            return material_id
+        return None
 
     def on_game_start_built_nodes_and_roads(self, player):
         """

@@ -71,7 +71,12 @@ class GameDirector:
                     self.game_manager.bot_manager.players[i]['player'].hand.get_total()))
 
             on_moving_thief = self.game_manager.bot_manager.players[player]['player'].on_moving_thief()
-            self.game_manager.move_thief(on_moving_thief['terrain'], on_moving_thief['player'])
+            # TODO: pasar terrain_id al objeto para saber donde se ha puesto el ladrón
+            move_thief_obj = self.game_manager.move_thief(on_moving_thief['terrain'], on_moving_thief['player'])
+
+            start_turn_object['thief_terrain'] = move_thief_obj['terrainId']
+            start_turn_object['robbed_player'] = move_thief_obj['robbedPlayer']
+            start_turn_object['stolen_material_id'] = move_thief_obj['stolenMaterialId']
 
         for i in range(4):
             start_turn_object['hand_P' + str(i)] = \

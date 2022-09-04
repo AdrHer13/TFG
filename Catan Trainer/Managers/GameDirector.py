@@ -74,6 +74,7 @@ class GameDirector:
             # TODO: pasar terrain_id al objeto para saber donde se ha puesto el ladrón
             move_thief_obj = self.game_manager.move_thief(on_moving_thief['terrain'], on_moving_thief['player'])
 
+            start_turn_object['past_thief_terrain'] = move_thief_obj['lastThiefTerrain']
             start_turn_object['thief_terrain'] = move_thief_obj['terrainId']
             start_turn_object['robbed_player'] = move_thief_obj['robbedPlayer']
             start_turn_object['stolen_material_id'] = move_thief_obj['stolenMaterialId']

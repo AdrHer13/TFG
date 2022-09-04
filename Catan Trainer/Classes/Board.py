@@ -457,18 +457,22 @@ class Board:
             self.terrain[rand_terrain]['hasThief'] = True
             return {'response': False,
                     'errorMsg': 'No se puede mover al ladrón a la misma casilla',
-                    'terrainId': rand_terrain}
+                    'terrainId': rand_terrain,
+                    'lastThiefTerrain': terrain}
         else:
             # Quitamos el ladrón del terreno que lo posea
+            last_terrain_id = -1
             for square in self.terrain:
                 if square['hasThief']:
                     square['hasThief'] = False
+                    last_terrain_id = square['id']
                     break
 
             self.terrain[terrain]['hasThief'] = True
             return {'response': True,
                     'errorMsg': '',
-                    'terrainId': terrain}
+                    'terrainId': terrain,
+                    'lastThiefTerrain': last_terrain_id}
 
     # def update_board(self):
     #     """

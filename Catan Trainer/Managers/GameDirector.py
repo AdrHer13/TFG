@@ -149,11 +149,14 @@ class GameDirector:
 
             if isinstance(response, Hand):
                 # TODO: solo devolver los materiales y cambiar la mano en el visualizador
+                #  (para que el visualizador pueda marcar qué han conseguido tras un intercambio)
                 commerce_phase_object['answer'] = response.resources.__to_object__()
+                commerce_phase_object['received'] = trade_offer['receives']
                 self.game_manager.bot_manager.players[player]['player'].hand = response
                 print(self.game_manager.bot_manager.players[player]['player'].hand)
             else:
                 commerce_phase_object['answer'] = response
+                commerce_phase_object['received'] = 'none'
                 print('pero no tiene materiales suficientes')
             print('%%%%%%%%%%%%%%%%%%%%%%%%%%%')
             commerce_phase_array.append(commerce_phase_object)

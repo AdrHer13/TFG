@@ -1,7 +1,3 @@
-from Classes.TradeOffer import TradeOffer
-from Interfaces.BotInterface import BotInterface
-
-
 class CommerceManager:
     """
      Clase que se encarga del comercio entre jugadores
@@ -37,7 +33,7 @@ class CommerceManager:
         :param receives: ID del material quiere recibir a cambio
         :return: bool | Indica si se ha completado el trato
         """
-        player_hand = player.hand.get_resources()
+        player_hand = player.hand
         if player_hand.get_from_id(gives) >= 3:
             player_hand.remove_material(gives, 3)
             player_hand.add_material(receives, 1)
@@ -53,7 +49,7 @@ class CommerceManager:
         :param receives: ID del material quiere recibir a cambio
         :return: bool | Indica si se ha completado el trato
         """
-        player_hand = player.hand.get_resources()
+        player_hand = player.hand
         if player_hand.get_from_id(gives) >= 2:
             player_hand.remove_material(gives, 2)
             player_hand.add_material(receives, 1)

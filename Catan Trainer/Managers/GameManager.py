@@ -34,7 +34,10 @@ class GameManager:
         Función que devuelve un valor entre el 2 y el 12, simulando una tirada de 2d6
         :return: integer entre 2 y 12
         """
-        self.last_dice_roll = random.randint(2, 12)
+        first_d6 = random.randint(1, 6)
+        second_d6 = random.randint(1, 6)
+        # self.last_dice_roll = random.randint(2, 12)
+        self.last_dice_roll = first_d6 + second_d6
         print('throw dice: ' + str(self.last_dice_roll))
         return
 
@@ -64,7 +67,7 @@ class GameManager:
                             player.hand.add_material(terrain['terrainType'], 1)
         return None
 
-    def trade_with_everyone(self, trade_offer=TradeOffer()):
+    def send_trade_with_everyone(self, trade_offer=TradeOffer()):
         """
         Permite enviar una oferta a todos los jugadores en la mesa. Si alguno acepta se hará el intercambio
         :param trade_offer: Oferta de comercio con el jugador, debe incluir qué se entrega y qué se recibe
@@ -353,9 +356,10 @@ class GameManager:
                 illegal = True
                 random_node_id = 0
                 while illegal:
-                    # TODO: Plantear si es mejor sustituir el randint por un bucle ascendente que vaya probando cada nodo
-                    #       Alt: Conseguir una lista con todos los nodos viables y elegir uno aleatorio
-                    random_node_id = random.randint(0, 53)
+                    # random_node_id = random.randint(0, 53)
+                    valid_nodes = self.board.valid_starting_nodes()
+                    i = random.randint(0, (valid_nodes.__len__() - 1))
+                    random_node_id = valid_nodes[i]
                     if (self.board.nodes[random_node_id]['player'] == -1 and
                             self.board.adyacent_nodes_dont_have_towns(random_node_id) and
                             not self.board.is_it_a_coastal_node(random_node_id)):

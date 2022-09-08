@@ -1,6 +1,6 @@
 import random
 
-from Classes.Constants import BuildConstants
+from Classes.Constants import BuildConstants, HarborConstants
 from Classes.Hand import Hand
 from Classes.TradeOffer import TradeOffer
 from Managers.GameManager import GameManager
@@ -71,7 +71,6 @@ class GameDirector:
                     self.game_manager.bot_manager.players[i]['player'].hand.get_total()))
 
             on_moving_thief = self.game_manager.bot_manager.players[player]['player'].on_moving_thief()
-            # TODO: pasar terrain_id al objeto para saber donde se ha puesto el ladrón
             move_thief_obj = self.game_manager.move_thief(on_moving_thief['terrain'], on_moving_thief['player'])
 
             start_turn_object['past_thief_terrain'] = move_thief_obj['lastThiefTerrain']
@@ -95,8 +94,8 @@ class GameDirector:
         :param commerce_phase_array:
         :param player: número que representa al jugador
         :return: object
-        TODO: He creado el array únicamente para poder hacerlo recursivo, dado que técnicamente un jugador debe de
-                poder hacer X cantidad de comercios
+        TODO: He creado el array únicamente para poder hacerlo recursivo (para introducir el objeto de comercio dentro),
+         dado que técnicamente un jugador debe de poder hacer 2 comercios con jugadores y todos los que quiera con el puerto
         """
         if commerce_phase_array is None:
             commerce_phase_array = []
@@ -116,7 +115,7 @@ class GameDirector:
                         trade_offer.gives):
                     commerce_phase_object['inviable'] = False
                     print('Puede hacer la oferta')
-                    answer_object = self.game_manager.trade_with_everyone(trade_offer)
+                    answer_object = self.game_manager.send_trade_with_everyone(trade_offer)
                     commerce_phase_object['answers'] = answer_object
                 else:
                     commerce_phase_object['inviable'] = True
@@ -134,14 +133,20 @@ class GameDirector:
             commerce_phase_object['trade_offer'] = trade_offer
             commerce_phase_object['harbor_trade'] = True
 
-            # TODO: Hacer que tener puerto sea funcional
-            response = self.game_manager.commerce_manager.trade_without_harbor(
-                self.game_manager.bot_manager.players[player]['player'], trade_offer['gives'], trade_offer['receives'])
-            # self.game_manager.commerce_manager.trade_through_harbor(self.game_manager.bot_manager.actualPlayer,
-            #                                                         trade_offer['gives'], trade_offer['receives'])
-            # self.game_manager.commerce_manager.trade_through_special_harbor(self.game_manager.bot_manager.actualPlayer,
-            #                                                                 trade_offer['gives'],
-            #                                                                 trade_offer['receives'])
+            harbor_type = self.game_manager.board.check_for_player_harbors(player, trade_offer['gives'])
+            if harbor_type == HarborConstants.NONE:
+                response = self.game_manager.commerce_manager.trade_without_harbor(
+                    self.game_manager.bot_manager.players[player]['player'], trade_offer['gives'],
+                    trade_offer['receives'])
+            elif harbor_type == HarborConstants.ALL:
+                response = self.game_manager.commerce_manager.trade_through_harbor(
+                    self.game_manager.bot_manager.players[player]['player'], trade_offer['gives'],
+                    trade_offer['receives'])
+            else:
+                response = self.game_manager.commerce_manager.trade_through_special_harbor(
+                    self.game_manager.bot_manager.players[player]['player'], trade_offer['gives'],
+                    trade_offer['receives'])
+
             if isinstance(response, Hand):
                 # TODO: solo devolver los materiales y cambiar la mano en el visualizador
                 commerce_phase_object['answer'] = response.resources.__to_object__()

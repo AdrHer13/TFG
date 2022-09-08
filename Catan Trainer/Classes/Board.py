@@ -1,6 +1,6 @@
 import random
 
-from Classes.Constants import HarborConstants, TerrainConstants
+from Classes.Constants import HarborConstants, TerrainConstants, MaterialConstants
 from Classes.Utilities import is_even
 
 
@@ -557,7 +557,50 @@ class Board:
         print('````````````````````````````')
         return valid_nodes
 
-# if __name__ == '__main__':
-#     print('#############################')
-#     Board()
-#     print('#############################')
+    def valid_starting_nodes(self):
+        """
+        Devuelve un array con las IDs de todos los nodos viables para el posicionamiento inicial
+        :return: [int]
+        """
+
+        valid_nodes = []
+        for node in self.nodes:
+            if (node['player'] == -1 and
+                    self.adyacent_nodes_dont_have_towns(node['id']) and
+                    not self.is_it_a_coastal_node(node['id'])):
+                valid_nodes.append(node['id'])
+
+        return valid_nodes
+
+
+    def check_for_player_harbors(self, player, material_gives):
+        """
+        Comprueba qué puertos tiene el jugador. Material gives sirve para buscar puertos 2:1 de ese tipo
+        :param player:
+        :param material_gives:
+        :return:
+        """
+        harbor_3_1_nodes = [7, 17, 26, 37, 45, 46, 47, 48]
+
+        if material_gives == MaterialConstants.CEREAL:
+            if self.nodes[3]['player'] == player or self.nodes[4]['player'] == player:
+                return HarborConstants.CEREAL
+        elif material_gives == MaterialConstants.MINERAL:
+            if self.nodes[28]['player'] == player or self.nodes[38]['player'] == player:
+                return HarborConstants.MINERAL
+        elif material_gives == MaterialConstants.CLAY:
+            if self.nodes[14]['player'] == player or self.nodes[15]['player'] == player:
+                return HarborConstants.CLAY
+        elif material_gives == MaterialConstants.WOOD:
+            if self.nodes[0]['player'] == player or self.nodes[1]['player'] == player:
+                return HarborConstants.WOOD
+        elif material_gives == MaterialConstants.WOOL:
+            if self.nodes[50]['player'] == player or self.nodes[51]['player'] == player:
+                return HarborConstants.WOOL
+
+        for node in harbor_3_1_nodes:
+            if self.nodes[node]['player'] == player:
+                return HarborConstants.ALL
+
+        return HarborConstants.NONE
+

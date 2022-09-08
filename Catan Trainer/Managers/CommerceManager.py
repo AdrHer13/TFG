@@ -60,31 +60,3 @@ class CommerceManager:
             return True
         else:
             return False
-
-    # def trade_with_player(self, trade_offer=TradeOffer(), sender=-1):
-    #     """
-    #     Permite enviar una oferta a todos los jugadores en la mesa. Si alguno acepta se hará el intercambio
-    #     :param trade_offer: Oferta de comercio con el jugador, debe incluir qué se entrega y qué se recibe
-    #     :param sender: La única persona a la que no hay que enviar la oferta
-    #     :return: void
-    #     """
-    #     # TODO: Comprobar que alguien acepta la oferta tiene la posibilidad de aceptarla de verdad. Es decir, tiene
-    #     #       los materiales necesarios
-    #
-    #     return
-
-    # def accept_offer(self):
-    #     """
-    #     Permite aceptar la oferta actualmente en curso
-    #     :return: void
-    #     """
-    #     return
-    #
-    # def deny_offer(self, counter_offer=TradeOffer(None)):
-    #     """
-    #     Permite denegar la oferta actualmente en curso. Si se le pasa un objeto contraoferta permite enviarle una
-    #     contraoferta al iniciador del intercambio
-    #     :param counter_offer: contra-oferta de comercio con el jugador, debe incluir qué se entrega y qué se recibe
-    #     :return: void
-    #     """
-    #     return

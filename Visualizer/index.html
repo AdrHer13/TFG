@@ -637,8 +637,9 @@
             let input = jQuery('#get_file');
             input.on('click', function(e) {
                 input.val('')
-                
+
                 // resetear el tablero
+                jQuery('.node').add('.road').css('background', 'black').text('')
             })
 
             input.on('change', function(e) {
@@ -868,7 +869,7 @@
                         }
 
                         if (phase_obj['dice'] == 7) {
-//                            jQuery('#terrain_' + phase_obj['past_thief_terrain']).text('')
+                            //                            jQuery('#terrain_' + phase_obj['past_thief_terrain']).text('')
                             jQuery('#terrain_' + phase_obj['past_thief_terrain']).text(game_obj['setup']['board']['board_terrain'][phase_obj['past_thief_terrain']]['probability'] != 0 ? game_obj['setup']['board']['board_terrain'][phase_obj['past_thief_terrain']]['probability'] : '')
                             jQuery('#terrain_' + phase_obj['thief_terrain']).text('X');
                         }

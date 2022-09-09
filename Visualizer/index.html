@@ -811,16 +811,16 @@
             contador_turnos.off().on('change', function(e) {
 
                 if (parseInt(contador_turnos.val()) > 4) {
-                    contador_turnos.val(1).change()
                     contador_rondas.val(parseInt(contador_rondas.val()) + 1).change()
+                    contador_turnos.val(1).change()
                     return;
                 }
                 if (parseInt(contador_turnos.val()) < 1) {
                     if (parseInt(contador_rondas.val()) < 1) {
                         contador_turnos.val(1).change();
                     } else {
-                        contador_turnos.val(4).change();
                         contador_rondas.val(parseInt(contador_rondas.val()) - 1).change();
+                        contador_turnos.val(4).change();
                     }
                     return;
                 }
@@ -847,15 +847,16 @@
             contador_fases.off().on('change', function(e) {
 
                 if (parseInt(contador_fases.val()) > 4) {
-                    contador_fases.val(1).change();
                     contador_turnos.val(parseInt(contador_turnos.val()) + 1).change();
+                    contador_fases.val(1).change();
                     return;
                 }
                 if (parseInt(contador_fases.val()) < 1) {
-                    contador_fases.val(4).change();
                     contador_turnos.val(parseInt(contador_turnos.val()) - 1).change();
+                    contador_fases.val(4).change();
                     return;
                 }
+
 
 
                 switch (parseInt(contador_fases.val()) - 1) {
@@ -1050,10 +1051,12 @@
 
             //-------------------------------------------------
             fase_previa_btn.off().on('click', function(e) {
+                console.log('fase - 1')
                 let value = parseInt(contador_fases.val())
                 contador_fases.val(value - 1).change()
             })
             fase_siguiente_btn.off().on('click', function(e) {
+                console.log('fase + 1')
                 let value = parseInt(contador_fases.val())
                 contador_fases.val(value + 1).change()
 

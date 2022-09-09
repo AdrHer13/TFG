@@ -639,7 +639,7 @@
                 input.val('')
 
                 // resetear el tablero
-                jQuery('.node').add('.road').css('background', 'black').text('')
+                jQuery('.node').add('.road').add('.vertical_road').css('background', 'black').text('')
             })
 
             input.on('change', function(e) {
@@ -684,7 +684,7 @@
         function addLogFromJSON() {
             $('#contador_rondas').val(1).change()
             $('#contador_turnos').val(1).change()
-            $('#contador_fases').val(0).change()
+            $('#contador_fases').val(1).change()
 
             $('#rondas_maximas').text(Object.keys(game_obj['game']).length)
         }

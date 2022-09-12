@@ -81,64 +81,81 @@ class GameManager:
             if index != self.turn_manager.whoseTurnIsIt:
                 receivers.append(self.bot_manager.players[index])
 
+        # Se aleatorizan el orden en el que se va a recibir la oferta para evitar que J1 tenga ventaja
         current_index, random_index = len(receivers), 0
         while current_index != 0:
             random_index = math.floor(random.random() * current_index)
             current_index -= 1
             (receivers[current_index], receivers[random_index]) = (receivers[random_index], receivers[current_index])
 
-        giver = self.bot_manager.players[self.turn_manager.whoseTurnIsIt]['player']
+        giver = self.bot_manager.players[self.turn_manager.whoseTurnIsIt]
         for receiver in receivers:
-            player_response = {}
-            response = receiver['player'].on_trade_offer(trade_offer)
+            on_tradeoffer_response = []
 
-            if isinstance(response, TradeOffer):
-                player_response['player'] = 'P' + str(receiver['id'] + 1)
-                player_response['response'] = response.__to_object__()
-
-                # TODO: usar recursividad o una función externa que pueda usarse recursivamente para establecer limites
-                #       arbitrarios
-                print('J' + str(receiver['id']) + ' ofrece contraoferta')
-                print('Contraoferta: ' + str(response))
-                response_from_giver = giver.on_trade_offer(response)
-
-                if isinstance(response_from_giver, TradeOffer):
-                    # TODO: Lo lógico sería poner la contraoferta del primer jugador, pero debido a que no es recursivo aún
-                    #       simplemente se pone True porque es como se está comportando
-                    player_response['giver_answer'] = True  # response_from_giver.__to_object__()
-                    # response_from_giver = False
-                    # TODO: cambiar por una funcion recursiva
-                    response_from_giver = True
+            repeat, count = True, 1
+            while repeat:
+                if count % 2 == 0:
+                    # Giver toma el papel de receiver porque es una contraoferta
+                    response_obj = self.on_tradeoffer_response(giver, receiver, count, trade_offer)
                 else:
-                    player_response['giver_answer'] = response_from_giver
+                    response_obj = self.on_tradeoffer_response(receiver, giver, count, trade_offer)
 
-                if response_from_giver:
+                on_tradeoffer_response.append(response_obj)
+                if isinstance(response_obj['response'], dict):
+                    repeat = True
+                    count += 1
+                else:
+                    repeat = False
+
+            if on_tradeoffer_response[(len(on_tradeoffer_response) - 1)]['response']:
+                if count % 2 == 0:
                     print('J' + str(self.turn_manager.whoseTurnIsIt) + ' ha aceptado')
-                    done = self.trade_with_player(response, receiver['player'], giver)
-                    if done:
-                        player_response['completed'] = True
-                        answer_object.append(player_response)
-                        return answer_object
-                    else:
-                        player_response['completed'] = False
+                    done = self.trade_with_player(trade_offer, giver['player'], receiver['player'])
                 else:
-                    print('J' + str(self.turn_manager.whoseTurnIsIt) + ' ha negado')
-            else:
-                player_response['player'] = 'P' + str(receiver['id'] + 1)
-                player_response['response'] = response
-
-                # En caso de que no haya contraoferta, o han aceptado o han denegado.
-                if response:
                     print('J' + str(receiver['id']) + ' ha aceptado')
-                    done = self.trade_with_player(trade_offer, giver, receiver['player'])
-                    player_response['completed'] = done
-                    if done:
-                        answer_object.append(player_response)
-                        return answer_object
+                    done = self.trade_with_player(trade_offer, receiver['player'], giver['player'])
+
+                if done:
+                    on_tradeoffer_response[(len(on_tradeoffer_response) - 1)]['completed'] = True
+                    answer_object.append(on_tradeoffer_response)
+                    return answer_object
                 else:
-                    print('J' + str(receiver['id']) + ' ha denegado')
-            answer_object.append(player_response)
+                    on_tradeoffer_response[(len(on_tradeoffer_response) - 1)]['completed'] = False
+            else:
+                print('J' + str(self.turn_manager.whoseTurnIsIt) + ' ha negado')
+            answer_object.append(on_tradeoffer_response)
         return answer_object
+
+    def on_tradeoffer_response(self, receiver, giver, count, trade_offer):
+        """
+        Función llamada cuando llega una oferta de comercio como respuesta a una oferta de comercio
+        :param giver: Player()
+        :param receiver: Player()
+        :param count: Int
+        :param json_obj: Objeto json al que se le añaden datos para poder exportarlo correctamente
+        :param trade_offer: TradeOffer()
+        :return: dictionary {'count': int, 'giver': Player(), 'receiver': Player(), 'trade_offer': TradeOffer(), 'response': True/False}
+        """
+        json_obj = {
+            'count': count,
+            'trade_offer': trade_offer.__to_object__(),
+            'giver': giver['id'],
+            'receiver': receiver['id'],
+        }
+
+        response = receiver['player'].on_trade_offer(trade_offer)
+        if isinstance(response, TradeOffer):
+            if count > 2:
+                json_obj['response'] = False
+                return json_obj
+
+            else:
+                # Se pasa de vuelta al bucle para que rote giver y receiver y se vuelva a preguntar por respuesta
+                json_obj['response'] = response.__to_object__()
+                return json_obj
+        else:
+            json_obj['response'] = response
+            return json_obj
 
     def trade_with_player(self, trade_offer=None, giver=None, receiver=None):
         """
@@ -279,7 +296,8 @@ class GameManager:
                         move_thief_obj['robbedPlayer'] = adjacent_player
                         break
                     else:
-                        move_thief_obj['errorMsg'] = 'No se ha podido robar al jugador debido a que no está en un nodo adyacente'
+                        move_thief_obj['errorMsg'] =\
+                            'No se ha podido robar al jugador debido a que no está en un nodo adyacente'
         return move_thief_obj
 
     def __steal_from_player__(self, player):

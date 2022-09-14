@@ -8,7 +8,8 @@ from Classes.Board import Board
 from Classes.Constants import MaterialConstants
 from Classes.Materials import Materials
 from Classes.TradeOffer import TradeOffer
-# from Managers.GraphicsManager import GraphicsManager
+from Classes.DevelopmentCards import *
+
 from Managers.TurnManager import TurnManager
 from Managers.CommerceManager import CommerceManager
 from Managers.BotManager import BotManager
@@ -20,6 +21,7 @@ class GameManager:
     """
     last_dice_roll = 0
     board = Board()
+    development_cards_deck = DevelopmentDeck()
     turn_manager = TurnManager()
     commerce_manager = CommerceManager()
     bot_manager = BotManager()
@@ -27,6 +29,7 @@ class GameManager:
     # graphics_manager = GraphicsManager()
 
     def __init__(self):
+        self.development_cards_deck = DevelopmentDeck()
         return
 
     def throw_dice(self):
@@ -54,17 +57,19 @@ class GameManager:
                 for node in terrain['contactingNodes']:
                     # Si tiene jugador, implica que hay pueblo
                     if self.board.nodes[node]['player'] != -1:
-                        player = self.bot_manager.players[self.board.nodes[node]['player']]['player']
+                        player = self.bot_manager.players[self.board.nodes[node]['player']]
                         # Si tiene ciudad se dan 2 en lugar de 1 material
 
                         if self.board.nodes[node]['hasCity']:
                             print('J' + str(self.board.nodes[node]['player']) + ' | material: ' + str(
                                 terrain['terrainType']) + ' | amount: 2')
-                            player.hand.add_material(terrain['terrainType'], 2)
+                            player['player'].hand.add_material(terrain['terrainType'], 2)
+                            player['resources'].add_material(terrain['terrainType'], 2)
                         else:
                             print('J' + str(self.board.nodes[node]['player']) + ' | material: ' + str(
                                 terrain['terrainType']) + ' | amount: 1')
-                            player.hand.add_material(terrain['terrainType'], 1)
+                            player['player'].hand.add_material(terrain['terrainType'], 1)
+                            player['resources'].add_material(terrain['terrainType'], 1)
         return None
 
     def send_trade_with_everyone(self, trade_offer=TradeOffer()):
@@ -94,6 +99,7 @@ class GameManager:
 
             repeat, count = True, 1
             while repeat:
+                # Se hace un bucle de contraofertas hasta que se llegue a una decisión de True o False
                 if count % 2 == 0:
                     # Giver toma el papel de receiver porque es una contraoferta
                     response_obj = self.on_tradeoffer_response(giver, receiver, count, trade_offer)
@@ -110,10 +116,10 @@ class GameManager:
             if on_tradeoffer_response[(len(on_tradeoffer_response) - 1)]['response']:
                 if count % 2 == 0:
                     print('J' + str(self.turn_manager.whoseTurnIsIt) + ' ha aceptado')
-                    done = self.trade_with_player(trade_offer, giver['player'], receiver['player'])
+                    done = self.trade_with_player(trade_offer, giver, receiver)
                 else:
                     print('J' + str(receiver['id']) + ' ha aceptado')
-                    done = self.trade_with_player(trade_offer, receiver['player'], giver['player'])
+                    done = self.trade_with_player(trade_offer, receiver, giver)
 
                 if done:
                     on_tradeoffer_response[(len(on_tradeoffer_response) - 1)]['completed'] = True
@@ -122,7 +128,7 @@ class GameManager:
                 else:
                     on_tradeoffer_response[(len(on_tradeoffer_response) - 1)]['completed'] = False
             else:
-                print('J' + str(self.turn_manager.whoseTurnIsIt) + ' ha negado')
+                print('J' + str(receiver['id']) + ' ha negado')
             answer_object.append(on_tradeoffer_response)
         return answer_object
 
@@ -161,52 +167,54 @@ class GameManager:
         """
         Función que hace el intercambio entre dos jugadores
         :param trade_offer: TradeOffer()
-        :param giver: BotInterface()
-        :param receiver: BotInterface()
+        :param giver: {BotInterface(), Hand(), int, DevelopmentCardHand()}
+        :param receiver: {BotInterface(), Hand(), int, DevelopmentCardHand()}
         :return: bool
         """
         if trade_offer is None or giver is None or receiver is None:
             return False
 
         # Si receiver o giver no tiene materiales se le ignora
-        if (receiver.hand.resources.has_this_more_materials(trade_offer.receives) and
-                giver.hand.resources.has_this_more_materials(trade_offer.gives)):
+        if (receiver['resources'].resources.has_this_more_materials(trade_offer.receives) and
+                giver['resources'].resources.has_this_more_materials(trade_offer.gives)):
             print('Puede hacerse el intercambio: ')
             # Se hace el intercambio
 
-            print('Giver: ' + str(giver.hand))
-            print('Receiver: ' + str(receiver.hand))
+            print('Giver: ' + str(giver['resources']))
+            print('Receiver: ' + str(receiver['resources']))
             # Se resta lo que da del giver
-            giver.hand.remove_material(MaterialConstants.WOOL, trade_offer.gives.wool)
-            giver.hand.remove_material(MaterialConstants.WOOD, trade_offer.gives.wood)
-            giver.hand.remove_material(MaterialConstants.CLAY, trade_offer.gives.clay)
-            giver.hand.remove_material(MaterialConstants.CEREAL, trade_offer.gives.cereal)
-            giver.hand.remove_material(MaterialConstants.MINERAL, trade_offer.gives.mineral)
+            giver['resources'].remove_material(MaterialConstants.WOOL, trade_offer.gives.wool)
+            giver['resources'].remove_material(MaterialConstants.WOOD, trade_offer.gives.wood)
+            giver['resources'].remove_material(MaterialConstants.CLAY, trade_offer.gives.clay)
+            giver['resources'].remove_material(MaterialConstants.CEREAL, trade_offer.gives.cereal)
+            giver['resources'].remove_material(MaterialConstants.MINERAL, trade_offer.gives.mineral)
 
             # Se añade lo que recibe
-            giver.hand.add_material(MaterialConstants.WOOL, trade_offer.receives.wool)
-            giver.hand.add_material(MaterialConstants.WOOD, trade_offer.receives.wood)
-            giver.hand.add_material(MaterialConstants.CLAY, trade_offer.receives.clay)
-            giver.hand.add_material(MaterialConstants.CEREAL, trade_offer.receives.cereal)
-            giver.hand.add_material(MaterialConstants.MINERAL, trade_offer.receives.mineral)
+            giver['resources'].add_material(MaterialConstants.WOOL, trade_offer.receives.wool)
+            giver['resources'].add_material(MaterialConstants.WOOD, trade_offer.receives.wood)
+            giver['resources'].add_material(MaterialConstants.CLAY, trade_offer.receives.clay)
+            giver['resources'].add_material(MaterialConstants.CEREAL, trade_offer.receives.cereal)
+            giver['resources'].add_material(MaterialConstants.MINERAL, trade_offer.receives.mineral)
 
             # Se resta lo que receiver entrega
-            receiver.hand.remove_material(MaterialConstants.WOOL, trade_offer.receives.wool)
-            receiver.hand.remove_material(MaterialConstants.WOOD, trade_offer.receives.wood)
-            receiver.hand.remove_material(MaterialConstants.CLAY, trade_offer.receives.clay)
-            receiver.hand.remove_material(MaterialConstants.CEREAL, trade_offer.receives.cereal)
-            receiver.hand.remove_material(MaterialConstants.MINERAL, trade_offer.receives.mineral)
+            receiver['resources'].remove_material(MaterialConstants.WOOL, trade_offer.receives.wool)
+            receiver['resources'].remove_material(MaterialConstants.WOOD, trade_offer.receives.wood)
+            receiver['resources'].remove_material(MaterialConstants.CLAY, trade_offer.receives.clay)
+            receiver['resources'].remove_material(MaterialConstants.CEREAL, trade_offer.receives.cereal)
+            receiver['resources'].remove_material(MaterialConstants.MINERAL, trade_offer.receives.mineral)
 
             # Se añade lo que receiver recibe
-            receiver.hand.add_material(MaterialConstants.WOOL, trade_offer.gives.wool)
-            receiver.hand.add_material(MaterialConstants.WOOD, trade_offer.gives.wood)
-            receiver.hand.add_material(MaterialConstants.CLAY, trade_offer.gives.clay)
-            receiver.hand.add_material(MaterialConstants.CEREAL, trade_offer.gives.cereal)
-            receiver.hand.add_material(MaterialConstants.MINERAL, trade_offer.gives.mineral)
+            receiver['resources'].add_material(MaterialConstants.WOOL, trade_offer.gives.wool)
+            receiver['resources'].add_material(MaterialConstants.WOOD, trade_offer.gives.wood)
+            receiver['resources'].add_material(MaterialConstants.CLAY, trade_offer.gives.clay)
+            receiver['resources'].add_material(MaterialConstants.CEREAL, trade_offer.gives.cereal)
+            receiver['resources'].add_material(MaterialConstants.MINERAL, trade_offer.gives.mineral)
 
+            giver['player'].hand = giver['resources']
+            receiver['player'].hand = receiver['resources']
             print('-------------------------')
-            print('Giver: ' + str(giver.hand))
-            print('Receiver: ' + str(receiver.hand))
+            print('Giver: ' + str(giver['resources']))
+            print('Receiver: ' + str(receiver['resources']))
             return True
         else:
             print('No tienen materiales suficientes para completar la oferta')
@@ -220,13 +228,18 @@ class GameManager:
         :param node: Número que representa un nodo en el tablero
         :return: void
         """
-        player = self.bot_manager.players[player_id]['player']
-        if player.hand.resources.has_this_more_materials(Materials(1, 0, 1, 1, 1)):
-            player.hand.remove_material(MaterialConstants.CEREAL, 1)
-            player.hand.remove_material(MaterialConstants.CLAY, 1)
-            player.hand.remove_material(MaterialConstants.WOOD, 1)
-            player.hand.remove_material(MaterialConstants.WOOL, 1)
-            return self.board.build_town(self.turn_manager.get_whose_turn_is_it(), node)
+        player_hand = self.bot_manager.players[player_id]['resources']
+        if player_hand.resources.has_this_more_materials(Materials(1, 0, 1, 1, 1)):
+            build_town_obj = self.board.build_town(self.turn_manager.get_whose_turn_is_it(), node)
+
+            if build_town_obj['response']:
+                player_hand.remove_material(MaterialConstants.CEREAL, 1)
+                player_hand.remove_material(MaterialConstants.CLAY, 1)
+                player_hand.remove_material(MaterialConstants.WOOD, 1)
+                player_hand.remove_material(MaterialConstants.WOOL, 1)
+                self.bot_manager.players[player_id]['player'].hand = player_hand
+
+            return build_town_obj
         else:
             return False
 
@@ -237,11 +250,16 @@ class GameManager:
         :param node: Número que representa un nodo en el tablero
         :return: void
         """
-        player = self.bot_manager.players[player_id]['player']
-        if player.hand.resources.has_this_more_materials(Materials(2, 3, 0, 0, 0)):
-            player.hand.remove_material(MaterialConstants.CEREAL, 2)
-            player.hand.remove_material(MaterialConstants.MINERAL, 3)
-            return self.board.build_city(self.turn_manager.get_whose_turn_is_it(), node)
+        player_hand = self.bot_manager.players[player_id]['resources']
+        if player_hand.resources.has_this_more_materials(Materials(2, 3, 0, 0, 0)):
+            build_city_obj = self.board.build_city(self.turn_manager.get_whose_turn_is_it(), node)
+
+            if build_city_obj['response']:
+                player_hand.remove_material(MaterialConstants.CEREAL, 2)
+                player_hand.remove_material(MaterialConstants.MINERAL, 3)
+                self.bot_manager.players[player_id]['player'].hand = player_hand
+
+            return build_city_obj
         else:
             return False
 
@@ -253,11 +271,15 @@ class GameManager:
         :param road: Número que representa una carretera en el tablero
         :return: void
         """
-        player = self.bot_manager.players[player_id]['player']
-        if player.hand.resources.has_this_more_materials(Materials(0, 0, 1, 1, 0)):
-            player.hand.remove_material(MaterialConstants.CLAY, 1)
-            player.hand.remove_material(MaterialConstants.WOOD, 1)
-            return self.board.build_road(self.turn_manager.get_whose_turn_is_it(), node, road)
+        player_hand = self.bot_manager.players[player_id]['resources']
+        if player_hand.resources.has_this_more_materials(Materials(0, 0, 1, 1, 0)):
+            build_road_obj = self.board.build_road(self.turn_manager.get_whose_turn_is_it(), node, road)
+
+            if build_road_obj['response']:
+                player_hand.remove_material(MaterialConstants.CLAY, 1)
+                player_hand.remove_material(MaterialConstants.WOOD, 1)
+
+            return build_road_obj
         else:
             return False
 
@@ -267,13 +289,15 @@ class GameManager:
         :param player_id:
         :return:
         """
-        player = self.bot_manager.players[player_id]['player']
-        if player.hand.resources.has_this_more_materials(Materials(1, 1, 0, 0, 1)):
-            player.hand.remove_material(MaterialConstants.CEREAL, 1)
-            player.hand.remove_material(MaterialConstants.MINERAL, 1)
-            player.hand.remove_material(MaterialConstants.WOOL, 1)
-            # return self.board.build_road(player)
-            return True
+        player_hand = self.bot_manager.players[player_id]['resources']
+        if player_hand.resources.has_this_more_materials(Materials(1, 1, 0, 0, 1)):
+            player_hand.remove_material(MaterialConstants.CEREAL, 1)
+            player_hand.remove_material(MaterialConstants.MINERAL, 1)
+            player_hand.remove_material(MaterialConstants.WOOL, 1)
+
+            self.bot_manager.players[player_id]['development_cards'].add_card(self.development_cards_deck.draw_card())
+            self.bot_manager.players[player_id]['player'].development_cards_hand = self.bot_manager.players[player_id]['development_cards']
+            return {'response': True}
         else:
             return False
 
@@ -306,25 +330,28 @@ class GameManager:
         :param player: Número que representa a un jugador
         :return: void
         """
-        player_obj = self.bot_manager.players[player]['player']
-        actual_player_obj = self.bot_manager.players[self.bot_manager.get_actual_player()]['player']
+        player_obj = self.bot_manager.players[player]
+        actual_player_obj = self.bot_manager.players[self.bot_manager.get_actual_player()]
         material_array = []
 
-        if player_obj.hand.get_cereal() > 0:
+        if player_obj['resources'].get_cereal() > 0:
             material_array.append(MaterialConstants.CEREAL)
-        if player_obj.hand.get_wool() > 0:
+        if player_obj['resources'].get_wool() > 0:
             material_array.append(MaterialConstants.WOOL)
-        if player_obj.hand.get_wood() > 0:
+        if player_obj['resources'].get_wood() > 0:
             material_array.append(MaterialConstants.WOOD)
-        if player_obj.hand.get_clay() > 0:
+        if player_obj['resources'].get_clay() > 0:
             material_array.append(MaterialConstants.CLAY)
-        if player_obj.hand.get_mineral() > 0:
+        if player_obj['resources'].get_mineral() > 0:
             material_array.append(MaterialConstants.MINERAL)
 
         if len(material_array):
             material_id = material_array[random.randint(0, (len(material_array) - 1))]
-            player_obj.hand.remove_material(material_id, 1)
-            actual_player_obj.hand.add_material(material_id, 1)
+            player_obj['resources'].remove_material(material_id, 1)
+            actual_player_obj['resources'].add_material(material_id, 1)
+
+            player_obj['player'].hand = player_obj['resources']
+            actual_player_obj['player'].hand = actual_player_obj['resources']
             return material_id
         return None
 
@@ -354,7 +381,11 @@ class GameManager:
                     self.board.nodes[node_id]['player'] = self.turn_manager.get_whose_turn_is_it()
                     # print('Materiales del nodo de J' + str(self.board.nodes[node_id]['player']))
                     # print(materials)
+
+                    # Se le dan materiales a la mano del botManager a la de los bots para que sepan cuantos tienen en realidad
+                    self.bot_manager.players[player]['resources'].add_material(materials, 1)
                     self.bot_manager.players[player]['player'].hand.add_material(materials, 1)
+
                     self.bot_manager.players[player]['victoryPoints'] += 1
 
                     # Parte carreteras
@@ -391,7 +422,11 @@ class GameManager:
                     materials.append(self.board.terrain[ter_id]['terrainType'])
 
                 self.board.nodes[random_node_id]['player'] = self.turn_manager.get_whose_turn_is_it()
+
+                # Se le dan materiales a la mano del botManager a la de los bots para que sepan cuantos tienen en realidad
+                self.bot_manager.players[player]['resources'].add_material(materials, 1)
                 self.bot_manager.players[player]['player'].hand.add_material(materials, 1)
+
                 self.bot_manager.players[player]['victoryPoints'] += 1
 
                 illegal = True

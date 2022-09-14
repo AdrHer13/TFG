@@ -27,6 +27,7 @@ class HarborConstants:
     def __init__(self):
         pass
 
+
 class TerrainConstants:
     """
     Constantes para facilitar la legibilidad al trabajar con terrenos
@@ -41,6 +42,7 @@ class TerrainConstants:
     def __init__(self):
         pass
 
+
 class BuildConstants:
     """
     Constantes para facilitar la legibilidad al trabajar con construcciones
@@ -50,6 +52,25 @@ class BuildConstants:
     CITY = 'city'
     ROAD = 'road'
     CARD = 'card'
+
+    def __init__(self):
+        pass
+
+
+class DevelopmentCardConstants:
+    """
+    Constantes para facilitar la legibilidad al trabajar con cartas de desarrollo
+    """
+
+    SOLDIER = 0
+    VICTORY_POINT = 1
+    PROGRESS_CARD = 2
+
+    SOLDIER_EFFECT = 0
+    VICTORY_POINT_EFFECT = 1
+    ROAD_BUILDING_EFFECT = 2
+    YEAR_OF_PLENTY_EFFECT = 3
+    MONOPOLY_EFFECT = 4
 
     def __init__(self):
         pass

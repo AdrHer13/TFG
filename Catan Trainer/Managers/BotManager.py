@@ -1,4 +1,6 @@
+from Classes.Hand import Hand
 from Interfaces.BotInterface import BotInterface
+from Classes.DevelopmentCards import DevelopmentCardsHand
 
 
 class BotManager:
@@ -22,21 +24,29 @@ class BotManager:
                 'id': 0,
                 'victoryPoints': 0,
                 'player': BotInterface(0),
+                'resources': Hand(),
+                'development_cards': DevelopmentCardsHand(),
             },
             {
                 'id': 1,
                 'victoryPoints': 0,
                 'player': BotInterface(1),
+                'resources': Hand(),
+                'development_cards': DevelopmentCardsHand(),
             },
             {
                 'id': 2,
                 'victoryPoints': 0,
                 'player': BotInterface(2),
+                'resources': Hand(),
+                'development_cards': DevelopmentCardsHand(),
             },
             {
                 'id': 3,
                 'victoryPoints': 0,
                 'player': BotInterface(3),
+                'resources': Hand(),
+                'development_cards': DevelopmentCardsHand(),
             }
         ]
         return

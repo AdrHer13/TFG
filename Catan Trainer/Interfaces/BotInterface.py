@@ -5,22 +5,24 @@ from Classes.Hand import Hand
 from Classes.Materials import Materials
 from Classes.TradeOffer import TradeOffer
 from Classes.Constants import MaterialConstants, BuildConstants
+from Classes.DevelopmentCards import *
 
 
 class BotInterface:
     """
     Interfaz que implementa a un bot
     """
-    hand = Hand()
-    board = Board()
     materialConstants = MaterialConstants()
-    # TODO: no debe de tener una ID de esta manera. Porque como mínimo rompen el GameDirector
+    board = Board()
+    hand = Hand()
+    development_cards_hand = DevelopmentCardsHand()
     id = 0
 
-    def __init__(self, bot_id=0):
+    def __init__(self, bot_id):
         self.hand = Hand()
         self.board = Board()
         self.materialConstants = MaterialConstants()
+        self.development_cards_hand = DevelopmentCardsHand()
         self.id = bot_id
         pass
 
@@ -48,13 +50,13 @@ class BotInterface:
         else:
             return False
 
-    # def on_turn_start(self):
-    #     """
-    #     Trigger para cuando empieza el turno (muy probablemente innecesarios). Termina cuando hace un return
-    #     :return: void, None
-    #     """
-    #     print('Player on turn start')
-    #     return None
+    def on_turn_start(self):
+        """
+        Trigger para cuando empieza el turno. Termina cuando hace un return. Se hace antes que tirar dados. Sirve para jugar cartas de desarrollo
+        :return: void, None
+        """
+        print('Player on turn start')
+        return None
 
     def on_having_more_than_7_materials(self):
         """
@@ -80,7 +82,7 @@ class BotInterface:
 
     def on_turn_end(self):
         """
-        Trigger para cuando acaba el turno (muy probablemente innecesarios). Termina cuando hace un return
+        Trigger para cuando acaba el turno. Termina cuando hace un return. Sirve para jugar cartas de desarrollo
         :return: void, None
         """
         print('Player on turn end')
@@ -124,7 +126,7 @@ class BotInterface:
         """
         print('Player on build phase')
         self.board = board_instance
-        answer = random.randint(0, 1)
+        answer = random.randint(0, 2)
         # Pueblo / carretera
         if self.hand.resources.has_this_more_materials(BuildConstants.TOWN) and answer == 0:
             answer = random.randint(0, 1)
@@ -150,8 +152,8 @@ class BotInterface:
                 return {'building': BuildConstants.CITY, 'nodeID': valid_nodes[city_node]}
 
         # Carta de desarrollo
-        elif self.hand.resources.has_this_more_materials(BuildConstants.CARD):
-            return None
+        elif self.hand.resources.has_this_more_materials(BuildConstants.CARD) and answer == 2:
+            return {'building': BuildConstants.CARD}
 
         return None
 

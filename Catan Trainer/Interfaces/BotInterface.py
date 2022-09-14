@@ -34,7 +34,7 @@ class BotInterface:
         :param incoming_trade_offer: Oferta de comercio que le llega al bot
         :return: true, TradeOffer, false, None
         """
-        answer = random.randint(0, 2)
+        answer = random.randint(0, 1)
         if answer:
             if answer == 2:
                 gives = Materials(random.randint(0, self.hand.get_cereal()), random.randint(0, self.hand.get_mineral()),
@@ -56,6 +56,8 @@ class BotInterface:
         :return: void, None
         """
         print('Player on turn start')
+        if len(self.development_cards_hand.check_hand()) and random.randint(0, 1):
+            return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[0].id)
         return None
 
     def on_having_more_than_7_materials(self):
@@ -86,6 +88,8 @@ class BotInterface:
         :return: void, None
         """
         print('Player on turn end')
+        if len(self.development_cards_hand.check_hand()) and random.randint(0, 1):
+            return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[0].id)
         return None
 
     def on_commerce_phase(self):
@@ -94,6 +98,10 @@ class BotInterface:
         :return: TradeOffer, Dictionary, None
         """
         print('Player on commerce phase')
+
+        if len(self.development_cards_hand.check_hand()) and random.randint(0, 1):
+            return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[0].id)
+
         answer = random.randint(0, 1)
         if answer:
             print(' - Jugador intenta comerciar por puerto - ')
@@ -126,6 +134,10 @@ class BotInterface:
         """
         print('Player on build phase')
         self.board = board_instance
+
+        if len(self.development_cards_hand.check_hand()) and random.randint(0, 1):
+            return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[0].id)
+
         answer = random.randint(0, 2)
         # Pueblo / carretera
         if self.hand.resources.has_this_more_materials(BuildConstants.TOWN) and answer == 0:

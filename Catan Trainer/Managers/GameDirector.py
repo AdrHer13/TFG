@@ -33,10 +33,11 @@ class GameDirector:
         self.game_manager.turn_manager.set_phase(0)
         self.game_manager.bot_manager.set_actual_player(player)
 
-        game_start_response = self.game_manager.bot_manager.players[player]['player'].on_turn_start()
+        turn_start_response = self.game_manager.bot_manager.players[player]['player'].on_turn_start()
 
-        if isinstance(game_start_response, DevelopmentCard):
-            # TODO: resolver efecto de carta de desarrollo
+        if isinstance(turn_start_response, DevelopmentCard):
+            # TODO: comprobar si se ha jugado una carta. Si es así, bloquear este eli
+            self.game_manager.play_development_card(turn_start_response)
             pass
 
         self.game_manager.throw_dice()
@@ -114,20 +115,20 @@ class GameDirector:
         print('Start commerce phase: ' + str(self.game_manager.turn_manager.get_turn()))
 
         self.game_manager.turn_manager.set_phase(1)
-        trade_offer = self.game_manager.bot_manager.players[player]['player'].on_commerce_phase()
+        commerce_response = self.game_manager.bot_manager.players[player]['player'].on_commerce_phase()
 
-        if isinstance(trade_offer, TradeOffer):
-            commerce_phase_object['trade_offer'] = trade_offer.__to_object__()
+        if isinstance(commerce_response, TradeOffer):
+            commerce_phase_object['trade_offer'] = commerce_response.__to_object__()
             commerce_phase_object['harbor_trade'] = False
 
-            if trade_offer:
-                print('Oferta: ' + str(trade_offer))
+            if commerce_response:
+                print('Oferta: ' + str(commerce_response))
 
                 if self.game_manager.bot_manager.players[player]['resources'].resources.has_this_more_materials(
-                        trade_offer.gives):
+                        commerce_response.gives):
                     commerce_phase_object['inviable'] = False
                     print('Puede hacer la oferta')
-                    answer_object = self.game_manager.send_trade_with_everyone(trade_offer)
+                    answer_object = self.game_manager.send_trade_with_everyone(commerce_response)
                     commerce_phase_object['answers'] = answer_object
                 else:
                     commerce_phase_object['inviable'] = True
@@ -136,28 +137,27 @@ class GameDirector:
 
             commerce_phase_array.append(commerce_phase_object)
             return commerce_phase_array
-
-        elif isinstance(trade_offer, dict):
+        elif isinstance(commerce_response, dict):
             print('%%%%%%%%%%%%%%%%%%%%%%%%%%%')
             print('Jugador comercia por puerto')
             print(self.game_manager.bot_manager.players[player]['player'].hand)
 
-            commerce_phase_object['trade_offer'] = trade_offer
+            commerce_phase_object['trade_offer'] = commerce_response
             commerce_phase_object['harbor_trade'] = True
 
-            harbor_type = self.game_manager.board.check_for_player_harbors(player, trade_offer['gives'])
+            harbor_type = self.game_manager.board.check_for_player_harbors(player, commerce_response['gives'])
             if harbor_type == HarborConstants.NONE:
                 response = self.game_manager.commerce_manager.trade_without_harbor(
-                    self.game_manager.bot_manager.players[player]['resources'], trade_offer['gives'],
-                    trade_offer['receives'])
+                    self.game_manager.bot_manager.players[player]['resources'], commerce_response['gives'],
+                    commerce_response['receives'])
             elif harbor_type == HarborConstants.ALL:
                 response = self.game_manager.commerce_manager.trade_through_harbor(
-                    self.game_manager.bot_manager.players[player]['resources'], trade_offer['gives'],
-                    trade_offer['receives'])
+                    self.game_manager.bot_manager.players[player]['resources'], commerce_response['gives'],
+                    commerce_response['receives'])
             else:
                 response = self.game_manager.commerce_manager.trade_through_special_harbor(
-                    self.game_manager.bot_manager.players[player]['resources'], trade_offer['gives'],
-                    trade_offer['receives'])
+                    self.game_manager.bot_manager.players[player]['resources'], commerce_response['gives'],
+                    commerce_response['receives'])
 
             if isinstance(response, Hand):
                 commerce_phase_object['answer'] = response.resources.__to_object__()
@@ -169,6 +169,12 @@ class GameDirector:
             print('%%%%%%%%%%%%%%%%%%%%%%%%%%%')
             commerce_phase_array.append(commerce_phase_object)
             return commerce_phase_array
+
+        elif isinstance(commerce_response, DevelopmentCard):
+            # TODO: comprobar si se ha jugado una carta. Si es así, bloquear este elif
+            self.game_manager.play_development_card(commerce_response)
+            return commerce_phase_array
+
         else:
             commerce_phase_object['trade_offer'] = 'None'
             commerce_phase_array.append(commerce_phase_object)
@@ -189,28 +195,28 @@ class GameDirector:
         building_obj = {}
 
         self.game_manager.turn_manager.set_phase(2)
-        to_build = self.game_manager.bot_manager.players[player]['player'].on_build_phase(self.game_manager.board)
-        if isinstance(to_build, dict):
-            building_obj = to_build
+        build_response = self.game_manager.bot_manager.players[player]['player'].on_build_phase(self.game_manager.board)
+        if isinstance(build_response, dict):
+            building_obj = build_response
             built = False
-            if to_build['building'] == BuildConstants.TOWN:
-                built = self.game_manager.build_town(player, to_build['nodeID'])
+            if build_response['building'] == BuildConstants.TOWN:
+                built = self.game_manager.build_town(player, build_response['nodeID'])
                 if built['response']:
                     self.game_manager.bot_manager.players[player]['victoryPoints'] += 1
-            elif to_build['building'] == BuildConstants.CITY:
-                built = self.game_manager.build_city(player, to_build['nodeID'])
+            elif build_response['building'] == BuildConstants.CITY:
+                built = self.game_manager.build_city(player, build_response['nodeID'])
                 if built['response']:
                     self.game_manager.bot_manager.players[player]['victoryPoints'] += 1
-            elif to_build['building'] == BuildConstants.ROAD:
-                built = self.game_manager.build_road(player, to_build['nodeID'], to_build['roadTo'])
-            elif to_build['building'] == BuildConstants.CARD:
+            elif build_response['building'] == BuildConstants.ROAD:
+                built = self.game_manager.build_road(player, build_response['nodeID'], build_response['roadTo'])
+            elif build_response['building'] == BuildConstants.CARD:
                 built = self.game_manager.build_development_card(player)
 
             if isinstance(built, dict):
                 if built['response']:
                     building_obj['finished'] = True
                     print('J' + str(player) + ' ha construido algo: ')
-                    print(to_build)
+                    print(build_response)
                     # Si se ha construido permitir que vuelvan a construir
                     build_phase_object.append(building_obj)
                     print(build_phase_object)
@@ -218,7 +224,7 @@ class GameDirector:
                 else:
                     building_obj['finished'] = False
                     print('J' + str(player) + ' ha fallado en algo: ')
-                    print(to_build)
+                    print(build_response)
                     print(built['errorMsg'])
                     # TODO: Avisar que no se ha podido construir
             else:
@@ -226,6 +232,13 @@ class GameDirector:
                 building_obj['errorMsg'] = 'Falta de materiales'
                 print('No se ha podido construir por falta de materiales')
                 # TODO: Avisar que no se ha podido construir
+
+        elif isinstance(build_response, DevelopmentCard):
+            self.game_manager.play_development_card(build_response)
+            # Tras jugar la carta de su mano se le permite volver a construir
+            # TODO: comprobar si se ha jugado una carta. Si es así, bloquear este elif
+            return self.start_build_phase(player, build_phase_object)
+
         else:
             building_obj['building'] = None
 
@@ -249,10 +262,12 @@ class GameDirector:
             print('J' + str(i) + ': ' + str(self.game_manager.bot_manager.players[i]['victoryPoints']))
         print('----- FIN Puntos de victoria de los jugadores ------')
         self.game_manager.turn_manager.set_phase(3)
-        on_turn_end_response = self.game_manager.bot_manager.players[player]['player'].on_turn_end()
+        turn_end_response = self.game_manager.bot_manager.players[player]['player'].on_turn_end()
 
-        if on_turn_end_response is not None:
-            # TODO: resolver efecto de carta de desarrollo
+        if isinstance(turn_end_response, DevelopmentCard):
+            # TODO: comprobar si se ha jugado una carta. Si es así, bloquear este elif
+            #       resolver efecto de carta de desarrollo
+            self.game_manager.play_development_card(turn_end_response)
             pass
 
         end_turn_object['victory_points'] = vp
@@ -282,12 +297,13 @@ class GameDirector:
             build_phase_object = self.start_build_phase(self.game_manager.turn_manager.get_whose_turn_is_it(), [])
             obj['build_phase'] = build_phase_object
 
-            print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
-            print('vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv')
             end_turn_object = self.end_turn(self.game_manager.turn_manager.get_whose_turn_is_it())
             obj['end_turn'] = end_turn_object
 
             round_object['turn_P' + str(i)] = obj
+
+            print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
+            print('vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv')
 
         return round_object
 

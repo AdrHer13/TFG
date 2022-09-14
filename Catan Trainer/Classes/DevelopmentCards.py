@@ -109,7 +109,21 @@ class DevelopmentCardsHand:
 
         return hand_array
 
-    def play_card(self, id):
+    def play_card_by_array_index(self, index):
+        """
+        Al usar esta función indicas que quieres jugar esta carta pasando el índice de la carta en el array,
+        lo que se la pasa al gameManager y la borra de la mano
+        :param id:
+        :return:
+        """
+        if len(self.hand):
+            card_obj = self.hand[index]
+            self.delete_card(self.hand[index].id)
+            return card_obj
+        print('no tenía esa carta en mano id ' + str(id))
+        pass
+
+    def play_card_by_id(self, id):
         """
         Al usar esta función indicas que quieres jugar esta carta, lo que se la pasa al gameManager y la borra de la mano
         :param id:
@@ -147,5 +161,5 @@ if __name__ == '__main__':
     hand.add_card(deck.draw_card())
     print(hand.check_hand())
     # hand.play_card(hand.hand[0].get_id())
-    hand.play_card(0)
+    hand.play_card_by_id(0)
     print(hand.check_hand())

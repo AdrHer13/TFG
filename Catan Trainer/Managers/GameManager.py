@@ -443,3 +443,8 @@ class GameManager:
                     else:
                         illegal = True
                         print(response['errorMsg'])
+
+    def play_development_card(self, card):
+        print('se juega una carta de desarrollo')
+        print(card)
+        pass

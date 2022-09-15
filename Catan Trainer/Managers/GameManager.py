@@ -263,19 +263,20 @@ class GameManager:
         else:
             return False
 
-    def build_road(self, player_id, node, road):
+    def build_road(self, player_id, node, road, free=False):
         """
         Permite construir una carretera en el camino seleccionado
         :param player_id: Número que representa al jugador
         :param node: Número que representa
         :param road: Número que representa una carretera en el tablero
+        :param free: Usado solo para cuando construyes carreteras gratis con una carta de desarrollo
         :return: void
         """
         player_hand = self.bot_manager.players[player_id]['resources']
-        if player_hand.resources.has_this_more_materials(Materials(0, 0, 1, 1, 0)):
+        if player_hand.resources.has_this_more_materials(Materials(0, 0, 1, 1, 0)) or free:
             build_road_obj = self.board.build_road(self.turn_manager.get_whose_turn_is_it(), node, road)
 
-            if build_road_obj['response']:
+            if build_road_obj['response'] and not free:
                 player_hand.remove_material(MaterialConstants.CLAY, 1)
                 player_hand.remove_material(MaterialConstants.WOOD, 1)
 
@@ -296,7 +297,8 @@ class GameManager:
             player_hand.remove_material(MaterialConstants.WOOL, 1)
 
             self.bot_manager.players[player_id]['development_cards'].add_card(self.development_cards_deck.draw_card())
-            self.bot_manager.players[player_id]['player'].development_cards_hand = self.bot_manager.players[player_id]['development_cards']
+            self.bot_manager.players[player_id]['player'].development_cards_hand = self.bot_manager.players[player_id][
+                'development_cards']
             return {'response': True}
         else:
             return False
@@ -320,7 +322,7 @@ class GameManager:
                         move_thief_obj['robbedPlayer'] = adjacent_player
                         break
                     else:
-                        move_thief_obj['errorMsg'] =\
+                        move_thief_obj['errorMsg'] = \
                             'No se ha podido robar al jugador debido a que no está en un nodo adyacente'
         return move_thief_obj
 
@@ -448,36 +450,130 @@ class GameManager:
         print('se juega una carta de desarrollo')
         print(card)
         card_obj = {}
+        # TODO: comprobar que funcionan
         if card.type == DevelopmentCardConstants.KNIGHT:
+            # se le suma un nuevo caballero al jugador y se le pide mover al ladrón
             self.bot_manager.players[player_id]['knights'] += 1
-
             on_moving_thief = self.bot_manager.players[player_id]['player'].on_moving_thief()
             move_thief_obj = self.move_thief(on_moving_thief['terrain'], on_moving_thief['player'])
 
+            # se pasan los cambios al objeto
+            card_obj['played_card'] = 'knight'
+            card_obj['total_knights'] = self.bot_manager.players[player_id]['knights']
             card_obj['past_thief_terrain'] = move_thief_obj['lastThiefTerrain']
             card_obj['thief_terrain'] = move_thief_obj['terrainId']
             card_obj['robbed_player'] = move_thief_obj['robbedPlayer']
             card_obj['stolen_material_id'] = move_thief_obj['stolenMaterialId']
             return card_obj
         elif card.type == DevelopmentCardConstants.VICTORY_POINT:
-            # si puntos de victoria + hidden == 10: finalizar partida, han ganado
-            # TODO: - No permitirle usar la carta a menos que tenga suficientes para ganar la partida con ellas
-            pass
+            # Si tienen suficientes puntos de victoria para ganar. Ganan automáticamente, si no, no pasa nada
+            if (self.bot_manager.players[player_id]['victoryPoints'] +
+                self.bot_manager.players[player_id]['hiddenVictoryPoints']) >= 10:
+
+                card_obj['played_card'] = 'victory_point'
+                self.bot_manager.players[player_id]['victoryPoints'] = 10
+            else:
+                card_obj['played_card'] = 'failed_victory_point'
+
+            return card_obj
         elif card.type == DevelopmentCardConstants.PROGRESS_CARD:
             if card.effect == DevelopmentCardConstants.MONOPOLY_EFFECT:
-                # TODO: - Crear función "on_monopoly_card_use" en los bots
-                #       - Eligen un material
-                #       - Todos los demás jugadores le entregan t.odo ese material al que lanzó la carta
-                pass
+                # Elige material
+                material_chosen = self.bot_manager.players[player_id]['player'].on_monopoly_card_use()
+                material_sum = 0
+
+                # Se elimina el material de la mano de todos los jugadores
+                for player in self.bot_manager.players:
+                    material_sum += player['resources'].get_from_id(material_chosen)
+                    player['resources'].remove_material(material_chosen,
+                                                        player['resources'].get_from_id(material_chosen))
+                    player['player'].hand = player['resources']
+
+                # Se le dan todos los materiales eliminados al que usó la carta
+                self.bot_manager.players[player_id]['resources'].add_material(material_chosen, material_sum)
+                self.bot_manager.players[player_id]['player'].hand = self.bot_manager.players[player_id]['resources']
+
+                # Se añade al objeto el material, la suma, y las nuevas manos tras la resta de materiales
+                card_obj['played_card'] = 'monopoly'
+                card_obj['material_chosen'] = material_chosen
+                card_obj['material_sum'] = material_sum
+                for i in range(4):
+                    card_obj['hand_P' + str(i)] = self.bot_manager.players[i]['resources'].resources.__to_object__()
+                return card_obj
+
             elif card.effect == DevelopmentCardConstants.ROAD_BUILDING_EFFECT:
-                # TODO: - Crear función "on_road_building_card_use" en los bots
-                #       - Eligen 2 puntos de carretera válidos
-                #       - Colocan 2 carreteras gratuitamente en dichos puntos
-                pass
+                # Se piden en qué puntos quieren construir carreteras
+                road_nodes = self.bot_manager.players[player_id]['player'].on_road_building_card_use()
+
+                # Si hay al menos una carretera
+                if road_nodes is not None:
+                    built = {'response': False}
+                    # Si existe una segunda carretera
+                    if road_nodes['nodeID_2'] is not None:
+                        built_2 = {'response': False}
+                    else:
+                        built_2 = {'response': True}
+
+                    # Mientras no estén construidas las carreteras se vuelve a intentar
+                    while not built['response'] and not built_2['response']:
+                        # Si ya está construida se ignora
+                        if not built['response']:
+                            built = self.build_road(player_id, road_nodes['nodeID'], road_nodes['roadTo'], free=True)
+                        if not built_2['response']:
+                            built_2 = self.build_road(player_id, road_nodes['nodeID_2'], road_nodes['roadTo_2'], free=True)
+
+                        if isinstance(built, dict):
+                            if built['response']:
+                                card_obj['valid_road_1'] = True
+                            else:
+                                card_obj['valid_road_1'] = False
+
+                                # Si no se ha podido construir se cambia de carretera a una aleatoria posible
+                                valid_nodes = self.board.valid_road_nodes(player_id)
+                                if len(valid_nodes):
+                                    road_node = random.randint(0, len(valid_nodes) - 1)
+                                    road_nodes['nodeID'] = valid_nodes[road_node]['startingNode']
+                                    road_nodes['roadTo'] = valid_nodes[road_node]['finishingNode']
+                                else:
+                                    # Si no hay más carreteras posibles se rompe el bucle
+                                    card_obj['error_msg'] = 'No hay más nodos válidos para construir una carretera'
+                                    break
+                        if isinstance(built_2, dict):
+                            if built['response']:
+                                card_obj['valid_road_2'] = True
+                            else:
+                                card_obj['valid_road_2'] = False
+
+                                valid_nodes = self.board.valid_road_nodes(player_id)
+                                if len(valid_nodes):
+                                    road_node = random.randint(0, len(valid_nodes) - 1)
+                                    road_nodes['nodeID_2'] = valid_nodes[road_node]['startingNode']
+                                    road_nodes['roadTo_2'] = valid_nodes[road_node]['finishingNode']
+                                else:
+                                    card_obj['error_msg'] = 'No hay más nodos válidos para construir una carretera'
+                                    break
+
+                    # Después del bucle ponemos donde se han construido las carreteras y devolvemos el objeto
+                    card_obj['roads'] = road_nodes
+                    return card_obj
+                else:
+                    # Si el objeto carreteras es None implica que no hay carreteras construidas
+                    card_obj['roads'] = None
+                    return card_obj
+
             elif card.effect == DevelopmentCardConstants.YEAR_OF_PLENTY_EFFECT:
-                # TODO: - Crear función "on_year_of_plenty_card_use" en los bots
-                #       - Roban 2 materiales a elegir de la pila central
-                #           (básicamente eligen 2 tipos de material y se llevan 1 de cada, o eligen 1 y se llevan 2 de ese)
-                pass
-            pass
+                # Eligen 2 materiales (puede ser el mismo 2 veces)
+                materials_selected = self.bot_manager.players[player_id]['player'].on_year_of_plenty_card_use()
+                card_obj['materials_selected'] = materials_selected
+
+                # Obtienen una carta de ese material elegido
+                self.bot_manager.players[player_id]['resources'].add_material(materials_selected['material'], 1)
+                self.bot_manager.players[player_id]['resources'].add_material(materials_selected['material_2'], 1)
+
+                # Se actualiza la mano
+                self.bot_manager.players[player_id]['player'].hand = self.bot_manager.players[player_id]['resources']
+                card_obj['hand_P' + player_id] = self.bot_manager.players[player_id]['resources'].resources.__to_object__()
+
+                return card_obj
+            return card_obj
         return card_obj

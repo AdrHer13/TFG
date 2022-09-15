@@ -58,14 +58,9 @@ class Hand:
         :return: true/false?
         """
         if self.get_from_id(resource) >= 1:
-            # print('entra if')
-            # print(str(self.get_from_id(resource)))
             self.add_material(resource, (amount * -1))
-            # print(str(self.get_from_id(resource)))
-            # print('--------')
             return True
         else:
-            # print('else')
             # TODO: comprobar por qué la excepción se lanza cuando alguien tiene 1 material pese a estar como válido si es >=1
             # raise Exception("Cantidad de materiales negativa. Cancelando partida")
             return False

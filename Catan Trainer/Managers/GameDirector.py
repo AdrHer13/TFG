@@ -256,19 +256,19 @@ class GameDirector:
 
         end_turn_object = {}
 
-        vp = {}
-        for i in range(4):
-            vp['J' + str(i)] = str(self.game_manager.bot_manager.players[i]['victoryPoints'])
-            print('J' + str(i) + ': ' + str(self.game_manager.bot_manager.players[i]['victoryPoints']))
-        print('----- FIN Puntos de victoria de los jugadores ------')
         self.game_manager.turn_manager.set_phase(3)
         turn_end_response = self.game_manager.bot_manager.players[player]['player'].on_turn_end()
-
         if isinstance(turn_end_response, DevelopmentCard):
             # TODO: comprobar si se ha jugado una carta. Si es así, bloquear este elif
             #       resolver efecto de carta de desarrollo
             played_card_obj = self.game_manager.play_development_card(player, turn_end_response)
             pass
+
+        vp = {}
+        for i in range(4):
+            vp['J' + str(i)] = str(self.game_manager.bot_manager.players[i]['victoryPoints'])
+            print('J' + str(i) + ': ' + str(self.game_manager.bot_manager.players[i]['victoryPoints']))
+        print('----- FIN Puntos de victoria de los jugadores ------')
 
         end_turn_object['victory_points'] = vp
         return end_turn_object
@@ -314,20 +314,14 @@ class GameDirector:
         """
         print('round end')
         print('---------------------')
-        # if self.game_manager.turn_manager.get_round() >= 2:
-        #     TODO
-        # return
-        # else:
+
         winner = False
         for player in self.game_manager.bot_manager.players:
             if player['victoryPoints'] >= 10:
                 winner = True
 
         self.game_manager.turn_manager.set_round(self.game_manager.turn_manager.get_round() + 1)
-        # if self.game_manager.turn_manager.get_round() == 2:
-        #     winner = True
         return winner
-        # return
 
     # Game #
     def game_start(self):

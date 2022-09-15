@@ -180,3 +180,48 @@ class BotInterface:
         possible_roads = self.board.nodes[node_id]['adjacent']
 
         return node_id, possible_roads[random.randint(0, len(possible_roads) - 1)]
+
+    def on_monopoly_card_use(self):
+        """
+        Se elige un material. El resto de jugadores te entregan dicho material
+        0: Cereal
+        1: Mineral
+        2: Clay
+        3: Wood
+        4: Wool
+        :return: int, representa el material elegido
+        """
+        material = random.randint(0, 4)
+        return material
+
+    def on_road_building_card_use(self):
+        """
+        Se eligen 2 lugares válidos donde construir carreteras. Si no son válidos, el programa pondrá aleatorios
+        :return:
+        """
+        valid_nodes = self.board.valid_road_nodes(self.id)
+        if len(valid_nodes) > 1:
+            while True:
+                road_node = random.randint(0, len(valid_nodes) - 1)
+                road_node_2 = random.randint(0, len(valid_nodes) - 1)
+                if road_node != road_node_2:
+                    return {'nodeID': valid_nodes[road_node]['startingNode'],
+                            'roadTo': valid_nodes[road_node]['finishingNode'],
+                            'nodeID_2': valid_nodes[road_node]['startingNode'],
+                            'roadTo_2': valid_nodes[road_node]['finishingNode'],
+                            }
+        elif len(valid_nodes) == 1:
+            return {'nodeID': valid_nodes[0]['startingNode'],
+                    'roadTo': valid_nodes[0]['finishingNode'],
+                    'nodeID_2': None,
+                    'roadTo_2': None,
+                    }
+        return None
+
+    def on_year_of_plenty_card_use(self):
+        """
+        Se eligen dos materiales (puede elegirse el mismo 2 veces). Te llevas una carta de ese material
+        :return:
+        """
+        material, material2 = random.randint(0, 4), random.randint(0, 4)
+        return {'material': material, 'material_2': material2}

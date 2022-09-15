@@ -5,7 +5,7 @@ import math
 import random
 
 from Classes.Board import Board
-from Classes.Constants import MaterialConstants
+from Classes.Constants import MaterialConstants, DevelopmentCardConstants
 from Classes.Materials import Materials
 from Classes.TradeOffer import TradeOffer
 from Classes.DevelopmentCards import *
@@ -444,7 +444,40 @@ class GameManager:
                         illegal = True
                         print(response['errorMsg'])
 
-    def play_development_card(self, card):
+    def play_development_card(self, player_id, card):
         print('se juega una carta de desarrollo')
         print(card)
-        pass
+        card_obj = {}
+        if card.type == DevelopmentCardConstants.KNIGHT:
+            self.bot_manager.players[player_id]['knights'] += 1
+
+            on_moving_thief = self.bot_manager.players[player_id]['player'].on_moving_thief()
+            move_thief_obj = self.move_thief(on_moving_thief['terrain'], on_moving_thief['player'])
+
+            card_obj['past_thief_terrain'] = move_thief_obj['lastThiefTerrain']
+            card_obj['thief_terrain'] = move_thief_obj['terrainId']
+            card_obj['robbed_player'] = move_thief_obj['robbedPlayer']
+            card_obj['stolen_material_id'] = move_thief_obj['stolenMaterialId']
+            return card_obj
+        elif card.type == DevelopmentCardConstants.VICTORY_POINT:
+            # si puntos de victoria + hidden == 10: finalizar partida, han ganado
+            # TODO: - No permitirle usar la carta a menos que tenga suficientes para ganar la partida con ellas
+            pass
+        elif card.type == DevelopmentCardConstants.PROGRESS_CARD:
+            if card.effect == DevelopmentCardConstants.MONOPOLY_EFFECT:
+                # TODO: - Crear función "on_monopoly_card_use" en los bots
+                #       - Eligen un material
+                #       - Todos los demás jugadores le entregan t.odo ese material al que lanzó la carta
+                pass
+            elif card.effect == DevelopmentCardConstants.ROAD_BUILDING_EFFECT:
+                # TODO: - Crear función "on_road_building_card_use" en los bots
+                #       - Eligen 2 puntos de carretera válidos
+                #       - Colocan 2 carreteras gratuitamente en dichos puntos
+                pass
+            elif card.effect == DevelopmentCardConstants.YEAR_OF_PLENTY_EFFECT:
+                # TODO: - Crear función "on_year_of_plenty_card_use" en los bots
+                #       - Roban 2 materiales a elegir de la pila central
+                #           (básicamente eligen 2 tipos de material y se llevan 1 de cada, o eligen 1 y se llevan 2 de ese)
+                pass
+            pass
+        return card_obj

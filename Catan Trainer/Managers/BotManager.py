@@ -23,30 +23,38 @@ class BotManager:
             {
                 'id': 0,
                 'victoryPoints': 0,
+                'hiddenVictoryPoints': 0,
                 'player': BotInterface(0),
                 'resources': Hand(),
                 'development_cards': DevelopmentCardsHand(),
+                'knights': 0,
             },
             {
                 'id': 1,
                 'victoryPoints': 0,
+                'hiddenVictoryPoints': 0,
                 'player': BotInterface(1),
                 'resources': Hand(),
                 'development_cards': DevelopmentCardsHand(),
+                'knights': 0,
             },
             {
                 'id': 2,
                 'victoryPoints': 0,
+                'hiddenVictoryPoints': 0,
                 'player': BotInterface(2),
                 'resources': Hand(),
                 'development_cards': DevelopmentCardsHand(),
+                'knights': 0,
             },
             {
                 'id': 3,
                 'victoryPoints': 0,
+                'hiddenVictoryPoints': 0,
                 'player': BotInterface(3),
                 'resources': Hand(),
                 'development_cards': DevelopmentCardsHand(),
+                'knights': 0,
             }
         ]
         return

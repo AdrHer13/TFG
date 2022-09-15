@@ -24,7 +24,7 @@ class DevelopmentDeck:
         # 6 cartas de progreso (2 de cada)
         # 5 de puntos de victoria
         for i in range(0, 14):
-            self.deck.append(DevelopmentCard(i, Dcc.SOLDIER, Dcc.SOLDIER_EFFECT))
+            self.deck.append(DevelopmentCard(i, Dcc.KNIGHT, Dcc.KNIGHT_EFFECT))
         for i in range(14, 19):
             self.deck.append(DevelopmentCard(i, Dcc.VICTORY_POINT, Dcc.VICTORY_POINT_EFFECT))
         for i in range(19, 21):

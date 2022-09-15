@@ -37,7 +37,7 @@ class GameDirector:
 
         if isinstance(turn_start_response, DevelopmentCard):
             # TODO: comprobar si se ha jugado una carta. Si es así, bloquear este eli
-            self.game_manager.play_development_card(turn_start_response)
+            played_card_obj = self.game_manager.play_development_card(player, turn_start_response)
             pass
 
         self.game_manager.throw_dice()
@@ -172,7 +172,7 @@ class GameDirector:
 
         elif isinstance(commerce_response, DevelopmentCard):
             # TODO: comprobar si se ha jugado una carta. Si es así, bloquear este elif
-            self.game_manager.play_development_card(commerce_response)
+            played_card_obj = self.game_manager.play_development_card(player, commerce_response)
             return commerce_phase_array
 
         else:
@@ -234,7 +234,7 @@ class GameDirector:
                 # TODO: Avisar que no se ha podido construir
 
         elif isinstance(build_response, DevelopmentCard):
-            self.game_manager.play_development_card(build_response)
+            played_card_obj = self.game_manager.play_development_card(player, build_response)
             # Tras jugar la carta de su mano se le permite volver a construir
             # TODO: comprobar si se ha jugado una carta. Si es así, bloquear este elif
             return self.start_build_phase(player, build_phase_object)
@@ -267,7 +267,7 @@ class GameDirector:
         if isinstance(turn_end_response, DevelopmentCard):
             # TODO: comprobar si se ha jugado una carta. Si es así, bloquear este elif
             #       resolver efecto de carta de desarrollo
-            self.game_manager.play_development_card(turn_end_response)
+            played_card_obj = self.game_manager.play_development_card(player, turn_end_response)
             pass
 
         end_turn_object['victory_points'] = vp

@@ -62,11 +62,11 @@ class DevelopmentCardConstants:
     Constantes para facilitar la legibilidad al trabajar con cartas de desarrollo
     """
 
-    SOLDIER = 0
+    KNIGHT = 0
     VICTORY_POINT = 1
     PROGRESS_CARD = 2
 
-    SOLDIER_EFFECT = 0
+    KNIGHT_EFFECT = 0
     VICTORY_POINT_EFFECT = 1
     ROAD_BUILDING_EFFECT = 2
     YEAR_OF_PLENTY_EFFECT = 3

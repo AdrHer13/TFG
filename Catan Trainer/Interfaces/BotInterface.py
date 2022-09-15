@@ -70,9 +70,9 @@ class BotInterface:
 
     def on_moving_thief(self):
         """
-        Trigger para cuando sale un 7 en el dado. Esto obliga a mover al ladrón. Si no se hace el GameDirector
-        lo hará de manera aleatoria. Incluyendo robar 1 recurso de cualquier jugador adyacente a la ficha de terreno
-        seleccionada
+        Trigger para cuando sale un 7 en el dado o se usa una carta de soldado. Esto obliga a mover al ladrón.
+        Si no se hace el GameDirector lo hará de manera aleatoria. Incluyendo robar 1 recurso de cualquier
+        jugador adyacente a la ficha de terreno seleccionada
         :return: {terrain, player}
         """
         terrain = random.randint(0, 18)

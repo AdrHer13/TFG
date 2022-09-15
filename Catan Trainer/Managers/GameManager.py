@@ -572,7 +572,7 @@ class GameManager:
 
                 # Se actualiza la mano
                 self.bot_manager.players[player_id]['player'].hand = self.bot_manager.players[player_id]['resources']
-                card_obj['hand_P' + player_id] = self.bot_manager.players[player_id]['resources'].resources.__to_object__()
+                card_obj['hand_P' + str(player_id)] = self.bot_manager.players[player_id]['resources'].resources.__to_object__()
 
                 return card_obj
             return card_obj

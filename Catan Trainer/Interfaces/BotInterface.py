@@ -56,6 +56,7 @@ class BotInterface:
         :return: void, None
         """
         print('Player on turn start')
+        # self.development_cards_hand.add_card(DevelopmentCard(99, 0, 0))
         if len(self.development_cards_hand.check_hand()) and random.randint(0, 1):
             return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[0].id)
         return None

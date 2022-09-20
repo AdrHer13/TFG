@@ -72,6 +72,21 @@ class GameManager:
                             player['resources'].add_material(terrain['terrainType'], 1)
         return None
 
+    def give_all_resources(self):
+        """
+        Función que otorga a todos los jugadores 5 de todos los recursos. Usado solo para debugging
+        :return:
+        """
+        for player in self.bot_manager.players:
+            player['resources'].add_material(MaterialConstants.CEREAL, 5)
+            player['resources'].add_material(MaterialConstants.MINERAL, 5)
+            player['resources'].add_material(MaterialConstants.CLAY, 5)
+            player['resources'].add_material(MaterialConstants.WOOD, 5)
+            player['resources'].add_material(MaterialConstants.WOOL, 5)
+            player['player'].hand = player['resources']
+
+        return
+
     def send_trade_with_everyone(self, trade_offer=TradeOffer()):
         """
         Permite enviar una oferta a todos los jugadores en la mesa. Si alguno acepta se hará el intercambio
@@ -241,7 +256,7 @@ class GameManager:
 
             return build_town_obj
         else:
-            return False
+            return {'response': False, 'errorMsg': 'Falta de materiales'}
 
     def build_city(self, player_id, node):
         """
@@ -261,7 +276,7 @@ class GameManager:
 
             return build_city_obj
         else:
-            return False
+            return {'response': False, 'errorMsg': 'Falta de materiales'}
 
     def build_road(self, player_id, node, road, free=False):
         """
@@ -282,7 +297,7 @@ class GameManager:
 
             return build_road_obj
         else:
-            return False
+            return {'response': False, 'errorMsg': 'Falta de materiales'}
 
     def build_development_card(self, player_id):
         """
@@ -297,11 +312,20 @@ class GameManager:
             player_hand.remove_material(MaterialConstants.WOOL, 1)
 
             self.bot_manager.players[player_id]['development_cards'].add_card(self.development_cards_deck.draw_card())
-            self.bot_manager.players[player_id]['player'].development_cards_hand = self.bot_manager.players[player_id][
-                'development_cards']
+            development_card_hand = self.bot_manager.players[player_id]['development_cards'].check_hand()
+            print('BUSCAR:')
+            print(development_card_hand)
+            if (len(development_card_hand) and
+                    development_card_hand[len(development_card_hand) - 1][
+                        'type'] == DevelopmentCardConstants.VICTORY_POINT):
+                self.bot_manager.players[player_id]['hiddenVictoryPoints'] += 1
+            print(development_card_hand)
+            self.bot_manager.players[player_id]['player'].development_cards_hand.hand = \
+                self.bot_manager.players[player_id][
+                    'development_cards'].hand
             return {'response': True}
         else:
-            return False
+            return {'response': False, 'errorMsg': 'Falta de materiales'}
 
     def move_thief(self, terrain, adjacent_player):
         """
@@ -447,16 +471,54 @@ class GameManager:
                         print(response['errorMsg'])
 
     def play_development_card(self, player_id, card):
-        print('se juega una carta de desarrollo')
-        print(card)
+        # Si la carta que llega existe en la mano del BotManager se elimina y se hace el efecto. Si no, se hace un return nulo
+        #  Si la carta es un punto de victoria no se borra de la mano
+        #  Después se iguala la mano del jugador a la del BotManager para evitar trampas.
+
         card_obj = {}
-        # TODO: comprobar que funcionan
+        print('SE JUEGA CARTA DE DESARROLLO')
+        print('CARTA QUE LLEGA: ')
+        print(card)
+        print('CARTAS EN MANO: ')
+
+        print('player hand checkhand()')
+        print(self.bot_manager.players[player_id]['player'].development_cards_hand.check_hand())
+        print('botmanager hand checkhand()')
+        print(self.bot_manager.players[player_id]['development_cards'].check_hand())
+
+        self.check_player_hands()
+
+        if card.__to_object__() in self.bot_manager.players[player_id]['development_cards'].check_hand():
+            if card.type != DevelopmentCardConstants.VICTORY_POINT:
+                print('BORRAR CARTA')
+                self.bot_manager.players[player_id]['development_cards'].delete_card(card.id)
+
+                self.bot_manager.players[player_id]['player'].development_cards_hand.hand = \
+                    self.bot_manager.players[player_id]['development_cards'].hand
+                pass
+
+        else:
+            self.bot_manager.players[player_id]['player'].development_cards_hand.hand = \
+                self.bot_manager.players[player_id]['development_cards'].hand
+            print('HACEN TRAMPAS')
+
+            card_obj['played_card'] = 'none'
+            card_obj['reason'] = 'Trying to use cards they don\'t have'
+
+            return card_obj
+
         if card.type == DevelopmentCardConstants.KNIGHT:
             # se le suma un nuevo caballero al jugador y se le pide mover al ladrón
+            print('SE JUEGA CABALLERO')
             self.bot_manager.players[player_id]['knights'] += 1
+            print('CANTIDAD CABALLEROS: ' + str(self.bot_manager.players[player_id]['knights']))
+            for terrain in self.board.terrain:
+                if terrain['hasThief']:
+                    print('DESDE: ' + str(terrain['id']))
             on_moving_thief = self.bot_manager.players[player_id]['player'].on_moving_thief()
             move_thief_obj = self.move_thief(on_moving_thief['terrain'], on_moving_thief['player'])
-
+            print('HASTA: ' + str(move_thief_obj['terrainId']))
+            print('ROBA A: P' + str(move_thief_obj['robbedPlayer']))
             # se pasan los cambios al objeto
             card_obj['played_card'] = 'knight'
             card_obj['total_knights'] = self.bot_manager.players[player_id]['knights']
@@ -464,24 +526,37 @@ class GameManager:
             card_obj['thief_terrain'] = move_thief_obj['terrainId']
             card_obj['robbed_player'] = move_thief_obj['robbedPlayer']
             card_obj['stolen_material_id'] = move_thief_obj['stolenMaterialId']
+
             return card_obj
         elif card.type == DevelopmentCardConstants.VICTORY_POINT:
             # Si tienen suficientes puntos de victoria para ganar. Ganan automáticamente, si no, no pasa nada
+
+            print('SE JUEGA PUNTOS DE VICTORIA')
             if (self.bot_manager.players[player_id]['victoryPoints'] +
                 self.bot_manager.players[player_id]['hiddenVictoryPoints']) >= 10:
+                print('SUPERAN 10')
 
                 card_obj['played_card'] = 'victory_point'
                 self.bot_manager.players[player_id]['victoryPoints'] = 10
             else:
+                print('NO SUPERAN 10')
                 card_obj['played_card'] = 'failed_victory_point'
 
             return card_obj
         elif card.type == DevelopmentCardConstants.PROGRESS_CARD:
+            print('SE JUEGA CARTA DE PROGRESO:')
+
             if card.effect == DevelopmentCardConstants.MONOPOLY_EFFECT:
+                print('  -  MONOPOLIO')
                 # Elige material
                 material_chosen = self.bot_manager.players[player_id]['player'].on_monopoly_card_use()
                 material_sum = 0
+                print('ELIGE MATERIAL: ' + str(material_chosen))
 
+                for i in range(4):
+                    print('PRE Hand_P' + str(i))
+                    print(self.bot_manager.players[i]['resources'].resources.__to_object__())
+                print('    -    -    -    -    -    -    -    -    -    -    -    -')
                 # Se elimina el material de la mano de todos los jugadores
                 for player in self.bot_manager.players:
                     material_sum += player['resources'].get_from_id(material_chosen)
@@ -493,18 +568,26 @@ class GameManager:
                 self.bot_manager.players[player_id]['resources'].add_material(material_chosen, material_sum)
                 self.bot_manager.players[player_id]['player'].hand = self.bot_manager.players[player_id]['resources']
 
+                for i in range(4):
+                    print('POST Hand_P' + str(i))
+                    print(self.bot_manager.players[i]['resources'].resources.__to_object__())
+
                 # Se añade al objeto el material, la suma, y las nuevas manos tras la resta de materiales
                 card_obj['played_card'] = 'monopoly'
                 card_obj['material_chosen'] = material_chosen
                 card_obj['material_sum'] = material_sum
                 for i in range(4):
                     card_obj['hand_P' + str(i)] = self.bot_manager.players[i]['resources'].resources.__to_object__()
+
                 return card_obj
 
             elif card.effect == DevelopmentCardConstants.ROAD_BUILDING_EFFECT:
+                print('  -  CONSTRUCCIÓN CARRETERAS')
+
                 # Se piden en qué puntos quieren construir carreteras
                 road_nodes = self.bot_manager.players[player_id]['player'].on_road_building_card_use()
-
+                print('NODOS ELEGIDOS: ')
+                print(road_nodes)
                 # Si hay al menos una carretera
                 if road_nodes is not None:
                     built = {'response': False}
@@ -520,7 +603,8 @@ class GameManager:
                         if not built['response']:
                             built = self.build_road(player_id, road_nodes['nodeID'], road_nodes['roadTo'], free=True)
                         if not built_2['response']:
-                            built_2 = self.build_road(player_id, road_nodes['nodeID_2'], road_nodes['roadTo_2'], free=True)
+                            built_2 = self.build_road(player_id, road_nodes['nodeID_2'], road_nodes['roadTo_2'],
+                                                      free=True)
 
                         if isinstance(built, dict):
                             if built['response']:
@@ -553,6 +637,9 @@ class GameManager:
                                     card_obj['error_msg'] = 'No hay más nodos válidos para construir una carretera'
                                     break
 
+                    print('    -    -    -    -    -    -    -    -    -    -    ')
+                    print('NODOS COLOCADOS:')
+                    print(road_nodes)
                     # Después del bucle ponemos donde se han construido las carreteras y devolvemos el objeto
                     card_obj['roads'] = road_nodes
                     return card_obj
@@ -562,18 +649,46 @@ class GameManager:
                     return card_obj
 
             elif card.effect == DevelopmentCardConstants.YEAR_OF_PLENTY_EFFECT:
+                print('  -  AÑO DE LA ABUNDANCIA')
+
                 # Eligen 2 materiales (puede ser el mismo 2 veces)
                 materials_selected = self.bot_manager.players[player_id]['player'].on_year_of_plenty_card_use()
                 card_obj['materials_selected'] = materials_selected
+                print('MATERIALES ELEGIDOS:')
+                print(materials_selected)
 
+                print('MANO PRE')
+                print(self.bot_manager.players[player_id]['resources'])
                 # Obtienen una carta de ese material elegido
                 self.bot_manager.players[player_id]['resources'].add_material(materials_selected['material'], 1)
                 self.bot_manager.players[player_id]['resources'].add_material(materials_selected['material_2'], 1)
 
                 # Se actualiza la mano
                 self.bot_manager.players[player_id]['player'].hand = self.bot_manager.players[player_id]['resources']
-                card_obj['hand_P' + str(player_id)] = self.bot_manager.players[player_id]['resources'].resources.__to_object__()
 
+                print('    -    -    -    -    -    -    -    -    -    -    ')
+                print('MANO POST')
+                print(self.bot_manager.players[player_id]['player'].hand)
+
+                card_obj['hand_P' + str(player_id)] = self.bot_manager.players[player_id][
+                    'resources'].resources.__to_object__()
                 return card_obj
             return card_obj
         return card_obj
+
+    def check_player_hands(self):
+        print('.  -  .  -  .  -  .  -  .  -  .  -  .  -  .')
+        print('CHECK HANDS')
+        print('Bot Manager: ')
+        for i in range(4):
+            print('P' + str(i + 1))
+            print(self.bot_manager.players[i]['development_cards'].check_hand())
+            # print(self.bot_manager.players[i]['development_cards'])
+
+        print('Players: ')
+        for i in range(4):
+            print('P' + str(i + 1))
+            print(self.bot_manager.players[i]['player'].development_cards_hand.check_hand())
+            # print(self.bot_manager.players[i]['player'].development_cards_hand)
+
+        print('.  -  .  -  .  -  .  -  .  -  .  -  .  -  .')

@@ -36,7 +36,7 @@ class GameDirector:
         turn_start_response = self.game_manager.bot_manager.players[player]['player'].on_turn_start()
 
         if isinstance(turn_start_response, DevelopmentCard):
-            # TODO: comprobar si se ha jugado una carta. Si es así, bloquear este eli
+            # TODO: comprobar si se ha jugado una carta. Si es así, bloquear este elif
             played_card_obj = self.game_manager.play_development_card(player, turn_start_response)
             pass
 
@@ -219,7 +219,7 @@ class GameDirector:
                     print(build_response)
                     # Si se ha construido permitir que vuelvan a construir
                     build_phase_object.append(building_obj)
-                    print(build_phase_object)
+                    # print(build_phase_object)
                     return self.start_build_phase(player, build_phase_object)
                 else:
                     building_obj['finished'] = False

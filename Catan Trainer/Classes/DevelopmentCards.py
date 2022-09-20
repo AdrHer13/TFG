@@ -1,7 +1,7 @@
 import math
 import random
 
-from Classes.Constants import DevelopmentCardConstants as Dcc
+from Classes.Constants import DevelopmentCardConstants as Dcc, DevelopmentCardConstants
 
 
 # Debido a como funciona el juego, en caso de querer lanzar una carta de desarrollo debería de lanzarse siempre que un jugador devuelva
@@ -19,6 +19,8 @@ class DevelopmentDeck:
     current_index = 0  # La carta que se va a robar si alguien construye una
 
     def __init__(self):
+        # Se vacía primero por completo el deck para evitar que se dupliquen las cartas
+        self.deck.clear()
         # Genera el array de cartas de desarrollo y lo baraja
         # Hay 14 soldados
         # 6 cartas de progreso (2 de cada)
@@ -71,7 +73,7 @@ class DevelopmentCard:
         pass
 
     def __str__(self):
-        return "{'type': " + str(self.type) + ", 'id': " + str(self.id) + ", 'effect':" + str(self.effect) + "}"
+        return "{'id': " + str(self.id) + ", 'type': " + str(self.type) + ", 'effect': " + str(self.effect) + "}"
 
     def get_type(self):
         return self.type
@@ -81,6 +83,9 @@ class DevelopmentCard:
 
     def get_effect(self):
         return self.effect
+
+    def __to_object__(self):
+        return {'id': self.get_id(), 'type': self.get_type(), 'effect': self.get_effect()}
 
 
 class DevelopmentCardsHand:
@@ -96,6 +101,8 @@ class DevelopmentCardsHand:
     def add_card(self, card):
         if card is not None:
             self.hand.append(card)
+        else:
+            return
 
     def check_hand(self):
         """
@@ -118,7 +125,7 @@ class DevelopmentCardsHand:
         """
         if len(self.hand):
             card_obj = self.hand[index]
-            self.delete_card(self.hand[index].id)
+            # self.delete_card(self.hand[index].id)
             return card_obj
         print('no tenía esa carta en mano id ' + str(id))
         pass
@@ -133,7 +140,7 @@ class DevelopmentCardsHand:
             if card.get_id() == id:
                 print('se juega carta con id ' + str(id))
                 card_obj = card
-                self.delete_card(id)
+                # self.delete_card(id)
                 return card_obj
         print('no tenía esa carta en mano id ' + str(id))
         pass
@@ -157,9 +164,15 @@ class DevelopmentCardsHand:
 if __name__ == '__main__':
     deck = DevelopmentDeck()
     hand = DevelopmentCardsHand()
+    hand_2 = DevelopmentCardsHand()
 
-    hand.add_card(deck.draw_card())
-    print(hand.check_hand())
-    # hand.play_card(hand.hand[0].get_id())
-    hand.play_card_by_id(0)
-    print(hand.check_hand())
+    while True:
+        hand.add_card(deck.draw_card())
+        hand_2.add_card(deck.draw_card())
+        print('--------------------------')
+        print(hand.check_hand())
+        print('##########################')
+        print(hand_2.check_hand())
+        # hand.play_card_by_array_index(0)
+    # hand.play_card_by_id(0)
+    # print(hand.check_hand())

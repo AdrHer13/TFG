@@ -26,6 +26,8 @@ class GameManager:
     commerce_manager = CommerceManager()
     bot_manager = BotManager()
 
+    MAX_COMMERCE_DEPTH = 2
+
     largest_army_player = {}
     largest_army = 2
 
@@ -113,8 +115,8 @@ class GameManager:
         for receiver in receivers:
             on_tradeoffer_response = []
 
-            repeat, count = True, 1
-            while repeat:
+            count = 1
+            while True:
                 # Se hace un bucle de contraofertas hasta que se llegue a una decisión de True o False
                 if count % 2 == 0:
                     # Giver toma el papel de receiver porque es una contraoferta
@@ -124,10 +126,9 @@ class GameManager:
 
                 on_tradeoffer_response.append(response_obj)
                 if isinstance(response_obj['response'], dict):
-                    repeat = True
                     count += 1
                 else:
-                    repeat = False
+                    break
 
             if on_tradeoffer_response[(len(on_tradeoffer_response) - 1)]['response']:
                 if count % 2 == 0:
@@ -167,7 +168,7 @@ class GameManager:
 
         response = receiver['player'].on_trade_offer(trade_offer)
         if isinstance(response, TradeOffer):
-            if count > 2:
+            if count > self.MAX_COMMERCE_DEPTH:
                 json_obj['response'] = False
                 return json_obj
 

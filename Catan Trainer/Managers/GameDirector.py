@@ -245,10 +245,10 @@ class GameDirector:
         build_phase_object.append(building_obj)
         return build_phase_object
 
-    def end_turn(self, player=-1):
+    def end_turn(self, player_id=-1):
         """
         Esta función permite finalizar el turno
-        :param player: número que representa al jugador
+        :param player_id: número que representa al jugador
         :return: void
         """
         print('start end turn: ' + str(self.game_manager.turn_manager.get_turn()))
@@ -257,17 +257,47 @@ class GameDirector:
         end_turn_object = {}
 
         self.game_manager.turn_manager.set_phase(3)
-        turn_end_response = self.game_manager.bot_manager.players[player]['player'].on_turn_end()
+        turn_end_response = self.game_manager.bot_manager.players[player_id]['player'].on_turn_end()
         if isinstance(turn_end_response, DevelopmentCard):
             # TODO: comprobar si se ha jugado una carta. Si es así, bloquear este elif
             #       resolver efecto de carta de desarrollo
-            played_card_obj = self.game_manager.play_development_card(player, turn_end_response)
+            played_card_obj = self.game_manager.play_development_card(player_id, turn_end_response)
             pass
+
+        # -- -- -- -- Calcular carretera más larga -- -- -- --
+        # Le quitamos el titulo al jugador que lo tiene
+        for player in self.game_manager.bot_manager.players:
+            if player['longest_road'] == 1:
+                player['longest_road'] = 0
+                player['victoryPoints'] -= 2
+                break
+
+        # Calculamos quien tiene la carretera más larga
+        real_longest_road = {'longest_road': 5, 'player': -1}
+        for node in self.game_manager.board.nodes:
+            longest_road_obj = self.game_manager.longest_road_calculator(node, 1, {'longest_road': 0, 'player': -1}, -1,
+                                                                         [node['id']])
+            # print('. . . . . . . . .')
+            # print('Node start: ' + str(node['id']))
+            # print('Longer:')
+            # print(longest_road_obj)
+            if longest_road_obj['longest_road'] > real_longest_road['longest_road']:
+                real_longest_road = longest_road_obj
+        # Se le da el titulo a quien tenga la carretera más larga
+        if real_longest_road['player'] != -1:
+            self.game_manager.bot_manager.players[real_longest_road['player']]['longest_road'] = 1
+            self.game_manager.bot_manager.players[real_longest_road['player']]['victoryPoints'] += 2
+        # print('-- -- -- -- -- -- -- -- --')
+        # print('Longest: ')
+        # print(real_longest_road)
+        # -- -- -- -- Fin carretera más larga -- -- -- --
 
         vp = {}
         for i in range(4):
             vp['J' + str(i)] = str(self.game_manager.bot_manager.players[i]['victoryPoints'])
-            print('J' + str(i) + ': ' + str(self.game_manager.bot_manager.players[i]['victoryPoints']))
+            print('J' + str(i) + ': ' + str(self.game_manager.bot_manager.players[i]['victoryPoints']) + ' (' + str(
+                self.game_manager.bot_manager.players[i]['largest_army']) + ')' + ' (' + str(
+                self.game_manager.bot_manager.players[i]['longest_road']) + ')')
         print('----- FIN Puntos de victoria de los jugadores ------')
 
         end_turn_object['victory_points'] = vp
@@ -318,6 +348,9 @@ class GameDirector:
         winner = False
         for player in self.game_manager.bot_manager.players:
             if player['victoryPoints'] >= 10:
+                # if (player['victoryPoints'] >= 10 or
+                # (player['victoryPoints'] >= 8 and (player['largest_army'] == 1 or player['longest_road'] == 1)) or
+                # (player['victoryPoints'] >= 6 and player['largest_army'] == 1 and player['longest_road'] == 1)):
                 winner = True
 
         self.game_manager.turn_manager.set_round(self.game_manager.turn_manager.get_round() + 1)
@@ -393,7 +426,7 @@ class GameDirector:
             winner = self.round_end()
 
         self.trace_loader.current_trace["game"] = game_object
-        # self.trace_loader.export_to_file()
+        self.trace_loader.export_to_file()
         return
 
 

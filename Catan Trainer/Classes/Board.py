@@ -40,8 +40,8 @@ class Board:
             while i < 54:
                 self.nodes.append({
                     "id": i,
-                    "adjacent": self.__get_adjacent_nodes(i),
-                    "harbor": self.__get_harbors(i),
+                    "adjacent": self.__get_adjacent_nodes__(i),
+                    "harbor": self.__get_harbors__(i),
                     "roads": [],
                     "hasCity": False,
                     "player": -1,
@@ -53,22 +53,22 @@ class Board:
         if terrain is None:
             j = 0
             while j < 19:
-                probability = self.__get_probability(j)
+                probability = self.__get_probability__(j)
                 if probability != 7:
                     self.terrain.append({
                         "id": j,
                         "hasThief": False,
                         "probability": probability,
-                        "terrainType": self.__get_terrain_type(j),
-                        "contactingNodes": self.__get_contacting_nodes(j),
+                        "terrainType": self.__get_terrain_type__(j),
+                        "contactingNodes": self.__get_contacting_nodes__(j),
                     })
                 else:
                     self.terrain.append({
                         "id": j,
                         "hasThief": True,
                         "probability": 0,
-                        "terrainType": self.__get_terrain_type(j),
-                        "contactingNodes": self.__get_contacting_nodes(j),
+                        "terrainType": self.__get_terrain_type__(j),
+                        "contactingNodes": self.__get_contacting_nodes__(j),
                     })
                 j += 1
         else:
@@ -97,6 +97,29 @@ class Board:
 
         # m += 1
         return
+
+    def visualize_board(self):
+        ## Código para comprobar que el tablero se inicializa con los adyacentes correctos
+        print('Nodos:')
+
+        for node in self.nodes:
+            print('ID: ' + str(node['id']))
+            print('Adjacent: ' + str(node['adjacent']))
+            print('Harbor: ' + str(node['harbor']))
+            print('Player: ' + str(node['player']))
+            print('Roads: ' + str(node['roads']))
+            print('---------------------\n')
+
+        ## Código para comprobar que el tablero se inicializa con el terreno correcto
+        print('Terreno:')
+        m = 0
+        while m < 19:
+            print(self.terrain[m]['id'])
+            print(self.terrain[m]['probability'])
+            print(self.terrain[m]['contactingNodes'])
+            print(self.terrain[m]['terrainType'])
+            print('#######################\n')
+            m += 1
 
     def get_board(self):
         return self.__class__()
@@ -151,7 +174,7 @@ class Board:
 
         return contacting_terrain
 
-    def __get_contacting_nodes(self, terrain_id):
+    def __get_contacting_nodes__(self, terrain_id):
         """
         Indica todos los nodos a los que la casilla terreno es adyacente, para cosas como por ejemplo repartir materiales
         :param terrain_id: La ID de la pieza del terreno actual
@@ -226,7 +249,7 @@ class Board:
 
         return contacting_nodes
 
-    def __get_probability(self, terrain_id):
+    def __get_probability__(self, terrain_id):
         # Establecer el tablero con las probabilidades por defecto del mapa de ejemplo de Catán
         if terrain_id == 17:
             return 2
@@ -253,7 +276,7 @@ class Board:
         else:
             return 0
 
-    def __get_terrain_type(self, terrain_id):
+    def __get_terrain_type__(self, terrain_id):
         """
         Establecer el tablero con el tipo de terreno por defecto del mapa de ejemplo de Catán
         :param terrain_id:
@@ -273,7 +296,7 @@ class Board:
             # En el caso de ser 7 o cualquier ID inexistente le asigna un desierto
             return TerrainConstants.DESERT
 
-    def __get_adjacent_nodes(self, node_id):
+    def __get_adjacent_nodes__(self, node_id):
         """
         Función que obtiene los nodos adyacentes de manera automática
         :param node_id: Id del nodo del que se quieren las IDs de los nodos adyacentes
@@ -345,7 +368,7 @@ class Board:
 
         return adjacent_nodes
 
-    def __get_harbors(self, node_id):
+    def __get_harbors__(self, node_id):
         if node_id == 0 or node_id == 1:
             return HarborConstants.WOOD
         elif node_id == 3 or node_id == 4:
@@ -572,7 +595,6 @@ class Board:
 
         return valid_nodes
 
-
     def check_for_player_harbors(self, player, material_gives):
         """
         Comprueba qué puertos tiene el jugador. Material gives sirve para buscar puertos 2:1 de ese tipo
@@ -603,4 +625,3 @@ class Board:
                 return HarborConstants.ALL
 
         return HarborConstants.NONE
-

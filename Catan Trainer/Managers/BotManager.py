@@ -28,6 +28,9 @@ class BotManager:
                 'resources': Hand(),
                 'development_cards': DevelopmentCardsHand(),
                 'knights': 0,
+                'already_played_development_card': 0,
+                'largest_army': 0,
+                'longest_road': 0,
             },
             {
                 'id': 1,
@@ -37,6 +40,9 @@ class BotManager:
                 'resources': Hand(),
                 'development_cards': DevelopmentCardsHand(),
                 'knights': 0,
+                'already_played_development_card': 0,
+                'largest_army': 0,
+                'longest_road': 0,
             },
             {
                 'id': 2,
@@ -46,6 +52,9 @@ class BotManager:
                 'resources': Hand(),
                 'development_cards': DevelopmentCardsHand(),
                 'knights': 0,
+                'already_played_development_card': 0,
+                'largest_army': 0,
+                'longest_road': 0,
             },
             {
                 'id': 3,
@@ -55,6 +64,9 @@ class BotManager:
                 'resources': Hand(),
                 'development_cards': DevelopmentCardsHand(),
                 'knights': 0,
+                'already_played_development_card': 0,
+                'largest_army': 0,
+                'longest_road': 0,
             }
         ]
         return

@@ -26,7 +26,8 @@ class GameManager:
     commerce_manager = CommerceManager()
     bot_manager = BotManager()
 
-    # graphics_manager = GraphicsManager()
+    largest_army_player = {}
+    largest_army = 2
 
     def __init__(self):
         self.development_cards_deck = DevelopmentDeck()
@@ -470,6 +471,33 @@ class GameManager:
                         illegal = True
                         print(response['errorMsg'])
 
+    def longest_road_calculator(self, node, depth, longest_road_obj, player_id, visited_nodes):
+        """
+        Función que calcula la carretera más larga a partir de un nodo
+        :param node:
+        :param depth:
+        :param longest_road:
+        :param visited_nodes:
+        :return:
+        """
+        for road in node['roads']:
+            # print('. . . . . . . ')
+            # print('Road to: ' + str(road['nodeID']))
+            if ((road['nodeID'] not in visited_nodes) and
+                (road['playerID'] == player_id or player_id == -1) and
+                (road['playerID'] == node['player'] or node['player'] == -1)):
+                visited_nodes.append(road['nodeID'])
+                # print(visited_nodes)
+                # print(node)
+                if depth > longest_road_obj['longest_road']:
+                    longest_road_obj['longest_road'] = depth
+                    longest_road_obj['player'] = player_id
+                # print('depth: ' + str(depth))
+                # print('player: ' + str(player_id))
+                longest_road_obj = self.longest_road_calculator(self.board.nodes[road['nodeID']], depth + 1, longest_road_obj, road['playerID'], visited_nodes)
+        return {'longest_road': longest_road_obj['longest_road'], 'player': longest_road_obj['player']}
+
+
     def play_development_card(self, player_id, card):
         # Si la carta que llega existe en la mano del BotManager se elimina y se hace el efecto. Si no, se hace un return nulo
         #  Si la carta es un punto de victoria no se borra de la mano
@@ -512,6 +540,23 @@ class GameManager:
             print('SE JUEGA CABALLERO')
             self.bot_manager.players[player_id]['knights'] += 1
             print('CANTIDAD CABALLEROS: ' + str(self.bot_manager.players[player_id]['knights']))
+
+            if self.bot_manager.players[player_id]['knights'] > self.largest_army:
+                if self.largest_army_player == {}:
+                    # Definimos el nuevo poseedor con el ejército más grande
+                    self.largest_army_player = self.bot_manager.players[player_id]
+                    self.largest_army_player['largest_army'] = 1
+                    self.largest_army_player['victoryPoints'] += 2
+                else:
+                    # Le quitamos los beneficios al anterior poseedor del ejército grande
+                    self.largest_army_player['largest_army'] = 0
+                    self.largest_army_player['victoryPoints'] -= 2
+
+                    # Definimos el nuevo poseedor con el ejército más grande
+                    self.largest_army_player = self.bot_manager.players[player_id]
+                    self.largest_army_player['largest_army'] = 1
+                    self.largest_army_player['victoryPoints'] += 2
+
             for terrain in self.board.terrain:
                 if terrain['hasThief']:
                     print('DESDE: ' + str(terrain['id']))

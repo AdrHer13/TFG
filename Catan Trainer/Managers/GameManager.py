@@ -634,6 +634,8 @@ class GameManager:
                 road_nodes = self.bot_manager.players[player_id]['player'].on_road_building_card_use()
                 print('NODOS ELEGIDOS: ')
                 print(road_nodes)
+                card_obj['played_card'] = 'road_building'
+
                 # Si hay al menos una carretera
                 if road_nodes is not None:
                     built = {'response': False}
@@ -696,6 +698,7 @@ class GameManager:
 
             elif card.effect == DevelopmentCardConstants.YEAR_OF_PLENTY_EFFECT:
                 print('  -  AÑO DE LA ABUNDANCIA')
+                card_obj['played_card'] = 'year_of_plenty'
 
                 # Eligen 2 materiales (puede ser el mismo 2 veces)
                 materials_selected = self.bot_manager.players[player_id]['player'].on_year_of_plenty_card_use()

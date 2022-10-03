@@ -18,6 +18,7 @@ class GameDirector:
     trace_loader = TraceLoader()
 
     MAX_COMMERCE_TRADES = 2
+    already_played_development_card = False
 
     def __init__(self):
         return
@@ -29,7 +30,7 @@ class GameDirector:
         :param player: número que representa al jugador
         :return: object
         """
-        start_turn_object = {}
+        start_turn_object = {'development_card_played': []}
         print('----------')
         print('start turn: ' + str(self.game_manager.turn_manager.get_turn()))
         self.game_manager.turn_manager.set_phase(0)
@@ -37,10 +38,12 @@ class GameDirector:
 
         turn_start_response = self.game_manager.bot_manager.players[player]['player'].on_turn_start()
 
-        if isinstance(turn_start_response, DevelopmentCard):
-            # TODO: comprobar si se ha jugado una carta. Si es así, bloquear este elif
+        if isinstance(turn_start_response, DevelopmentCard) and not self.already_played_development_card:
             played_card_obj = self.game_manager.play_development_card(player, turn_start_response)
-            pass
+            if not (played_card_obj['played_card'] == 'victory_point' or
+                    played_card_obj['played_card'] == 'failed_victory_point'):
+                self.already_played_development_card = True
+            start_turn_object['development_card_played'].append(played_card_obj)
 
         self.game_manager.throw_dice()
         self.game_manager.give_resources()
@@ -166,14 +169,16 @@ class GameDirector:
             print('%%%%%%%%%%%%%%%%%%%%%%%%%%%')
             return commerce_phase_object
 
-        elif isinstance(commerce_response, DevelopmentCard):
-            # TODO: comprobar si se ha jugado una carta. Si es así, bloquear este elif
+        elif isinstance(commerce_response, DevelopmentCard) and not self.already_played_development_card:
             played_card_obj = self.game_manager.play_development_card(player, commerce_response)
             commerce_phase_object['trade_offer'] = 'played_card'
-            commerce_phase_object['harbor_trade'] = 'played_card'
+            commerce_phase_object['harbor_trade'] = None
+            commerce_phase_object['development_card_played'] = played_card_obj
+            if not (played_card_obj['played_card'] == 'victory_point' or
+                    played_card_obj['played_card'] == 'failed_victory_point'):
+                self.already_played_development_card = True
 
             return commerce_phase_object
-
         else:
             commerce_phase_object['trade_offer'] = 'None'
             return commerce_phase_object
@@ -227,14 +232,17 @@ class GameDirector:
                 print('No se ha podido construir por falta de materiales')
                 # TODO: Avisar que no se ha podido construir
 
-        elif isinstance(build_response, DevelopmentCard):
+        elif isinstance(build_response, DevelopmentCard) and not self.already_played_development_card:
             played_card_obj = self.game_manager.play_development_card(player, build_response)
             build_phase_object['building'] = 'played_card'
             build_phase_object['finished'] = 'played_card'
-            # Tras jugar la carta de su mano se le permite volver a construir
-            # TODO: comprobar si se ha jugado una carta. Si es así, bloquear este elif
-            return build_phase_object
+            build_phase_object['development_card_played'] = played_card_obj
 
+            if not (played_card_obj['played_card'] == 'victory_point' or
+                    played_card_obj['played_card'] == 'failed_victory_point'):
+                self.already_played_development_card = True
+
+            return build_phase_object
         else:
             build_phase_object['building'] = 'None'
 
@@ -249,15 +257,17 @@ class GameDirector:
         print('start end turn: ' + str(self.game_manager.turn_manager.get_turn()))
         print('----- Puntos de victoria de los jugadores: ------')
 
-        end_turn_object = {}
+        end_turn_object = {'development_card_played': []}
 
         self.game_manager.turn_manager.set_phase(3)
         turn_end_response = self.game_manager.bot_manager.players[player_id]['player'].on_turn_end()
-        if isinstance(turn_end_response, DevelopmentCard):
-            # TODO: comprobar si se ha jugado una carta. Si es así, bloquear este elif
-            #       resolver efecto de carta de desarrollo
+
+        if isinstance(turn_end_response, DevelopmentCard) and not self.already_played_development_card:
             played_card_obj = self.game_manager.play_development_card(player_id, turn_end_response)
-            pass
+            if not (played_card_obj['played_card'] == 'victory_point' or
+                    played_card_obj['played_card'] == 'failed_victory_point'):
+                self.already_played_development_card = True
+            end_turn_object['development_card_played'].append(played_card_obj)
 
         # -- -- -- -- Calcular carretera más larga -- -- -- --
         # Le quitamos el titulo al jugador que lo tiene
@@ -307,6 +317,7 @@ class GameDirector:
         round_object = {}
         print('---------------------')
         print('round start')
+        self.already_played_development_card = False
 
         for i in range(4):
             obj = {}
@@ -320,11 +331,12 @@ class GameDirector:
             #  comercia con un jugador una tercera vez, devuelve None y corta el bucle
             commerce_phase_array, depth = [], 1
             while True:
-                commerce_phase_object = self.start_commerce_phase(self.game_manager.turn_manager.get_whose_turn_is_it(), depth)
+                commerce_phase_object = self.start_commerce_phase(self.game_manager.turn_manager.get_whose_turn_is_it(),
+                                                                  depth)
                 commerce_phase_array.append(commerce_phase_object)
                 if commerce_phase_object['trade_offer'] == 'None':
                     break
-                elif not commerce_phase_object['harbor_trade']:
+                elif not (commerce_phase_object['harbor_trade'] or commerce_phase_object['harbor_trade'] is None):
                     depth += 1
             obj['commerce_phase'] = commerce_phase_array
 

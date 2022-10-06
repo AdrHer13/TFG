@@ -3,34 +3,67 @@ h3 {
     display: inline-block
 }
 
+/*.col {*/
+/*    padding: 0;*/
+/*}*/
+
 .content {
     padding: 0 1em 0 1em;
 }
 
-.playerprofile {
-    height: 35vh;
-}
+
+/*********************************/
+/*              Game             */
+/*********************************/
+
 
 .gamefield {
     height: 70vh;
+    background: #00aacc;
+    padding-left: 1em;
+    padding-right: 1em;
 }
 
-.hand {
+#controles {
+    height: 7vh;
     background: white;
+    border: 1px solid black;
+/*    border-bottom: 3px solid black;*/
+    border-bottom: 0;
 }
 
-.hand-top {
-    padding-top: 1em;
-    padding-bottom: 0.5em;
-    border-top: 1px solid black;
-    border-bottom: 1px solid black;
+#controles div {
+    padding-top: 0.35em;
+/*    padding-bottom: 0.5em;*/
 }
 
-.hand-bottom {
-    padding-top: 0.5em;
-    padding-bottom: 1em;
-    border-bottom: 1px solid black;
-    border-top: 1px solid black;
+
+/*********************************/
+/*              Log              */
+/*********************************/
+
+
+.log {
+/*    padding-right: 0;*/
+/*    border: 1px solid black;*/
+    padding: 0 1em 0 1em;
+    border-left: 3px solid black;
+}
+
+#other_useful_info {
+    border-top: black solid 1px;
+}
+
+#commerce_log,
+#other_useful_info {
+    background: white;
+    font-family: monospace;
+    overflow-y: scroll;
+}
+
+.span_title {
+    font-family: sans-serif;
+    text-decoration: underline;
 }
 
 .gives,
@@ -45,15 +78,50 @@ h3 {
     margin-left: 5em;
 }
 
-#controles .col,
-.col-1 {
-    background: purple;
+
+/*********************************/
+/*         Player profiles       */
+/*********************************/
+
+
+.player {
+    border: 1px black solid;
+    border-top: 0;
+    border-left: 0;
+}
+
+.playerprofile {
+/*    height: 10vh;*/
+}
+
+.largest_army,
+.longest_road {
+    height: 5vh;
+}
+
+.hand {
+    background: white;
+}
+
+.hand-top {
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    /*    border-top: 1px solid black;*/
+    /*    border-bottom: 1px solid black;*/
+}
+
+.hand-bottom {
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    /*    border-bottom: 1px solid black;*/
+    /*    border-top: 1px solid black;*/
 }
 
 
 /*********************************/
-/*              Game             */
+/*           Terreno             */
 /*********************************/
+
 
 .node {
     background: black;
@@ -86,7 +154,7 @@ h3 {
 }
 
 .filler_node {
-    background: gray;
+    background: #00aacc;
     height: 30px !important;
     flex: 0 0 30px !important;
     border-radius: 15px;
@@ -94,7 +162,7 @@ h3 {
 }
 
 .filler_road {
-    background: gray;
+    background: #00aacc;
     height: 10px;
     z-index: 1;
 }

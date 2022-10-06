@@ -27,34 +27,51 @@
             <div class="col-7">
                 <div class="row">
                     <!-- Col Partida -->
-                    <div class="col-12" style="padding-right: 0">
+                    <div class="col-12" style="padding-right: 0" id="gamefield_external">
                         <!--                        <div id="diceroll">Diceroll: 0</div>-->
-                        <div class="gamefield text-center">
-                            <div class="terrain_pieces">
-                                <div class="terrain" id="terrain_0" style="top: 55px; left: 165px; background: green;"></div>
-                                <div class="terrain" id="terrain_1" style="top: 55px; left: 320px; background: greenyellow;"></div>
-                                <div class="terrain" id="terrain_2" style="top: 55px; left: 475px; background: yellow;"></div>
-
-                                <div class="terrain" id="terrain_3" style="top: 135px; left: 85px; background: brown;"></div>
-                                <div class="terrain" id="terrain_4" style="top: 135px; left: 240px; background: lightgray;"></div>
-                                <div class="terrain" id="terrain_5" style="top: 135px; left: 395px; background: brown;"></div>
-                                <div class="terrain" id="terrain_6" style="top: 135px; left: 555px; background: greenyellow;"></div>
-
-                                <div class="terrain" id="terrain_7" style="top: 215px; left: 5px; background: orange;">X</div>
-                                <div class="terrain" id="terrain_8" style="top: 215px; left: 165px; background: green;"></div>
-                                <div class="terrain" id="terrain_9" style="top: 215px; left: 320px; background: yellow;"></div>
-                                <div class="terrain" id="terrain_10" style="top: 215px; left: 475px; background: green;"></div>
-                                <div class="terrain" id="terrain_11" style="top: 215px; left: 635px; background: yellow;"></div>
-
-                                <div class="terrain" id="terrain_12" style="top: 295px; left: 85px; background: brown;"></div>
-                                <div class="terrain" id="terrain_13" style="top: 295px; left: 240px; background: greenyellow;"></div>
-                                <div class="terrain" id="terrain_14" style="top: 295px; left: 395px; background: greenyellow;"></div>
-                                <div class="terrain" id="terrain_15" style="top: 295px; left: 555px; background: lightgray;"></div>
-
-                                <div class="terrain" id="terrain_16" style="top: 375px; left: 165px; background: lightgray;"></div>
-                                <div class="terrain" id="terrain_17" style="top: 375px; left: 320px; background: yellow;"></div>
-                                <div class="terrain" id="terrain_18" style="top: 375px; left: 475px; background: green;"></div>
+                        <div class="gamefield" id="gamefield">
+                            <div class="terrain_pieces" id="terrain_pieces">
+                                <div class="terrain"></div>
+                                <div class="terrain"></div>
+                                <div class="terrain" id="terrain_0" style="background: green;"></div>
+                                <div class="terrain" id="terrain_1" style="background: greenyellow;"></div>
+                                <div class="terrain" id="terrain_2" style="background: yellow;"></div>
+                                <div class="terrain"></div>
+                                <div class="terrain"></div>
+                                <br>
+                                <div class="terrain"></div>
+                                <div class="terrain" id="terrain_3" style="background: brown;"></div>
+                                <div class="terrain" id="terrain_4" style="background: lightgray;"></div>
+                                <div class="terrain" id="terrain_5" style="background: brown;"></div>
+                                <div class="terrain" id="terrain_6" style="background: greenyellow;"></div>
+                                <div class="terrain"></div>
+                                <div class="terrain"></div>
+                                <br>
+                                <div class="terrain"></div>
+                                <div class="terrain" id="terrain_7" style="background: orange;"></div>
+                                <div class="terrain" id="terrain_8" style="background: green;"></div>
+                                <div class="terrain" id="terrain_9" style="background: yellow;"></div>
+                                <div class="terrain" id="terrain_10" style="background: green;"></div>
+                                <div class="terrain" id="terrain_11" style="background: yellow;"></div>
+                                <div class="terrain"></div>
+                                <br>
+                                <div class="terrain"></div>
+                                <div class="terrain" id="terrain_12" style="background: brown;"></div>
+                                <div class="terrain" id="terrain_13" style="background: greenyellow;"></div>
+                                <div class="terrain" id="terrain_14" style="background: greenyellow;"></div>
+                                <div class="terrain" id="terrain_15" style="background: lightgray;"></div>
+                                <div class="terrain"></div>
+                                <div class="terrain"></div>
+                                <br>
+                                <div class="terrain"></div>
+                                <div class="terrain"></div>
+                                <div class="terrain" id="terrain_16" style="background: lightgray;"></div>
+                                <div class="terrain" id="terrain_17" style="background: yellow;"></div>
+                                <div class="terrain" id="terrain_18" style="background: green;"></div>
+                                <div class="terrain"></div>
+                                <div class="terrain"></div>
                             </div>
+                            <!--
                             <div class="row" style="padding-top: 3em;">
                                 <div class="col filler_node"></div>
                                 <div class="col filler_road"></div>
@@ -419,6 +436,7 @@
 
                                 <div class="col filler_node"></div>
                             </div>
+-->
 
                             <!--                    <img src="./Images/mapa.png" style="height: 57vh; margin-top: 5em" alt="Juego del Catan">-->
                         </div>
@@ -491,7 +509,7 @@
                         <span class="span_title">Comercios</span>
                     </p>
                 </div>
-                <div id="other_useful_info" style="height: 27vh">
+                <div id="other_useful_info">
                     <p>
                         <span class="span_title">Otra información útil</span>
                     </p>
@@ -554,8 +572,8 @@
                                     <div class="col"></div>
                                 </div> -->
                             </div>
-                            <div id="hand_P0" class="hand hand-bottom text-center col-5">
-                                <div class="row">
+                            <div id="hand_P0" class="hand text-center col-5">
+                                <div class="row top_hand_row">
                                     <div class="cereal col ms-3 me-1 px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
                                         <i class="fa-solid fa-wheat-awn" data-toggle="tooltip" data-placement="top" title="Cereal"></i>
                                         <span>: </span>
@@ -582,7 +600,7 @@
                                         <span class="ore_quantity">0</span>
                                     </div>
                                 </div>
-                                <div class="row mt-2">
+                                <div class="row bottom_hand_row">
                                     <div class="knight col ms-3 me-1 px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
                                         <i class="fa-solid fa-chess-knight" data-toggle="tooltip" data-placement="top" title="Caballero"></i>
                                         <span>: </span>
@@ -633,8 +651,8 @@
                                     <div class="col"></div>
                                 </div>
                             </div>
-                            <div id="hand_P1" class="hand hand-bottom text-center col-5">
-                                <div class="row">
+                            <div id="hand_P1" class="hand text-center col-5">
+                                <div class="row top_hand_row">
                                     <div class="cereal col ms-3 me-1 px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
                                         <i class="fa-solid fa-wheat-awn" data-toggle="tooltip" data-placement="top" title="Cereal"></i>
                                         <span>: </span>
@@ -661,7 +679,7 @@
                                         <span class="ore_quantity">0</span>
                                     </div>
                                 </div>
-                                <div class="row mt-2">
+                                <div class="row bottom_hand_row">
                                     <div class="knight col ms-3 me-1 px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
                                         <i class="fa-solid fa-chess-knight" data-toggle="tooltip" data-placement="top" title="Caballero"></i>
                                         <span>: </span>
@@ -718,8 +736,8 @@
                                     <div class="col"></div>
                                 </div>
                             </div>
-                            <div id="hand_P2" class="hand hand-top text-center col-5">
-                                <div class="row">
+                            <div id="hand_P2" class="hand text-center col-5">
+                                <div class="row top_hand_row">
                                     <div class="cereal col ms-3 me-1 px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
                                         <i class="fa-solid fa-wheat-awn" data-toggle="tooltip" data-placement="top" title="Cereal"></i>
                                         <span>: </span>
@@ -746,7 +764,7 @@
                                         <span class="ore_quantity">0</span>
                                     </div>
                                 </div>
-                                <div class="row mt-2">
+                                <div class="row bottom_hand_row">
                                     <div class="knight col ms-3 me-1 px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
                                         <i class="fa-solid fa-chess-knight" data-toggle="tooltip" data-placement="top" title="Caballero"></i>
                                         <span>: </span>
@@ -784,7 +802,7 @@
                                     <div class="col">
                                         <!--                                <img src="Images/nouser.png" alt="No user" height="80px">-->
                                         <h1>J4</h1>
-                                        <h3 id="puntos_victoria_J4"></h3>
+                                        <h3 id="puntos_victoria_J4">3</h3>
                                         <!--                    <textarea class="buildings_textarea" id="buildings_P4" style="width: 100%"></textarea>-->
                                     </div>
                                 </div>
@@ -798,8 +816,8 @@
                                     <div class="col"></div>
                                 </div>
                             </div>
-                            <div id="hand_P3" class="hand hand-top text-center col-5">
-                                <div class="row">
+                            <div id="hand_P3" class="hand text-center col-5">
+                                <div class="row top_hand_row">
                                     <div class="cereal col ms-3 me-1 px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
                                         <i class="fa-solid fa-wheat-awn" data-toggle="tooltip" data-placement="top" title="Cereal"></i>
                                         <span>: </span>
@@ -826,7 +844,7 @@
                                         <span class="ore_quantity">0</span>
                                     </div>
                                 </div>
-                                <div class="row mt-2">
+                                <div class="row bottom_hand_row">
                                     <div class="knight col ms-3 me-1 px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
                                         <i class="fa-solid fa-chess-knight" data-toggle="tooltip" data-placement="top" title="Caballero"></i>
                                         <span>: </span>

@@ -1,6 +1,14 @@
 h1,
 h3 {
-    display: inline-block
+    display: inline-block;
+}
+
+h1 {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1.5rem;
 }
 
 /*.col {*/
@@ -17,104 +25,27 @@ h3 {
 /*********************************/
 
 
-.gamefield {
+#gamefield_external {
     height: 70vh;
     background: #00aacc;
-    padding-left: 1em;
-    padding-right: 1em;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: -1.5em;
 }
 
 #controles {
     height: 7vh;
     background: white;
     border: 1px solid black;
-/*    border-bottom: 3px solid black;*/
+    /*    border-bottom: 3px solid black;*/
     border-bottom: 0;
 }
 
 #controles div {
     padding-top: 0.35em;
-/*    padding-bottom: 0.5em;*/
-}
-
-
-/*********************************/
-/*              Log              */
-/*********************************/
-
-
-.log {
-/*    padding-right: 0;*/
-/*    border: 1px solid black;*/
-    padding: 0 1em 0 1em;
-    border-left: 3px solid black;
-}
-
-#other_useful_info {
-    border-top: black solid 1px;
-}
-
-#commerce_log,
-#other_useful_info {
-    background: white;
-    font-family: monospace;
-    overflow-y: scroll;
-}
-
-.span_title {
-    font-family: sans-serif;
-    text-decoration: underline;
-}
-
-.gives,
-.receives {
-    margin: 0;
-    margin-left: 5em;
-}
-
-.counteroffer_gives,
-.counteroffer_receives,
-.counteroffer_answer {
-    margin-left: 5em;
-}
-
-
-/*********************************/
-/*         Player profiles       */
-/*********************************/
-
-
-.player {
-    border: 1px black solid;
-    border-top: 0;
-    border-left: 0;
-}
-
-.playerprofile {
-/*    height: 10vh;*/
-}
-
-.largest_army,
-.longest_road {
-    height: 5vh;
-}
-
-.hand {
-    background: white;
-}
-
-.hand-top {
-    padding-top: 0.5em;
-    padding-bottom: 0.5em;
-    /*    border-top: 1px solid black;*/
-    /*    border-bottom: 1px solid black;*/
-}
-
-.hand-bottom {
-    padding-top: 0.5em;
-    padding-bottom: 0.5em;
-    /*    border-bottom: 1px solid black;*/
-    /*    border-top: 1px solid black;*/
+    /*    padding-bottom: 0.5em;*/
 }
 
 
@@ -122,6 +53,37 @@ h3 {
 /*           Terreno             */
 /*********************************/
 
+#gamefield {
+    display: flex;
+    justify-content: center;
+    /*Se crean variables en CSS??*/
+    --s: 90px;
+    --m: 4px;
+    --f: calc(var(--s) * 1.732 + 4 * var(--m) - 1px); 
+}
+
+#terrain_pieces {
+    font-size: 0;
+}
+
+#terrain_pieces::before {
+  content: "";
+  width: calc(var(--s) / 2 + var(--m));
+  float: left;
+  height: 120%; 
+  shape-outside: repeating-linear-gradient(#0000 0 calc(var(--f) - 3px), #000 0 var(--f));
+}
+
+.terrain {
+    width: var(--s);
+    margin: var(--m);
+    height: calc(var(--s) * 1.1547);
+    display: inline-block;
+    font-size: initial;
+    clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
+    margin-bottom: calc(var(--m) - var(--s) * 0.2886); /* some negative margin to create overlap */
+    background: #00aacc;
+}
 
 .node {
     background: black;
@@ -167,6 +129,7 @@ h3 {
     z-index: 1;
 }
 
+/*
 .terrain_pieces {
     position: absolute;
     height: 70vh;
@@ -183,4 +146,82 @@ h3 {
     position: absolute;
     z-index: 3;
     padding: 30px;
+}
+*/
+
+/*********************************/
+/*              Log              */
+/*********************************/
+
+
+.log {
+    /*    padding-right: 0;*/
+    /*    border: 1px solid black;*/
+    padding: 0 1em 0 1em;
+    border-left: 3px solid black;
+}
+
+#other_useful_info {
+    border-top: black solid 1px;
+}
+
+#commerce_log,
+#other_useful_info {
+    background: white;
+    font-family: monospace;
+    overflow-y: scroll;
+}
+
+.span_title {
+    font-family: sans-serif;
+    text-decoration: underline;
+}
+
+.gives,
+.receives {
+    margin: 0;
+    margin-left: 5em;
+}
+
+.counteroffer_gives,
+.counteroffer_receives,
+.counteroffer_answer {
+    margin-left: 5em;
+}
+
+
+/*********************************/
+/*         Player profiles       */
+/*********************************/
+
+
+.player {
+    border: 1px black solid;
+    border-top: 0;
+    border-left: 0;
+}
+
+.playerprofile {
+    /*    height: 10vh;*/
+}
+
+.largest_army,
+.longest_road {
+    height: 5vh;
+    color: rgba(127, 127, 127, 50%)
+}
+
+.hand {
+    background: white;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+}
+
+.top_hand_row {
+    align-items: flex-start;
+    height: 50%;
+}
+.bottom_hand_row {
+    align-items: flex-end;
+    height: 50%;
 }

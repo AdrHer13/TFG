@@ -85,9 +85,9 @@ h3 {
     clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
     margin-bottom: calc(var(--m) - var(--s) * 0.2886);
     /* some negative margin to create overlap */
-    background: white;
+/*    background: white;*/
     z-index: 5;
-/*    background: #00aacc;*/
+    background: #00aacc;
 }
 
 .terrain_number {
@@ -144,6 +144,10 @@ h3 {
     flex: 0 0 30px !important;
     border-radius: 15px;
     z-index: 10;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .road {
@@ -176,26 +180,6 @@ h3 {
     height: 10px;
     z-index: 1;
 }
-
-/*
-.terrain_pieces {
-    position: absolute;
-    height: 70vh;
-    width: 50%;
-    padding-right: calc(var(--bs-gutter-x) * .5);
-    padding-left: calc(var(--bs-gutter-x) * .5);
-    z-index: 2;
-}
-
-.terrain {
-    background: greenyellow;
-    height: 80px;
-    width: 155px;
-    position: absolute;
-    z-index: 3;
-    padding: 30px;
-}
-*/
 
 /*********************************/
 /*              Log              */

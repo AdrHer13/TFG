@@ -28,6 +28,11 @@
                 <div class="row">
                     <!-- Col Partida -->
                     <div id="diceroll" style="position: absolute; z-index: 5; top: 10px; left: 30px;">Diceroll: 0</div>
+                    <div class="rounds" style="position: absolute; z-index: 5; top: 40px; left: 30px;">
+                        <span id="actual_round"></span>
+                        /
+                        <span id="rondas_maximas"></span>
+                    </div>
                     <div class="col-12" style="padding-right: 0" id="gamefield_external">
                         <div class="gamefield" id="gamefield">
                             <div class="nodes">
@@ -82,7 +87,7 @@
                                 <div class="node" id="node_44" style="top: 419px; left: 428px;"></div>
                                 <div class="node" id="node_45" style="top: 442px; left: 477px;"></div>
                                 <div class="node" id="node_46" style="top: 419px; left: 530px;"></div>
-                                
+
                                 <div class="node" id="node_47" style="top: 502px; left: 184px;"></div>
                                 <div class="node" id="node_48" style="top: 529px; left: 234px;"></div>
                                 <div class="node" id="node_49" style="top: 502px; left: 282px;"></div>
@@ -583,29 +588,14 @@
                         <div class="btn btn-secondary" id="fase_previa_btn" data-toggle="tooltip" data-placement="top" title="Fase anterior"><i class="fa-solid fa-backward-step"></i></div>
                     </div>
                     <div class="col text-center">
+                        <input type="number" class="form-control" id="contador_rondas" style="/*display: inline-block*/; width: 100px; display: none;">
+                        <input type="number" class="form-control" id="contador_turnos" style="display: none">
+                        <input type="number" class="form-control" id="contador_fases" style="display: none">
 
-                        <!--                        <div class="row">-->
-                        <!--
-                            <div class="col text-center">
-                                <input type="number" class="form-control" id="contador_turnos">
-                                <input type="number" class="form-control" id="contador_fases">
-                            </div>
--->
-                        <!--                            <div class="col-2 text-center">-->
                         <div class="btn btn-secondary" id="play_btn" data-toggle="tooltip" data-placement="top" title="Play"><i class="fa-solid fa-play"></i></div>
-                        <!--                            </div>-->
-                        <!--
-                            <div class="col text-center">
-                                <input type="number" class="form-control" id="contador_rondas" style="display: inline-block; width: 100px">
-                                /
-                                <span id="rondas_maximas"></span>
-                            </div>
-                            <div>
-                                <span id="millis_seleccionados"></span>
-                                <input type="range" min="10" max="1000" value="25" class="slider" id="millis_for_play">
-                            </div>
--->
-                        <!--                        </div>-->
+
+                        <input type="range" min="10" max="1000" value="25" class="slider" id="millis_for_play" style="width: 50px;">
+                        <span id="millis_seleccionados"></span>
 
                     </div>
                     <div class="col-1 text-center">
@@ -650,7 +640,7 @@
                 <div class="row">
                     <div class="col-6">
                         <div class="row player">
-                            <div style="background: lightcoral" class="playerprofile col" id="P0">
+                            <div style="background: lightcoral; border: 5px solid lightcoral" class="playerprofile col" id="P0">
                                 <div class="row">
                                     <div class="col">
                                         <!--                                    <img src="Images/nouser.png" alt="No user" height="80px">-->
@@ -687,7 +677,7 @@
                                     <div class="col"></div>
                                 </div> -->
                             </div>
-                            <div id="hand_P0" class="hand text-center col-5">
+                            <div id="hand_P0" class="hand text-center col-6">
                                 <div class="row top_hand_row">
                                     <div class="cereal col ms-3 me-1 px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
                                         <i class="fa-solid fa-wheat-awn" data-toggle="tooltip" data-placement="top" title="Cereal"></i>
@@ -747,7 +737,7 @@
                     </div>
                     <div class="col-6">
                         <div class="row player">
-                            <div style="background: lightblue" class="playerprofile col" id="P1">
+                            <div style="background: lightblue; border: 5px solid lightblue" class="playerprofile col" id="P1">
                                 <div class="row">
                                     <div class="col">
                                         <!--                                <img src="Images/nouser.png" alt="No user" height="80px">-->
@@ -766,7 +756,7 @@
                                     <div class="col"></div>
                                 </div>
                             </div>
-                            <div id="hand_P1" class="hand text-center col-5">
+                            <div id="hand_P1" class="hand text-center col-6">
                                 <div class="row top_hand_row">
                                     <div class="cereal col ms-3 me-1 px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
                                         <i class="fa-solid fa-wheat-awn" data-toggle="tooltip" data-placement="top" title="Cereal"></i>
@@ -832,7 +822,7 @@
                 <div class="row">
                     <div class="col-6">
                         <div class="row player">
-                            <div style="background: lightgreen" class="playerprofile col" id="P2">
+                            <div style="background: lightgreen; border: 5px solid lightgreen" class="playerprofile col" id="P2">
                                 <div class="row">
                                     <div class="col">
                                         <!--                                <img src="Images/nouser.png" alt="No user" height="80px">-->
@@ -851,7 +841,7 @@
                                     <div class="col"></div>
                                 </div>
                             </div>
-                            <div id="hand_P2" class="hand text-center col-5">
+                            <div id="hand_P2" class="hand text-center col-6">
                                 <div class="row top_hand_row">
                                     <div class="cereal col ms-3 me-1 px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
                                         <i class="fa-solid fa-wheat-awn" data-toggle="tooltip" data-placement="top" title="Cereal"></i>
@@ -911,7 +901,7 @@
                     </div>
                     <div class="col-6">
                         <div class="row player">
-                            <div style="background: lightyellow" class="playerprofile col" id="P3">
+                            <div style="background: lightyellow; border: 5px solid lightyellow" class="playerprofile col" id="P3">
 
                                 <div class="row">
                                     <div class="col">
@@ -931,7 +921,7 @@
                                     <div class="col"></div>
                                 </div>
                             </div>
-                            <div id="hand_P3" class="hand text-center col-5">
+                            <div id="hand_P3" class="hand text-center col-6">
                                 <div class="row top_hand_row">
                                     <div class="cereal col ms-3 me-1 px-1" style="border-right: 1px solid black; border-left: 1px solid black;">
                                         <i class="fa-solid fa-wheat-awn" data-toggle="tooltip" data-placement="top" title="Cereal"></i>
@@ -1086,6 +1076,8 @@
 
                     paint_it_player_color(i, node);
                     paint_it_player_color(i, road);
+
+                    node.html('<i class="fa-solid fa-house"></i>');
                 }
             }
         }
@@ -1120,7 +1112,7 @@
 
             for (let i = 0; i < nodes.length; i++) {
                 let node = jQuery('#node_' + i);
-                
+
                 // TODO: Añadir icono de puerto a las costeras O añadir un icono en el mar
                 node.html(fromHarborNumberToMaterials(nodes[i]['harbor']));
             }
@@ -1196,6 +1188,8 @@
                     play_btn.click()
                 }
 
+                jQuery('#actual_round').text(contador_rondas.val())
+
                 round_obj = game_obj['game']['round_' + (contador_rondas.val() - 1)];
                 contador_turnos.val(1).change();
             })
@@ -1216,19 +1210,22 @@
                     return;
                 }
 
-                $('.playerprofile').css('border', 'none')
+                $('#P0').css('border', '5px solid lightcoral')
+                $('#P1').css('border', '5px solid lightblue')
+                $('#P2').css('border', '5px solid lightgreen')
+                $('#P3').css('border', '5px solid lightyellow')
                 switch (parseInt(contador_turnos.val()) - 1) {
                     case 0:
-                        $('#P0').css('border', '10px solid red')
+                        $('#P0').css('border', '5px solid red')
                         break;
                     case 1:
-                        $('#P1').css('border', '10px solid blue')
+                        $('#P1').css('border', '5px solid blue')
                         break;
                     case 2:
-                        $('#P2').css('border', '10px solid green')
+                        $('#P2').css('border', '5px solid green')
                         break;
                     case 3:
-                        $('#P3').css('border', '10px solid yellow')
+                        $('#P3').css('border', '5px solid yellow')
                         break;
                 }
 
@@ -1359,21 +1356,22 @@
                                 switch (building['building']) {
                                     case 'town':
                                         if (building['finished']) {
-                                            let node = jQuery('#node_' + building['nodeID'])
+                                            let node = jQuery('#node_' + building['nodeID']);
                                             paint_it_player_color((parseInt(contador_turnos.val()) - 1), node);
+                                            node.html('<i class="fa-solid fa-house"></i>');
 
-                                            let str = 'node: ' + building['nodeID'] + ' | ' + 'type: ' + 'T' + '\r\n'
-                                            textarea.text(textarea.text() + str)
-
+                                            let str = 'node: ' + building['nodeID'] + ' | ' + 'type: ' + 'T' + '\r\n';
+                                            textarea.text(textarea.text() + str);
                                         }
                                         break;
                                     case 'city':
                                         if (building['finished']) {
-                                            let node = jQuery('#node_' + building['nodeID'])
-                                            node.text(node.text() + ' C ');
+                                            let node = jQuery('#node_' + building['nodeID']);
+                                            node.html('<i class="fa-solid fa-chess-rook"></i>');
+                                            //                                            node.text(node.text() + ' C ');
 
-                                            let str = 'node: ' + building['nodeID'] + ' | ' + 'type: ' + 'C' + '\r\n'
-                                            textarea.text(textarea.text() + str)
+                                            let str = 'node: ' + building['nodeID'] + ' | ' + 'type: ' + 'C' + '\r\n';
+                                            textarea.text(textarea.text() + str);
                                         }
                                         break;
                                     case 'road':
@@ -1500,16 +1498,16 @@
             object_to_paint.css('color', 'black')
             switch (player) {
                 case 0:
-                    object_to_paint.css('background', 'lightcoral').css('border', '1px solid black');
+                    object_to_paint.css('background', 'lightcoral') //.css('border', '1px solid black');
                     break;
                 case 1:
-                    object_to_paint.css('background', 'lightblue').css('border', '1px solid black');
+                    object_to_paint.css('background', 'lightblue') //.css('border', '1px solid black');
                     break;
                 case 2:
-                    object_to_paint.css('background', 'lightgreen').css('border', '1px solid black');
+                    object_to_paint.css('background', 'lightgreen') //.css('border', '1px solid black');
                     break;
                 case 3:
-                    object_to_paint.css('background', 'lightyellow').css('border', '1px solid black');
+                    object_to_paint.css('background', 'lightyellow') //.css('border', '1px solid black');
                     break;
                 default:
                     console.log('Jugador: ' + player)
@@ -1520,7 +1518,7 @@
 
 
         function setup() {
-//            nodeSetup();
+            //            nodeSetup();
             terrainSetup();
             addSetupBuildings();
         }

@@ -28,7 +28,7 @@ h3 {
 #gamefield_external {
     height: 70vh;
     background: #00aacc;
-    
+
     display: flex;
     justify-content: center;
     align-items: center;
@@ -54,12 +54,14 @@ h3 {
 /*********************************/
 
 #gamefield {
-    display: flex;
-    justify-content: center;
     /*Se crean variables en CSS??*/
     --s: 90px;
     --m: 4px;
-    --f: calc(var(--s) * 1.732 + 4 * var(--m) - 1px); 
+    --f: calc(var(--s) * 1.732 + 4 * var(--m) - 1px);
+    
+    display: flex;
+    justify-content: center;
+    padding-left: calc(var(--s) / 2)
 }
 
 #terrain_pieces {
@@ -67,11 +69,11 @@ h3 {
 }
 
 #terrain_pieces::before {
-  content: "";
-  width: calc(var(--s) / 2 + var(--m));
-  float: left;
-  height: 120%; 
-  shape-outside: repeating-linear-gradient(#0000 0 calc(var(--f) - 3px), #000 0 var(--f));
+    content: "";
+    width: calc(var(--s) / 2 + var(--m));
+    float: left;
+    height: 120%;
+    shape-outside: repeating-linear-gradient(#0000 0 calc(var(--f) - 3px), #000 0 var(--f));
 }
 
 .terrain {
@@ -81,17 +83,56 @@ h3 {
     display: inline-block;
     font-size: initial;
     clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
-    margin-bottom: calc(var(--m) - var(--s) * 0.2886); /* some negative margin to create overlap */
-    background: #00aacc;
+    margin-bottom: calc(var(--m) - var(--s) * 0.2886);
+    /* some negative margin to create overlap */
+    background: white;
+    z-index: 5;
+/*    background: #00aacc;*/
+}
+
+.terrain_number {
+    --t: 50px;
+    width: var(--t);
+    height: var(--t);
+    
+    position: relative;
+    top: calc(calc(var(--s) * 1.1547 / 2) - var(--t) / 2);
+    left: calc(calc(var(--s) / 2) - var(--t) / 2);
+    
+    flex: 0 0 var(--t) !important;
+    
+    border-radius: calc(var(--t) / 2);
+    background: #f2e5c0;
+    color: black;
+    z-index: 10;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.terrain_number > * {
+    position: absolute;
+    font-weight: bold;
+}
+
+.nodes {
+    position: absolute;
+    width: -webkit-fill-available;
+    height: -webkit-fill-available;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .node {
     background: black;
-    /*    width: 30px!important;*/
+    width: 30px !important;
     height: 30px !important;
-    /*    position: relative;*/
-    /*    top: 0em;*/
-    /*    left: 0em;*/
+        position: relative;
+        top: calc(calc(var(--s) * 1.1547 / 2) - 15px);
+        left: calc(calc(var(--s) / 2) - 15px);
     color: white;
     flex: 0 0 30px !important;
     border-radius: 15px;
@@ -221,6 +262,7 @@ h3 {
     align-items: flex-start;
     height: 50%;
 }
+
 .bottom_hand_row {
     align-items: flex-end;
     height: 50%;

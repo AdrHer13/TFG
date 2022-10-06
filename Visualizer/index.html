@@ -27,47 +27,95 @@
             <div class="col-7">
                 <div class="row">
                     <!-- Col Partida -->
+                    <div id="diceroll" style="position: absolute; z-index: 5; top: 10px; left: 30px;">Diceroll: 0</div>
                     <div class="col-12" style="padding-right: 0" id="gamefield_external">
-                        <!--                        <div id="diceroll">Diceroll: 0</div>-->
+
                         <div class="gamefield" id="gamefield">
+
+                            <!--
+                        <div class="nodes">
+                            <div class="node"></div>
+                            <div class="node"></div>
+                        </div>
+-->
                             <div class="terrain_pieces" id="terrain_pieces">
                                 <div class="terrain"></div>
                                 <div class="terrain"></div>
-                                <div class="terrain" id="terrain_0" style="background: green;"></div>
-                                <div class="terrain" id="terrain_1" style="background: greenyellow;"></div>
-                                <div class="terrain" id="terrain_2" style="background: yellow;"></div>
+                                <div class="terrain" id="terrain_0" style="background: green;">
+                                    <div class="terrain_number"></div>
+                                </div>
+                                <div class="terrain" id="terrain_1" style="background: greenyellow;">
+                                    <div class="terrain_number"></div>
+                                </div>
+                                <div class="terrain" id="terrain_2" style="background: #f1cc0b;">
+                                    <div class="terrain_number"></div>
+                                </div>
                                 <div class="terrain"></div>
                                 <div class="terrain"></div>
                                 <br>
                                 <div class="terrain"></div>
-                                <div class="terrain" id="terrain_3" style="background: brown;"></div>
-                                <div class="terrain" id="terrain_4" style="background: lightgray;"></div>
-                                <div class="terrain" id="terrain_5" style="background: brown;"></div>
-                                <div class="terrain" id="terrain_6" style="background: greenyellow;"></div>
+                                <div class="terrain" id="terrain_3" style="background: brown;">
+                                    <div class="terrain_number"></div>
+                                </div>
+                                <div class="terrain" id="terrain_4" style="background: darkgray;">
+                                    <div class="terrain_number"></div>
+                                </div>
+                                <div class="terrain" id="terrain_5" style="background: brown;">
+                                    <div class="terrain_number"></div>
+                                </div>
+                                <div class="terrain" id="terrain_6" style="background: greenyellow;">
+                                    <div class="terrain_number"></div>
+                                </div>
                                 <div class="terrain"></div>
                                 <div class="terrain"></div>
                                 <br>
                                 <div class="terrain"></div>
-                                <div class="terrain" id="terrain_7" style="background: orange;"></div>
-                                <div class="terrain" id="terrain_8" style="background: green;"></div>
-                                <div class="terrain" id="terrain_9" style="background: yellow;"></div>
-                                <div class="terrain" id="terrain_10" style="background: green;"></div>
-                                <div class="terrain" id="terrain_11" style="background: yellow;"></div>
+                                <div class="terrain" id="terrain_7" style="background: #f2e5c0;">
+                                    <div class="terrain_number">
+                                        <i class="fa-solid fa-user-ninja fa-2x" data-toggle="tooltip" data-placement="top" title="Ladrón"></i>
+                                    </div>
+                                </div>
+                                <div class="terrain" id="terrain_8" style="background: green;">
+                                    <div class="terrain_number"></div>
+                                </div>
+                                <div class="terrain" id="terrain_9" style="background: #f1cc0b;">
+                                    <div class="terrain_number"></div>
+                                </div>
+                                <div class="terrain" id="terrain_10" style="background: green;">
+                                    <div class="terrain_number"></div>
+                                </div>
+                                <div class="terrain" id="terrain_11" style="background: #f1cc0b;">
+                                    <div class="terrain_number"></div>
+                                </div>
                                 <div class="terrain"></div>
                                 <br>
                                 <div class="terrain"></div>
-                                <div class="terrain" id="terrain_12" style="background: brown;"></div>
-                                <div class="terrain" id="terrain_13" style="background: greenyellow;"></div>
-                                <div class="terrain" id="terrain_14" style="background: greenyellow;"></div>
-                                <div class="terrain" id="terrain_15" style="background: lightgray;"></div>
+                                <div class="terrain" id="terrain_12" style="background: brown;">
+                                    <div class="terrain_number"></div>
+                                </div>
+                                <div class="terrain" id="terrain_13" style="background: greenyellow;">
+                                    <div class="terrain_number"></div>
+                                </div>
+                                <div class="terrain" id="terrain_14" style="background: greenyellow;">
+                                    <div class="terrain_number"></div>
+                                </div>
+                                <div class="terrain" id="terrain_15" style="background: darkgray;">
+                                    <div class="terrain_number"></div>
+                                </div>
                                 <div class="terrain"></div>
                                 <div class="terrain"></div>
                                 <br>
                                 <div class="terrain"></div>
                                 <div class="terrain"></div>
-                                <div class="terrain" id="terrain_16" style="background: lightgray;"></div>
-                                <div class="terrain" id="terrain_17" style="background: yellow;"></div>
-                                <div class="terrain" id="terrain_18" style="background: green;"></div>
+                                <div class="terrain" id="terrain_16" style="background: darkgray;">
+                                    <div class="terrain_number"></div>
+                                </div>
+                                <div class="terrain" id="terrain_17" style="background: #f1cc0b;">
+                                    <div class="terrain_number"></div>
+                                </div>
+                                <div class="terrain" id="terrain_18" style="background: green;">
+                                    <div class="terrain_number"></div>
+                                </div>
                                 <div class="terrain"></div>
                                 <div class="terrain"></div>
                             </div>
@@ -502,8 +550,6 @@
             </div>
             <!-- Log -->
             <div class="col log">
-                <!--                <div class="row">-->
-                <!--                    <div class="col-12">-->
                 <div id="commerce_log" style="height: 50vh">
                     <p>
                         <span class="span_title">Comercios</span>
@@ -514,18 +560,7 @@
                         <span class="span_title">Otra información útil</span>
                     </p>
                 </div>
-                <!--                    </div>-->
-                <!--                </div>-->
-                <!-- // TODO: Mover el input file a un boton en un menú -->
-                <!--
-                <div class="row">
-                    <div class="col-12">
-                        <div style="background: pink">
-                            <input type="file" id="get_file" accept=".json">
-                        </div>
-                    </div>
-                </div>
--->
+                <input type="file" id="get_file" accept=".json" style="display: none;">
             </div>
         </div> <!-- fin partida -->
 
@@ -888,6 +923,11 @@
 
         function init_events() {
             let input = jQuery('#get_file');
+            let load_game = jQuery('#load_game');
+            load_game.on('click', function(e) {
+                input.click();
+            })
+
             input.on('click', function(e) {
                 input.val('')
 
@@ -975,10 +1015,23 @@
 
             for (let i = 0; i < terrain.length; i++) {
                 let terrain_div = jQuery('#terrain_' + i);
+                let terrain_number = jQuery('#terrain_' + i + ' .terrain_number');
 
-                terrain_div.text(terrain[i]['probability'] != 0 ? terrain[i]['probability'] : 'X');
+                html = '';
+                if (terrain[i]['probability'] != 0) {
+                    if (terrain[i]['probability'] == 6 || terrain[i]['probability'] == 8) {
+                        html += '<span style="color: red;">';
+                    } else {
+                        html += '<span>';
+                    }
+                    html += terrain[i]['probability'] + '</span>';
+                } else {
+                    html += '<i class="fa-solid fa-user-ninja fa-2x" data-toggle="tooltip" data-placement="top" title="Ladrón"></i>'
+                }
+
+                terrain_number.html(html);
                 terrain_div.css('background', getTerrainTypeColor(terrain[i]['terrainType']));
-                terrain_div.text(terrain_div.text() + '');
+                //                terrain_div.text(terrain_div.text() + '');
             }
         }
 
@@ -1016,17 +1069,17 @@
         function getTerrainTypeColor(terrainType) {
             switch (terrainType) {
                 case 0:
-                    return 'yellow';
+                    return '#f1cc0b';
                 case 1:
-                    return 'lightgray';
+                    return 'darkgray';
                 case 2:
                     return 'brown';
                 case 3:
                     return 'green';
                 case 4:
-                    return 'yellowgreen';
+                    return 'greenyellow';
                 case -1:
-                    return 'orange';
+                    return '#f2e5c0';
                 default:
                     alert('Caso ilegal de terreno');
                     break;
@@ -1128,7 +1181,7 @@
                         if (phase_obj['dice'] == 7) {
                             //                            jQuery('#terrain_' + phase_obj['past_thief_terrain']).text('')
                             jQuery('#terrain_' + phase_obj['past_thief_terrain']).text(game_obj['setup']['board']['board_terrain'][phase_obj['past_thief_terrain']]['probability'] != 0 ? game_obj['setup']['board']['board_terrain'][phase_obj['past_thief_terrain']]['probability'] : '')
-                            jQuery('#terrain_' + phase_obj['thief_terrain']).text('X');
+                            jQuery('#terrain_' + phase_obj['thief_terrain']).html('<i class="fa-solid fa-user-ninja fa-2x" data-toggle="tooltip" data-placement="top" title="Ladrón"></i>');
                         }
 
                         break;
@@ -1385,9 +1438,9 @@
 
 
         function setup() {
-            nodeSetup();
+            //            nodeSetup();
             terrainSetup();
-            addSetupBuildings();
+            //            addSetupBuildings();
         }
 
         // init()

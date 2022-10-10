@@ -1,7 +1,3 @@
-/*********************************/
-/*           Terreno             */
-/*********************************/
-
 #gamefield {
     /*Se crean variables en CSS??*/
     --s: 90px;
@@ -13,6 +9,9 @@
     padding-left: calc(var(--s) / 2)
 }
 
+/*********************************/
+/*           Terreno             */
+/*********************************/
 #terrain_pieces {
     font-size: 0;
 }
@@ -73,6 +72,29 @@
     clip-path: polygon(50% 0%, 100% 25%, 100% 33%, 0% 33%, 0% 25%);
 }
 
+.terrain_cereal {
+    background: #f1cc0b;
+}
+.terrain_mineral {
+    background: darkgray;
+}
+.terrain_clay {
+    background: brown;
+}
+.terrain_wood {
+    background: green;
+}
+.terrain_wool {
+    background: greenyellow;
+}
+.terrain_desert {
+    background: #f2e5c0;
+}
+
+
+/*********************************/
+/*             Nodes             */
+/*********************************/
 .nodes {
     position: absolute;
     width: 735px;
@@ -101,6 +123,17 @@
     align-items: center;
 }
 
+.filler_node {
+    background: #00aacc;
+    height: 30px !important;
+    flex: 0 0 30px !important;
+    border-radius: 15px;
+    z-index: 1;
+}
+
+/*********************************/
+/*             Roads             */
+/*********************************/
 .roads {
     position: absolute;
     width: 735px;
@@ -122,20 +155,11 @@
     /*    left: 304px;*/
 }
 
-.filler_node {
-    background: #00aacc;
-    height: 30px !important;
-    flex: 0 0 30px !important;
-    border-radius: 15px;
-    z-index: 1;
-}
-
 .filler_road {
     background: #00aacc;
     height: 10px;
     z-index: 1;
 }
-
 
 /***************************/
 /*        Rotation         */

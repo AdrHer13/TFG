@@ -822,7 +822,8 @@
                 }
 
                 terrain_number.html(html);
-                terrain_div.css('background', getTerrainTypeColor(terrain[i]['terrainType']));
+                terrain_div.removeClass(['terrain_cereal', 'terrain_mineral', 'terrain_clay', 'terrain_wood', 'terrain_wool', 'terrain_desert'])
+                terrain_div.addClass(getTerrainTypeClass(terrain[i]['terrainType']));
                 //                terrain_div.text(terrain_div.text() + '');
             }
         }
@@ -860,20 +861,20 @@
             }
         }
 
-        function getTerrainTypeColor(terrainType) {
+        function getTerrainTypeClass(terrainType) {
             switch (terrainType) {
                 case 0:
-                    return '#f1cc0b';
+                    return 'terrain_cereal';
                 case 1:
-                    return 'darkgray';
+                    return 'terrain_mineral';
                 case 2:
-                    return 'brown';
+                    return 'terrain_clay';
                 case 3:
-                    return 'green';
+                    return 'terrain_wood';
                 case 4:
-                    return 'greenyellow';
+                    return 'terrain_wool';
                 case -1:
-                    return '#f2e5c0';
+                    return 'terrain_desert';
                 default:
                     alert('Caso ilegal de terreno');
                     break;

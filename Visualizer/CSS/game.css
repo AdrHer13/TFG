@@ -1,0 +1,292 @@
+/*********************************/
+/*           Terreno             */
+/*********************************/
+
+#gamefield {
+    /*Se crean variables en CSS??*/
+    --s: 90px;
+    --m: 4px;
+    --f: calc(var(--s) * 1.732 + 4 * var(--m) - 1px);
+
+    display: flex;
+    justify-content: center;
+    padding-left: calc(var(--s) / 2)
+}
+
+#terrain_pieces {
+    font-size: 0;
+}
+
+#terrain_pieces::before {
+    content: "";
+    width: calc(var(--s) / 2 + var(--m));
+    float: left;
+    height: 120%;
+    shape-outside: repeating-linear-gradient(#0000 0 calc(var(--f) - 3px), #000 0 var(--f));
+}
+
+.terrain {
+    width: var(--s);
+    margin: var(--m);
+    height: calc(var(--s) * 1.1547);
+    display: inline-block;
+    font-size: initial;
+    clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
+    margin-bottom: calc(var(--m) - var(--s) * 0.2886);
+    /* some negative margin to create overlap */
+    /*    background: white;*/
+    z-index: 5;
+    background: #00aacc;
+}
+
+.terrain_number {
+    --t: 50px;
+    width: var(--t);
+    height: var(--t);
+
+    position: relative;
+    top: calc(calc(var(--s) * 1.1547 / 2) - var(--t) / 2);
+    left: calc(calc(var(--s) / 2) - var(--t) / 2);
+
+    flex: 0 0 var(--t) !important;
+
+    border-radius: calc(var(--t) / 2);
+    background: #f2e5c0;
+    color: black;
+    z-index: 10;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.terrain_number > * {
+    position: absolute;
+    font-weight: bold;
+}
+
+.top_terrain {
+    clip-path: polygon(0% 66%, 100% 66%, 100% 75%, 50% 100%, 0% 75%);
+}
+
+.bottom_terrain {
+    clip-path: polygon(50% 0%, 100% 25%, 100% 33%, 0% 33%, 0% 25%);
+}
+
+.nodes {
+    position: absolute;
+    width: 735px;
+    height: 429.750px;
+    ;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.node {
+    background: none;
+    width: 25px !important;
+    height: 25px !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: white;
+    flex: 0 0 30px !important;
+    border-radius: 15px;
+    z-index: 10;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.roads {
+    position: absolute;
+    width: 735px;
+    height: 429.750px;
+    ;
+
+    /*    display: flex;*/
+    /*    justify-content: center;*/
+    /*    align-items: center;*/
+}
+
+.road {
+    background: none;
+    height: 15px;
+    /*    z-index: 10;*/
+    width: 50px;
+    position: absolute;
+    /*    top: 310px;*/
+    /*    left: 304px;*/
+}
+
+.filler_node {
+    background: #00aacc;
+    height: 30px !important;
+    flex: 0 0 30px !important;
+    border-radius: 15px;
+    z-index: 1;
+}
+
+.filler_road {
+    background: #00aacc;
+    height: 10px;
+    z-index: 1;
+}
+
+
+/***************************/
+/*        Rotation         */
+/***************************/
+.left_road {
+    transform: rotate(-30deg);
+}
+
+.right_road {
+    transform: rotate(30deg);
+}
+
+.vertical_road {
+    transform: rotate(90deg);
+}
+
+/***************************/
+/*          Column         */
+/***************************/
+.first_col {
+    left: 103px;
+}
+
+.second_col {
+    left: 151px;
+}
+
+.third_col {
+    left: 202px;
+}
+
+.fourth_col {
+    left: 250px;
+}
+
+.fifth_col {
+    left: 299px;
+}
+
+.sixth_col {
+    left: 348px;
+}
+
+.seventh_col {
+    left: 398px;
+}
+
+.eighth_col {
+    left: 446px;
+}
+
+.ninth_col {
+    left: 495px;
+}
+
+.tenth_col {
+    left: 543px;
+}
+
+/***************************/
+
+.vertical_first_col {
+    left: 80px;
+}
+
+.vertical_second_col {
+    left: 130px;
+}
+
+.vertical_third_col {
+    left: 180px;
+}
+
+.vertical_fourth_col {
+    left: 225px;
+}
+
+.vertical_fifth_col {
+    left: 275px;
+}
+
+.vertical_sixth_col {
+    left: 322px;
+}
+
+.vertical_seventh_col {
+    left: 375px;
+}
+
+.vertical_eighth_col {
+    left: 423px;
+}
+
+.vertical_ninth_col {
+    left: 470px;
+}
+
+.vertical_tenth_col {
+    left: 521px;
+}
+
+.vertical_eleventh_col {
+    left: 565px;
+}
+
+/***************************/
+/*           Rows          */
+/***************************/
+
+.first_row {
+    top: 93px;
+}
+
+.second_row {
+    top: 176px;
+}
+
+.third_row {
+    top: 264px;
+}
+
+.fourth_row {
+    top: 347px;
+}
+
+.fifth_row {
+    top: 436px;
+}
+
+.sixth_row {
+    top: 519px;
+}
+
+/***************************/
+
+.vertical_first_row {
+    top: 135px;
+}
+
+.vertical_second_row {
+    top: 220px;
+}
+
+.vertical_third_row {
+    top: 306px;
+}
+
+.vertical_fourth_row {
+    top: 392px;
+}
+
+.vertical_fifth_row {
+    top: 478px;
+}

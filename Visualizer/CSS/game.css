@@ -9,6 +9,17 @@
     padding-left: calc(var(--s) / 2)
 }
 
+#gamefield_external {
+    height: 70vh;
+/*    background: #00aacc;*/
+    background: url('../Images/textures/water.jpg')!important;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: -1.5em;
+}
+
 /*********************************/
 /*           Terreno             */
 /*********************************/
@@ -35,7 +46,8 @@
     /* some negative margin to create overlap */
     /*    background: white;*/
     z-index: 5;
-    background: #00aacc;
+    background: none;
+/*    background: #00aacc;*/
 }
 
 .terrain_number {
@@ -72,23 +84,34 @@
     clip-path: polygon(50% 0%, 100% 25%, 100% 33%, 0% 33%, 0% 25%);
 }
 
+
 .terrain_cereal {
-    background: #f1cc0b;
+    background: yellow!important;
+/*    background: url('../Images/textures/cereal.jpg')!important;*/
 }
 .terrain_mineral {
-    background: darkgray;
+    background: darkgray!important;
+/*    background: url('../Images/textures/mountain.jpg')!important;*/
 }
 .terrain_clay {
-    background: brown;
+    background: brown!important;
+/*    background: url('../Images/textures/quarry.jpg')!important;*/
 }
 .terrain_wood {
-    background: green;
+    background: green!important;
+/*    background: url('../Images/textures/forest.jpg')!important;*/
 }
 .terrain_wool {
-    background: greenyellow;
+    background: yellowgreen;
+/*    background: url('../Images/textures/wool.jpg')!important;*/
 }
 .terrain_desert {
-    background: #f2e5c0;
+    background: #f2e5c0!important;
+/*    background: url('../Images/textures/desert.jpg')!important;*/
+}
+.terrain_water {
+    background: #00aacc!important;
+/*    background: url('../Images/textures/water.jpg')!important;*/
 }
 
 

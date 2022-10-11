@@ -21,19 +21,8 @@ h3 {
 
 
 /*********************************/
-/*              Game             */
+/*            Controles          */
 /*********************************/
-
-
-#gamefield_external {
-    height: 70vh;
-    background: #00aacc;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: -1.5em;
-}
 
 #controles {
     height: 7vh;

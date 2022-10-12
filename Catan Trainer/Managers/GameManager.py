@@ -313,7 +313,8 @@ class GameManager:
             player_hand.remove_material(MaterialConstants.MINERAL, 1)
             player_hand.remove_material(MaterialConstants.WOOL, 1)
 
-            self.bot_manager.players[player_id]['development_cards'].add_card(self.development_cards_deck.draw_card())
+            card_drawn = self.development_cards_deck.draw_card()
+            self.bot_manager.players[player_id]['development_cards'].add_card(card_drawn)
             development_card_hand = self.bot_manager.players[player_id]['development_cards'].check_hand()
             print('BUSCAR:')
             print(development_card_hand)
@@ -325,7 +326,10 @@ class GameManager:
             self.bot_manager.players[player_id]['player'].development_cards_hand.hand = \
                 self.bot_manager.players[player_id][
                     'development_cards'].hand
-            return {'response': True}
+            if card_drawn is not None:
+                return {'response': True, 'card_id': card_drawn.id, 'card_type': card_drawn.type, 'card_effect': card_drawn.effect}
+            else:
+                return {'response': True, 'card_type': None, 'card_effect': None}
         else:
             return {'response': False, 'errorMsg': 'Falta de materiales'}
 

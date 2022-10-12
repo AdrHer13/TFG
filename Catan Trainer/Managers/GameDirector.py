@@ -216,6 +216,12 @@ class GameDirector:
             if isinstance(built, dict):
                 if built['response']:
                     build_phase_object['finished'] = True
+
+                    if build_response['building'] == BuildConstants.CARD:
+                        build_phase_object['card_id'] = built['card_effect']
+                        build_phase_object['card_type'] = built['card_type']
+                        build_phase_object['card_effect'] = built['card_effect']
+
                     print('J' + str(player) + ' ha construido algo: ')
                     print(build_response)
                     # Si se ha construido permitir que vuelvan a construir

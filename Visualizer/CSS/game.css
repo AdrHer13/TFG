@@ -162,18 +162,14 @@
     width: 735px;
     height: 429.750px;
     ;
-
-    /*    display: flex;*/
-    /*    justify-content: center;*/
-    /*    align-items: center;*/
 }
 
 .road {
     background: none;
     height: 15px;
-    /*    z-index: 10;*/
     width: 50px;
     position: absolute;
+    /*    z-index: 10;*/
     /*    top: 310px;*/
     /*    left: 304px;*/
 }

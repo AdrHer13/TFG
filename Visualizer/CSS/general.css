@@ -114,3 +114,7 @@ h3 {
     align-items: flex-end;
     height: 50%;
 }
+
+.increment {
+    width: 1rem;
+}

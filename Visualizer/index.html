@@ -341,14 +341,16 @@
             <!-- Log -->
             <div class="col log">
                 <div id="commerce_log" style="height: 50vh">
-                    <p>
-                        <span class="span_title">Comercios</span>
-                    </p>
+                    <div id="commerce_log_title">Comercios</div>
+                    <div id="commerce_log_text" style="height: -webkit-fill-available">
+
+                    </div>
                 </div>
                 <div id="other_useful_info">
-                    <p>
-                        <span class="span_title">Otra información útil</span>
-                    </p>
+                    <div id="other_useful_info_title">Otra información útil</div>
+                    <div id="other_useful_info_text">
+
+                    </div>
                 </div>
                 <input type="file" id="get_file" accept=".json" style="display: none;">
             </div>
@@ -419,10 +421,10 @@
                                         <span class="knight_quantity">0</span>
                                         <i class="increment fa-solid"></i>
                                     </div>
-                                    <div class="victory_points col me-1 px-1" data-id="victory_points" style="border-right: 1px solid black; border-left: 1px solid black;">
+                                    <div class="victory_point col me-1 px-1" data-id="victory_point" style="border-right: 1px solid black; border-left: 1px solid black;">
                                         <i class="fa-solid fa-trophy" data-toggle="tooltip" data-placement="top" title="Puntos de victoria"></i>
                                         <span>: </span>
-                                        <span class="victory_points_quantity">0</span>
+                                        <span class="victory_point_quantity">0</span>
                                         <i class="increment fa-solid"></i>
                                     </div>
                                     <div class="road_building col me-1 px-1" data-id="road_building" style="border-right: 1px solid black; border-left: 1px solid black;">
@@ -508,10 +510,10 @@
                                         <span class="knight_quantity">0</span>
                                         <i class="increment fa-solid"></i>
                                     </div>
-                                    <div class="victory_points col me-1 px-1" data-id="victory_points" style="border-right: 1px solid black; border-left: 1px solid black;">
+                                    <div class="victory_point col me-1 px-1" data-id="victory_point" style="border-right: 1px solid black; border-left: 1px solid black;">
                                         <i class="fa-solid fa-trophy" data-toggle="tooltip" data-placement="top" title="Puntos de victoria"></i>
                                         <span>: </span>
-                                        <span class="victory_points_quantity">0</span>
+                                        <span class="victory_point_quantity">0</span>
                                         <i class="increment fa-solid"></i>
                                     </div>
                                     <div class="road_building col me-1 px-1" data-id="road_building" style="border-right: 1px solid black; border-left: 1px solid black;">
@@ -603,10 +605,10 @@
                                         <span class="knight_quantity">0</span>
                                         <i class="increment fa-solid"></i>
                                     </div>
-                                    <div class="victory_points col me-1 px-1" data-id="victory_points" style="border-right: 1px solid black; border-left: 1px solid black;">
+                                    <div class="victory_point col me-1 px-1" data-id="victory_point" style="border-right: 1px solid black; border-left: 1px solid black;">
                                         <i class="fa-solid fa-trophy" data-toggle="tooltip" data-placement="top" title="Puntos de victoria"></i>
                                         <span>: </span>
-                                        <span class="victory_points_quantity">0</span>
+                                        <span class="victory_point_quantity">0</span>
                                         <i class="increment fa-solid"></i>
                                     </div>
                                     <div class="road_building col me-1 px-1" data-id="road_building" style="border-right: 1px solid black; border-left: 1px solid black;">
@@ -693,10 +695,10 @@
                                         <span class="knight_quantity">0</span>
                                         <i class="increment fa-solid"></i>
                                     </div>
-                                    <div class="victory_points col me-1 px-1" data-id="victory_points" style="border-right: 1px solid black; border-left: 1px solid black;">
+                                    <div class="victory_point col me-1 px-1" data-id="victory_point" style="border-right: 1px solid black; border-left: 1px solid black;">
                                         <i class="fa-solid fa-trophy" data-toggle="tooltip" data-placement="top" title="Puntos de victoria"></i>
                                         <span>: </span>
-                                        <span class="victory_points_quantity">0</span>
+                                        <span class="victory_point_quantity">0</span>
                                         <i class="increment fa-solid"></i>
                                     </div>
                                     <div class="road_building col me-1 px-1" data-id="road_building" style="border-right: 1px solid black; border-left: 1px solid black;">
@@ -1002,8 +1004,8 @@
                         phase_obj = turn_obj['start_turn'];
 
                         if (phase_obj['development_card_played'].length) {
-                            console.log('SE JUEGA CARTA DE DESAROLLO AL INICIO DEL TURNO' + '| Ronda: ' + contador_rondas.val() + ' Turno: ' + contador_turnos.val())
-                            console.log(phase_obj)
+                            //                            console.log('SE JUEGA CARTA DE DESAROLLO AL INICIO DEL TURNO' + '| Ronda: ' + contador_rondas.val() + ' Turno: ' + contador_turnos.val())
+                            //                            console.log(phase_obj)
                             on_development_card_played(phase_obj['development_card_played'][0])
                         }
 
@@ -1028,10 +1030,117 @@
                     case 1:
                         phase_obj = turn_obj['commerce_phase'];
 
-                        let commerce_log = jQuery('#commerce_log');
-                        commerce_log.empty();
+                        console.log(phase_obj)
+
+                        let commerce_log_text = jQuery('#commerce_log_text');
+                        commerce_log_text.empty();
 
                         let html = '';
+
+                        for (let i = 0; i < phase_obj.length; i++) {
+
+                            if (phase_obj[i]['trade_offer'] == 'None' || phase_obj[i]['inviable']) {
+                                // Do nothing or break, porque debería de ser el último de todas maneras
+                                break;
+                            }
+
+                            if (phase_obj[i]['harbor_trade']) {
+                                // TO DO
+                            } else {
+
+                                html += '<div class="offer"><p>';
+                                html += '<span class="commerce_P' + contador_turnos.val() + '">P' + contador_turnos.val() + '</span>: Offer';
+                                html += '<br><span class="gives">';
+                                html += 'Gives: ' + 'Cereal: ' + phase_obj[i]['trade_offer']['gives']['cereal'] + ' | ';
+                                html += 'Mineral: ' + phase_obj[i]['trade_offer']['gives']['mineral'] + ' | ';
+                                html += 'Wool: ' + phase_obj[i]['trade_offer']['gives']['wool'] + ' | ';
+                                html += 'Wood: ' + phase_obj[i]['trade_offer']['gives']['wood'] + ' | ';
+                                html += 'Clay: ' + phase_obj[i]['trade_offer']['gives']['clay'] + '</span>';
+
+                                html += '<br><span class="receives">';
+                                html += 'Receives: ' + 'Cereal: ' + phase_obj[i]['trade_offer']['receives']['cereal'] + ' | ';
+                                html += 'Mineral: ' + phase_obj[i]['trade_offer']['receives']['mineral'] + ' | ';
+                                html += 'Wool: ' + phase_obj[i]['trade_offer']['receives']['wool'] + ' | ';
+                                html += 'Wood: ' + phase_obj[i]['trade_offer']['receives']['wood'] + ' | ';
+                                html += 'Clay: ' + phase_obj[i]['trade_offer']['receives']['clay'] + '</span>';
+                                html += '</p></div>';
+
+                                html += '<div class="answers">'
+                                for (let j = 0; j < phase_obj[i]['answers'].length; j++) {
+                                    for (let n = 0; n < phase_obj[i]['answers'][j].length; n++) {
+                                        html += '<div>';
+
+                                        if (phase_obj[i]['answers'][j][n]['count'] == 1) {
+
+                                            if (phase_obj[i]['answers'][j][n]['response'] == true) {
+                                                html += '<span class="commerce_P' + (parseInt(phase_obj[i]['answers'][j][n]['receiver']) + 1) + '"> P' + (parseInt(phase_obj[i]['answers'][j][n]['receiver']) + 1) + '</span>';
+                                                if (phase_obj[i]['answers'][j][n]['completed']) {
+                                                    html += ': Accepted';
+                                                } else {
+                                                    html += ': Accepted | Cannot be completed (lack of materials)';
+                                                }
+                                            } else {
+                                                if (phase_obj[i]['answers'][j][n]['count'] == phase_obj[i]['answers'][j].length) {
+                                                    html += '<span class="commerce_P' + (parseInt(phase_obj[i]['answers'][j][n]['receiver']) + 1) + '"> P' + (parseInt(phase_obj[i]['answers'][j][n]['receiver']) + 1) + '</span>';
+                                                    html += ': Denied';
+                                                }
+                                            }
+                                        } else {
+
+                                            html += '<div class="offer"><p>';
+                                            html += '<span class="commerce_P' + (phase_obj[i]['answers'][j][n]['giver'] + 1) + '">P' + (phase_obj[i]['answers'][j][n]['giver'] + 1) + '</span>: Counteroffer';
+                                            html += '<br><span class="gives">';
+                                            html += 'Gives: ' + 'Cereal: ' + phase_obj[i]['answers'][j][n]['trade_offer']['gives']['cereal'] + ' | ';
+                                            html += 'Mineral: ' + phase_obj[i]['answers'][j][n]['trade_offer']['gives']['mineral'] + ' | ';
+                                            html += 'Wool: ' + phase_obj[i]['answers'][j][n]['trade_offer']['gives']['wool'] + ' | ';
+                                            html += 'Wood: ' + phase_obj[i]['answers'][j][n]['trade_offer']['gives']['wood'] + ' | ';
+                                            html += 'Clay: ' + phase_obj[i]['answers'][j][n]['trade_offer']['gives']['clay'] + '</span>';
+
+                                            html += '<br><span class="receives">';
+                                            html += 'Receives: ' + 'Cereal: ' + phase_obj[i]['answers'][j][n]['trade_offer']['receives']['cereal'] + ' | ';
+                                            html += 'Mineral: ' + phase_obj[i]['answers'][j][n]['trade_offer']['receives']['mineral'] + ' | ';
+                                            html += 'Wool: ' + phase_obj[i]['answers'][j][n]['trade_offer']['receives']['wool'] + ' | ';
+                                            html += 'Wood: ' + phase_obj[i]['answers'][j][n]['trade_offer']['receives']['wood'] + ' | ';
+                                            html += 'Clay: ' + phase_obj[i]['answers'][j][n]['trade_offer']['receives']['clay'] + '</span>';
+                                            html += '</p></div>';
+
+
+                                            if (phase_obj[i]['answers'][j][n]['response'] == true) {
+
+                                                html += '<span class="answers commerce_P' + (parseInt(phase_obj[i]['answers'][j][n]['receiver']) + 1) + '"> P' + (parseInt(phase_obj[i]['answers'][j][n]['receiver']) + 1) + '</span>';
+                                                if (phase_obj[i]['answers'][j][n]['completed']) {
+                                                    html += ': Accepted';
+                                                } else {
+                                                    html += ': Accepted | Cannot be completed (lack of materials)';
+                                                }
+                                                html += '</div>'
+                                            } else {
+                                                if (phase_obj[i]['answers'][j][n]['count'] == phase_obj[i]['answers'][j].length) {
+                                                    html += '<span class="answers commerce_P' + (parseInt(phase_obj[i]['answers'][j][n]['receiver']) + 1) + '"> P' + (parseInt(phase_obj[i]['answers'][j][n]['receiver']) + 1) + '</span>';
+                                                    html += ': Denied';
+                                                    html += '</div>'
+                                                } else {
+                                                    html += '<div class="answers">'
+                                                }
+                                            }
+
+                                        }
+                                    }
+                                    html += '</p></div>'
+                                }
+                                html += '</div>' // div.answers
+                                html += '</div>'
+
+
+                                html += '<hr/>'
+
+                                //                                html += phase_obj[i]['trade_offer']['gives']['cereal']
+                            }
+
+
+                        }
+
+                        commerce_log_text.append(html)
 
 
                         //                        for (let i = 0; i < phase_obj.length; i++) {
@@ -1040,65 +1149,9 @@
                         //                                    // TODO:
                         //                                } else {
                         //
-                        //                                    html += '<div class="offer"><p>';
-                        //                                    html += '<span>P' + contador_turnos.val() + ': Offer</span>';
-                        //                                    html += '<br><span class="gives">';
-                        //                                    html += 'Gives: ' + 'Cereal: ' + phase_obj[i]['trade_offer']['gives']['cereal'] + ' | ';
-                        //                                    html += 'Mineral: ' + phase_obj[i]['trade_offer']['gives']['mineral'] + ' | ';
-                        //                                    html += 'Wool: ' + phase_obj[i]['trade_offer']['gives']['wool'] + ' | ';
-                        //                                    html += 'Wood: ' + phase_obj[i]['trade_offer']['gives']['wood'] + ' | ';
-                        //                                    html += 'Clay: ' + phase_obj[i]['trade_offer']['gives']['clay'] + '</span>';
-                        //
-                        //                                    html += '<br><span class="receives">';
-                        //                                    html += 'Receives: ' + 'Cereal: ' + phase_obj[i]['trade_offer']['receives']['cereal'] + ' | ';
-                        //                                    html += 'Mineral: ' + phase_obj[i]['trade_offer']['receives']['mineral'] + ' | ';
-                        //                                    html += 'Wool: ' + phase_obj[i]['trade_offer']['receives']['wool'] + ' | ';
-                        //                                    html += 'Wood: ' + phase_obj[i]['trade_offer']['receives']['wood'] + ' | ';
-                        //                                    html += 'Clay: ' + phase_obj[i]['trade_offer']['receives']['clay'] + '</span>';
-                        //                                    html += '</p></div>';
-                        //
                         //                                    html += '<div class="answers">';
                         //
-                        //                                    for (let j = 0; j < phase_obj[i]['answers'].length; j++) {
-                        //                                        html += '<div><p>';
-                        //                                        html += '<span>' + phase_obj[i]['answers'][j]['player'];
-                        //                                        if (phase_obj[i]['answers'][j]['response'] == true) {
-                        //                                            if (phase_obj[i]['answers'][j]['completed']) {
-                        //                                                html += ': true </span>';
-                        //                                            } else {
-                        //                                                html += ': true | Cannot be completed (lack of materials)</span>';
-                        //                                            }
-                        //                                        } else if (phase_obj[i]['answers'][j]['response'] == false) {
-                        //                                            html += ': false </span>';
-                        //                                        } else {
-                        //                                            html += ': counteroffer </span>';
-                        //                                            html += '<br><span class="counteroffer_gives">'
-                        //                                            html += 'Gives: ' + 'Cereal: ' + phase_obj[i]['answers'][j]['response']['gives']['cereal'] + ' | ';
-                        //                                            html += 'Mineral: ' + phase_obj[i]['answers'][j]['response']['gives']['mineral'] + ' | ';
-                        //                                            html += 'Wool: ' + phase_obj[i]['answers'][j]['response']['gives']['wool'] + ' | ';
-                        //                                            html += 'Wood: ' + phase_obj[i]['answers'][j]['response']['gives']['wood'] + ' | ';
-                        //                                            html += 'Clay: ' + phase_obj[i]['answers'][j]['response']['gives']['clay'] + '</span>';
-                        //                                            html += '<br><span class="counteroffer_receives">'
-                        //                                            html += 'Receives: ' + 'Cereal: ' + phase_obj[i]['answers'][j]['response']['receives']['cereal'] + ' | ';
-                        //                                            html += 'Mineral: ' + phase_obj[i]['answers'][j]['response']['receives']['mineral'] + ' | ';
-                        //                                            html += 'Wool: ' + phase_obj[i]['answers'][j]['response']['receives']['wool'] + ' | ';
-                        //                                            html += 'Wood: ' + phase_obj[i]['answers'][j]['response']['receives']['wood'] + ' | ';
-                        //                                            html += 'Clay: ' + phase_obj[i]['answers'][j]['response']['receives']['clay'] + '</span>';
-                        //
-                        //                                            html += '<br><span class="counteroffer_answer">P' + contador_turnos.val();
-                        //                                            if (phase_obj[i]['answers'][j]['giver_answer']) {
-                        //                                                if (phase_obj[i]['answers'][j]['completed']) {
-                        //                                                    html += ': true </span>';
-                        //                                                } else {
-                        //                                                    html += ': true | Cannot be completed (lack of materials)</span>';
-                        //                                                }
-                        //                                            } else {
-                        //                                                html += ': false </span>';
-                        //                                            }
-                        //                                        }
-                        //
-                        //                                        html += '</p></div>'
-                        //                                    }
+
                         //
                         //                                    html += '</div>'
                         //                                }
@@ -1171,8 +1224,8 @@
                         let winner = '';
 
                         if (phase_obj['development_card_played'].length) {
-                            console.log('SE JUEGA CARTA DE DESAROLLO AL FINAL DEL TURNO' + '| Ronda: ' + contador_rondas.val() + ' Turno: ' + contador_turnos.val())
-                            console.log(phase_obj)
+                            //                            console.log('SE JUEGA CARTA DE DESAROLLO AL FINAL DEL TURNO' + '| Ronda: ' + contador_rondas.val() + ' Turno: ' + contador_turnos.val())
+                            //                            console.log(phase_obj)
                             on_development_card_played(phase_obj['development_card_played'][0])
                         }
 
@@ -1295,9 +1348,9 @@
         function on_development_card_played(card) {
             jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + card['played_card']).removeClass(['increased', 'neutral', 'decreased']).addClass('decreased')
             jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + card['played_card'] + ' .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down')
-            let quantity = jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + card['played_card'] +'_quantity')
+            let quantity = jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + card['played_card'] + '_quantity')
             quantity.text(parseInt(quantity.text()) - 1).change()
-            
+
             switch (card['played_card']) {
                 case 'knight':
                     break;
@@ -1332,7 +1385,7 @@
                     for (let i = 0; i < 4; i++) {
                         changeHandObject(i, card['hand_P' + i]);
 
-                        if (material_chosen != ''){
+                        if (material_chosen != '') {
                             jQuery('#hand_P' + i + ' .' + material_chosen).addClass('decreased')
                             jQuery('#hand_P' + i + ' .' + material_chosen + ' .increment').addClass('fa-caret-down');
                         }
@@ -1340,7 +1393,7 @@
 
                     if (material_chosen != '')
                         jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + material_chosen).removeClass('decreased').addClass('increased')
-                        jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + material_chosen + ' .increment').removeClass('fa-caret-down').addClass('fa-caret-up');
+                    jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + material_chosen + ' .increment').removeClass('fa-caret-down').addClass('fa-caret-up');
                     break;
 
                 case 'year_of_plenty':

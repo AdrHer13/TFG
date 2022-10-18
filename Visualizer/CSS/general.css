@@ -53,21 +53,40 @@ h3 {
     border-top: black solid 1px;
 }
 
-#commerce_log,
-#other_useful_info {
+#commerce_log_text,
+#other_useful_info_text {
     background: white;
     font-family: monospace;
     overflow-y: scroll;
 }
 
-.span_title {
+
+#commerce_log_title,
+#other_useful_info_title {
     font-family: sans-serif;
     text-decoration: underline;
+}
+
+.commerce_P1 {
+    color: darkred;
+}
+.commerce_P2 {
+    color: darkblue;
+}
+.commerce_P3 {
+    color: darkgreen;
+}
+.commerce_P4 {
+    color: darkgoldenrod;
 }
 
 .gives,
 .receives {
     margin: 0;
+    margin-left: 5em;
+}
+
+.answers {
     margin-left: 5em;
 }
 

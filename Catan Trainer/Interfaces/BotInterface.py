@@ -34,7 +34,7 @@ class BotInterface:
         :param incoming_trade_offer: Oferta de comercio que le llega al bot
         :return: true, TradeOffer, false, None
         """
-        answer = random.randint(0, 1)
+        answer = random.randint(0, 2)
         if answer:
             if answer == 2:
                 gives = Materials(random.randint(0, self.hand.get_cereal()), random.randint(0, self.hand.get_mineral()),

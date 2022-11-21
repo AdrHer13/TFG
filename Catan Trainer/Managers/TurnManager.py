@@ -7,15 +7,12 @@ class TurnManager:
     """
 
     turn = 0
-    whoseTurnIsIt = 0
+    whose_turn_is_it = 0
     phase = 0
     round = 0
 
     def __init__(self):
-        self.turn, self.whoseTurnIsIt, self.phase, self.round = 0, 0, 0, 0
-        return
-
-    def end_phase(self):
+        self.turn, self.whose_turn_is_it, self.phase, self.round = 0, 0, 0, 0
         return
 
     #############################
@@ -31,7 +28,7 @@ class TurnManager:
         """
         :return: int whose_turn_is_it
         """
-        return self.whoseTurnIsIt
+        return self.whose_turn_is_it
 
     def get_phase(self):
         """
@@ -59,7 +56,7 @@ class TurnManager:
         """
         :return: int whose_turn_is_it
         """
-        self.whoseTurnIsIt = player
+        self.whose_turn_is_it = player
         return
 
     def set_phase(self, phase=0):

@@ -982,6 +982,7 @@
                 contador_fases.val(1).change();
             })
             contador_fases.off().on('change', function(e) {
+                let commerce_log_text = jQuery('#commerce_log_text');
 
                 if (parseInt(contador_fases.val()) > 4) {
                     contador_turnos.val(parseInt(contador_turnos.val()) + 1).change();
@@ -994,14 +995,10 @@
                     return;
                 }
 
-                //                for (let i = 0; i < phase_obj.length; i++){
-                //                    if(phase_obj[i]['development_card_played'])
-                //                        console.log(phase_obj[i])
-                //                }
-
                 switch (parseInt(contador_fases.val()) - 1) {
                     case 0:
                         phase_obj = turn_obj['start_turn'];
+                        commerce_log_text.empty();
 
                         if (phase_obj['development_card_played'].length) {
                             //                            console.log('SE JUEGA CARTA DE DESAROLLO AL INICIO DEL TURNO' + '| Ronda: ' + contador_rondas.val() + ' Turno: ' + contador_turnos.val())
@@ -1029,23 +1026,129 @@
                         break;
                     case 1:
                         phase_obj = turn_obj['commerce_phase'];
-
-                        console.log(phase_obj)
-
-                        let commerce_log_text = jQuery('#commerce_log_text');
-                        commerce_log_text.empty();
+                        console.log(phase_obj);
 
                         let html = '';
 
                         for (let i = 0; i < phase_obj.length; i++) {
 
-                            if (phase_obj[i]['trade_offer'] == 'None' || phase_obj[i]['inviable']) {
-                                // Do nothing or break, porque debería de ser el último de todas maneras
+                            if (phase_obj[i]['trade_offer'] == 'None') {
+                                // break, porque debería de ser el último de todas maneras
+
+                                // si no hay ningún comercio que ponga PJ: No trade
+                                if (phase_obj.length == 1) {
+                                    html += '<div class="offer"><p>';
+                                    html += '<span class="commerce_P' + contador_turnos.val() + '">P' + contador_turnos.val() + '</span>: No trade';
+                                    html += '<p></div>'
+                                    html += '<hr/>'
+                                }
+
+                                break;
+                            }
+                            if (phase_obj[i]['inviable']) {
+                                html += '<div class="offer"><p>';
+                                html += '<span class="commerce_P' + contador_turnos.val() + '">P' + contador_turnos.val() + '</span>: Inviable trade';
+                                html += '<p></div>'
+                                html += '<hr/>'
+                                // break, porque no se puede completar el comercio
                                 break;
                             }
 
                             if (phase_obj[i]['harbor_trade']) {
-                                // TO DO
+
+                                let actualPlayer = (contador_turnos.val() - 1)
+                                html += '<div class="offer"><p>';
+                                html += '<span class="commerce_P' + contador_turnos.val() + '">P' + contador_turnos.val() + '</span>: Harbor trade';
+                                html += '<br><span class="gives">Gives: ';
+                                switch (phase_obj[i]['trade_offer']['gives']) {
+                                    case 0:
+                                        html += 'Cereal'
+                                        jQuery('#hand_P' + actualPlayer + ' .cereal').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
+                                        jQuery('#hand_P' + actualPlayer + ' .cereal .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
+
+                                        break;
+                                    case 1:
+                                        html += 'Mineral'
+                                        jQuery('#hand_P' + actualPlayer + ' .mineral').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
+                                        jQuery('#hand_P' + actualPlayer + ' .mineral .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
+
+                                        break;
+                                    case 2:
+                                        html += 'Clay'
+                                        jQuery('#hand_P' + actualPlayer + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
+                                        jQuery('#hand_P' + actualPlayer + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
+
+                                        break;
+                                    case 3:
+                                        html += 'Wood'
+                                        jQuery('#hand_P' + actualPlayer + ' .wood').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
+                                        jQuery('#hand_P' + actualPlayer + ' .wood .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
+
+                                        break;
+                                    case 4:
+                                        html += 'Wool'
+                                        jQuery('#hand_P' + actualPlayer + ' .wool').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
+                                        jQuery('#hand_P' + actualPlayer + ' .wool .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
+
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                html += '</span>';
+                                html += '<br><span class="receives">Receives: ';
+                                switch (phase_obj[i]['trade_offer']['receives']) {
+                                    case 0:
+                                        html += 'Cereal'
+                                        jQuery('#hand_P' + actualPlayer + ' .cereal').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                        jQuery('#hand_P' + actualPlayer + ' .cereal .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+
+                                        break;
+                                    case 1:
+                                        html += 'Mineral'
+                                        jQuery('#hand_P' + actualPlayer + ' .mineral').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                        jQuery('#hand_P' + actualPlayer + ' .mineral .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+
+                                        break;
+                                    case 2:
+                                        html += 'Clay'
+                                        jQuery('#hand_P' + actualPlayer + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                        jQuery('#hand_P' + actualPlayer + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+
+                                        break;
+                                    case 3:
+                                        html += 'Wood'
+                                        jQuery('#hand_P' + actualPlayer + ' .wood').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                        jQuery('#hand_P' + actualPlayer + ' .wood .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+
+                                        break;
+                                    case 4:
+                                        html += 'Wool'
+                                        jQuery('#hand_P' + actualPlayer + ' .wool').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                        jQuery('#hand_P' + actualPlayer + ' .wool .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                html += '</span>';
+                                html += '</p></div>';
+                                html += '<hr/>';
+
+                                // se actualiza la mano del jugador
+                                changeHandObject(actualPlayer, phase_obj[i]['answer'])
+
+                            } else if (phase_obj[i]['harbor_trade'] == 'None') {
+                                // Se ha jugado una carta de desarrollo
+                                if (phase_obj[i]['trade_offer'] == 'played_card') {
+
+                                    html += '<div><p>';
+                                    html += '<span class="commerce_P' + contador_turnos.val() + '">P' + contador_turnos.val() + '</span>: Played a development card';
+                                    html += '</p></div>';
+                                    on_development_card_played(phase_obj[i]['development_card_played'])
+
+                                } else {
+                                    console.log('No debería de existir este log')
+                                }
                             } else {
 
                                 html += '<div class="offer"><p>';
@@ -1067,6 +1170,7 @@
 
                                 html += '<div class="answers">'
                                 for (let j = 0; j < phase_obj[i]['answers'].length; j++) {
+                                    let counteroffer_counter = 0
                                     for (let n = 0; n < phase_obj[i]['answers'][j].length; n++) {
                                         html += '<div>';
 
@@ -1076,6 +1180,126 @@
                                                 html += '<span class="commerce_P' + (parseInt(phase_obj[i]['answers'][j][n]['receiver']) + 1) + '"> P' + (parseInt(phase_obj[i]['answers'][j][n]['receiver']) + 1) + '</span>';
                                                 if (phase_obj[i]['answers'][j][n]['completed']) {
                                                     html += ': Accepted';
+
+                                                    // añadir materiales a mano
+                                                    let giver_nmbr = phase_obj[i]['answers'][j][n]['giver'];
+                                                    let receiver_nmbr = phase_obj[i]['answers'][j][n]['receiver'];
+                                                    
+                                                    let gives_cereal = parseInt(phase_obj[i]['answers'][j][n]['trade_offer']['gives']['cereal']);
+                                                    let gives_mineral = parseInt(phase_obj[i]['answers'][j][n]['trade_offer']['gives']['mineral']);
+                                                    let gives_clay = parseInt(phase_obj[i]['answers'][j][n]['trade_offer']['gives']['clay']);
+                                                    let gives_wood = parseInt(phase_obj[i]['answers'][j][n]['trade_offer']['gives']['wood']);
+                                                    let gives_wool = parseInt(phase_obj[i]['answers'][j][n]['trade_offer']['gives']['wool']);
+
+                                                    let receives_cereal = parseInt(phase_obj[i]['answers'][j][n]['trade_offer']['receives']['cereal']);
+                                                    let receives_mineral = parseInt(phase_obj[i]['answers'][j][n]['trade_offer']['receives']['mineral']);
+                                                    let receives_clay = parseInt(phase_obj[i]['answers'][j][n]['trade_offer']['receives']['clay']);
+                                                    let receives_wood = parseInt(phase_obj[i]['answers'][j][n]['trade_offer']['receives']['wood']);
+                                                    let receives_wool = parseInt(phase_obj[i]['answers'][j][n]['trade_offer']['receives']['wool']);
+
+
+                                                    changeHandObject(giver_nmbr, {
+                                                        'cereal': (parseInt($('#hand_P' + giver_nmbr + ' .cereal_quantity').text()) - gives_cereal + receives_cereal),
+                                                        'mineral': (parseInt($('#hand_P' + giver_nmbr + ' .mineral_quantity').text()) - gives_mineral + receives_mineral),
+                                                        'clay': (parseInt($('#hand_P' + giver_nmbr + ' .bricks_quantity').text()) - gives_clay + receives_clay),
+                                                        'wood': (parseInt($('#hand_P' + giver_nmbr + ' .wood_quantity').text()) - gives_wood + receives_wood),
+                                                        'wool': (parseInt($('#hand_P' + giver_nmbr + ' .wool_quantity').text()) - gives_wool + receives_wool),
+                                                    });
+                                                    changeHandObject(receiver_nmbr, {
+                                                        'cereal': (parseInt($('#hand_P' + receiver_nmbr + ' .cereal_quantity').text()) + gives_cereal - receives_cereal),
+                                                        'mineral': (parseInt($('#hand_P' + receiver_nmbr + ' .mineral_quantity').text()) + gives_mineral - receives_mineral),
+                                                        'clay': (parseInt($('#hand_P' + receiver_nmbr + ' .bricks_quantity').text()) + gives_clay - receives_clay),
+                                                        'wood': (parseInt($('#hand_P' + receiver_nmbr + ' .wood_quantity').text()) + gives_wood - receives_wood),
+                                                        'wool': (parseInt($('#hand_P' + receiver_nmbr + ' .wool_quantity').text()) + gives_wool - receives_wool),
+                                                    });
+
+                                                    // añadir caret
+                                                    if (gives_cereal - receives_cereal < 0) {
+                                                        $('#hand_P' + giver_nmbr + ' .cereal .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                                                        $('#hand_P' + giver_nmbr + ' .cereal').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                                        $('#hand_P' + receiver_nmbr + ' .cereal .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
+                                                        $('#hand_P' + receiver_nmbr + ' .cereal').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
+                                                    } else if (gives_cereal - receives_cereal > 0) {
+                                                        $('#hand_P' + giver_nmbr + ' .cereal .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down')
+                                                        $('#hand_P' + giver_nmbr + ' .cereal').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased')
+                                                        $('#hand_P' + receiver_nmbr + ' .cereal .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                                                        $('#hand_P' + receiver_nmbr + ' .cereal').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                                    } else {
+                                                        $('#hand_P' + giver_nmbr + ' .cereal .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
+                                                        $('#hand_P' + giver_nmbr + ' .cereal').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
+                                                        $('#hand_P' + receiver_nmbr + ' .cereal .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
+                                                        $('#hand_P' + receiver_nmbr + ' .cereal').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
+                                                    }
+                                                    
+                                                    if (gives_mineral - receives_mineral < 0) {
+                                                        $('#hand_P' + giver_nmbr + ' .mineral .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                                                        $('#hand_P' + giver_nmbr + ' .mineral').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                                        $('#hand_P' + receiver_nmbr + ' .mineral .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
+                                                        $('#hand_P' + receiver_nmbr + ' .mineral').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
+                                                    } else if (gives_mineral - receives_mineral > 0) {
+                                                        $('#hand_P' + giver_nmbr + ' .mineral .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down')
+                                                        $('#hand_P' + giver_nmbr + ' .mineral').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased')
+                                                        $('#hand_P' + receiver_nmbr + ' .mineral .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                                                        $('#hand_P' + receiver_nmbr + ' .mineral').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                                    } else {
+                                                        $('#hand_P' + giver_nmbr + ' .mineral .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
+                                                        $('#hand_P' + giver_nmbr + ' .mineral').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
+                                                        $('#hand_P' + receiver_nmbr + ' .mineral .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
+                                                        $('#hand_P' + receiver_nmbr + ' .mineral').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
+                                                    }
+                                                    
+                                                    if (gives_clay - receives_clay < 0) {
+                                                        $('#hand_P' + giver_nmbr + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                                                        $('#hand_P' + giver_nmbr + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                                        $('#hand_P' + receiver_nmbr + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
+                                                        $('#hand_P' + receiver_nmbr + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
+                                                    } else if (gives_clay - receives_clay > 0) {
+                                                        $('#hand_P' + giver_nmbr + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down')
+                                                        $('#hand_P' + giver_nmbr + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased')
+                                                        $('#hand_P' + receiver_nmbr + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                                                        $('#hand_P' + receiver_nmbr + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                                    } else {
+                                                        $('#hand_P' + giver_nmbr + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
+                                                        $('#hand_P' + giver_nmbr + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
+                                                        $('#hand_P' + receiver_nmbr + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
+                                                        $('#hand_P' + receiver_nmbr + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
+                                                    }
+                                                    
+                                                    if (gives_wood - receives_wood < 0) {
+                                                        $('#hand_P' + giver_nmbr + ' .wood .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                                                        $('#hand_P' + giver_nmbr + ' .wood').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                                        $('#hand_P' + receiver_nmbr + ' .wood .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
+                                                        $('#hand_P' + receiver_nmbr + ' .wood').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
+                                                    } else if (gives_wood - receives_wood > 0) {
+                                                        $('#hand_P' + giver_nmbr + ' .wood .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down')
+                                                        $('#hand_P' + giver_nmbr + ' .wood').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased')
+                                                        $('#hand_P' + receiver_nmbr + ' .wood .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                                                        $('#hand_P' + receiver_nmbr + ' .wood').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                                    } else {
+                                                        $('#hand_P' + giver_nmbr + ' .wood .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
+                                                        $('#hand_P' + giver_nmbr + ' .wood').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
+                                                        $('#hand_P' + receiver_nmbr + ' .wood .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
+                                                        $('#hand_P' + receiver_nmbr + ' .wood').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
+                                                    }
+
+                                                    if (gives_wool - receives_wool < 0) {
+                                                        $('#hand_P' + giver_nmbr + ' .wool .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                                                        $('#hand_P' + giver_nmbr + ' .wool').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                                        $('#hand_P' + receiver_nmbr + ' .wool .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
+                                                        $('#hand_P' + receiver_nmbr + ' .wool').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
+                                                    } else if (gives_wool - receives_wool > 0) {
+                                                        $('#hand_P' + giver_nmbr + ' .wool .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down')
+                                                        $('#hand_P' + giver_nmbr + ' .wool').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased')
+                                                        $('#hand_P' + receiver_nmbr + ' .wool .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                                                        $('#hand_P' + receiver_nmbr + ' .wool').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                                    } else {
+                                                        $('#hand_P' + giver_nmbr + ' .wool .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
+                                                        $('#hand_P' + giver_nmbr + ' .wool').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
+                                                        $('#hand_P' + receiver_nmbr + ' .wool .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
+                                                        $('#hand_P' + receiver_nmbr + ' .wool').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
+                                                    }
+                                                    // fin añadir materiales a mano
+                                                    
                                                 } else {
                                                     html += ': Accepted | Cannot be completed (lack of materials)';
                                                 }
@@ -1086,7 +1310,8 @@
                                                 }
                                             }
                                         } else {
-
+                                            counteroffer_counter++;
+                                            // hay contraoferta
                                             html += '<div class="offer"><p>';
                                             html += '<span class="commerce_P' + (phase_obj[i]['answers'][j][n]['giver'] + 1) + '">P' + (phase_obj[i]['answers'][j][n]['giver'] + 1) + '</span>: Counteroffer';
                                             html += '<br><span class="gives">';
@@ -1110,16 +1335,146 @@
                                                 html += '<span class="answers commerce_P' + (parseInt(phase_obj[i]['answers'][j][n]['receiver']) + 1) + '"> P' + (parseInt(phase_obj[i]['answers'][j][n]['receiver']) + 1) + '</span>';
                                                 if (phase_obj[i]['answers'][j][n]['completed']) {
                                                     html += ': Accepted';
+
+                                                    // añadir materiales a mano
+                                                    let giver_nmbr = phase_obj[i]['answers'][j][n]['giver'];
+                                                    let receiver_nmbr = phase_obj[i]['answers'][j][n]['receiver'];
+                                                    
+                                                    let gives_cereal = parseInt(phase_obj[i]['answers'][j][n]['trade_offer']['gives']['cereal']);
+                                                    let gives_mineral = parseInt(phase_obj[i]['answers'][j][n]['trade_offer']['gives']['mineral']);
+                                                    let gives_clay = parseInt(phase_obj[i]['answers'][j][n]['trade_offer']['gives']['clay']);
+                                                    let gives_wood = parseInt(phase_obj[i]['answers'][j][n]['trade_offer']['gives']['wood']);
+                                                    let gives_wool = parseInt(phase_obj[i]['answers'][j][n]['trade_offer']['gives']['wool']);
+
+                                                    let receives_cereal = parseInt(phase_obj[i]['answers'][j][n]['trade_offer']['receives']['cereal']);
+                                                    let receives_mineral = parseInt(phase_obj[i]['answers'][j][n]['trade_offer']['receives']['mineral']);
+                                                    let receives_clay = parseInt(phase_obj[i]['answers'][j][n]['trade_offer']['receives']['clay']);
+                                                    let receives_wood = parseInt(phase_obj[i]['answers'][j][n]['trade_offer']['receives']['wood']);
+                                                    let receives_wool = parseInt(phase_obj[i]['answers'][j][n]['trade_offer']['receives']['wool']);
+
+
+                                                    changeHandObject(giver_nmbr, {
+                                                        'cereal': (parseInt($('#hand_P' + giver_nmbr + ' .cereal_quantity').text()) - gives_cereal + receives_cereal),
+                                                        'mineral': (parseInt($('#hand_P' + giver_nmbr + ' .mineral_quantity').text()) - gives_mineral + receives_mineral),
+                                                        'clay': (parseInt($('#hand_P' + giver_nmbr + ' .bricks_quantity').text()) - gives_clay + receives_clay),
+                                                        'wood': (parseInt($('#hand_P' + giver_nmbr + ' .wood_quantity').text()) - gives_wood + receives_wood),
+                                                        'wool': (parseInt($('#hand_P' + giver_nmbr + ' .wool_quantity').text()) - gives_wool + receives_wool),
+                                                    });
+                                                    changeHandObject(receiver_nmbr, {
+                                                        'cereal': (parseInt($('#hand_P' + receiver_nmbr + ' .cereal_quantity').text()) + gives_cereal - receives_cereal),
+                                                        'mineral': (parseInt($('#hand_P' + receiver_nmbr + ' .mineral_quantity').text()) + gives_mineral - receives_mineral),
+                                                        'clay': (parseInt($('#hand_P' + receiver_nmbr + ' .bricks_quantity').text()) + gives_clay - receives_clay),
+                                                        'wood': (parseInt($('#hand_P' + receiver_nmbr + ' .wood_quantity').text()) + gives_wood - receives_wood),
+                                                        'wool': (parseInt($('#hand_P' + receiver_nmbr + ' .wool_quantity').text()) + gives_wool - receives_wool),
+                                                    });
+
+                                                    // añadir caret
+                                                    if (gives_cereal - receives_cereal < 0) {
+                                                        $('#hand_P' + giver_nmbr + ' .cereal .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                                                        $('#hand_P' + giver_nmbr + ' .cereal').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                                        $('#hand_P' + receiver_nmbr + ' .cereal .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
+                                                        $('#hand_P' + receiver_nmbr + ' .cereal').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
+                                                    } else if (gives_cereal - receives_cereal > 0) {
+                                                        $('#hand_P' + giver_nmbr + ' .cereal .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down')
+                                                        $('#hand_P' + giver_nmbr + ' .cereal').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased')
+                                                        $('#hand_P' + receiver_nmbr + ' .cereal .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                                                        $('#hand_P' + receiver_nmbr + ' .cereal').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                                    } else {
+                                                        $('#hand_P' + giver_nmbr + ' .cereal .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
+                                                        $('#hand_P' + giver_nmbr + ' .cereal').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
+                                                        $('#hand_P' + receiver_nmbr + ' .cereal .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
+                                                        $('#hand_P' + receiver_nmbr + ' .cereal').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
+                                                    }
+                                                    
+                                                    if (gives_mineral - receives_mineral < 0) {
+                                                        $('#hand_P' + giver_nmbr + ' .mineral .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                                                        $('#hand_P' + giver_nmbr + ' .mineral').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                                        $('#hand_P' + receiver_nmbr + ' .mineral .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
+                                                        $('#hand_P' + receiver_nmbr + ' .mineral').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
+                                                    } else if (gives_mineral - receives_mineral > 0) {
+                                                        $('#hand_P' + giver_nmbr + ' .mineral .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down')
+                                                        $('#hand_P' + giver_nmbr + ' .mineral').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased')
+                                                        $('#hand_P' + receiver_nmbr + ' .mineral .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                                                        $('#hand_P' + receiver_nmbr + ' .mineral').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                                    } else {
+                                                        $('#hand_P' + giver_nmbr + ' .mineral .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
+                                                        $('#hand_P' + giver_nmbr + ' .mineral').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
+                                                        $('#hand_P' + receiver_nmbr + ' .mineral .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
+                                                        $('#hand_P' + receiver_nmbr + ' .mineral').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
+                                                    }
+                                                    
+                                                    if (gives_clay - receives_clay < 0) {
+                                                        $('#hand_P' + giver_nmbr + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                                                        $('#hand_P' + giver_nmbr + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                                        $('#hand_P' + receiver_nmbr + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
+                                                        $('#hand_P' + receiver_nmbr + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
+                                                    } else if (gives_clay - receives_clay > 0) {
+                                                        $('#hand_P' + giver_nmbr + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down')
+                                                        $('#hand_P' + giver_nmbr + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased')
+                                                        $('#hand_P' + receiver_nmbr + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                                                        $('#hand_P' + receiver_nmbr + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                                    } else {
+                                                        $('#hand_P' + giver_nmbr + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
+                                                        $('#hand_P' + giver_nmbr + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
+                                                        $('#hand_P' + receiver_nmbr + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
+                                                        $('#hand_P' + receiver_nmbr + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
+                                                    }
+                                                    
+                                                    if (gives_wood - receives_wood < 0) {
+                                                        $('#hand_P' + giver_nmbr + ' .wood .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                                                        $('#hand_P' + giver_nmbr + ' .wood').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                                        $('#hand_P' + receiver_nmbr + ' .wood .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
+                                                        $('#hand_P' + receiver_nmbr + ' .wood').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
+                                                    } else if (gives_wood - receives_wood > 0) {
+                                                        $('#hand_P' + giver_nmbr + ' .wood .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down')
+                                                        $('#hand_P' + giver_nmbr + ' .wood').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased')
+                                                        $('#hand_P' + receiver_nmbr + ' .wood .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                                                        $('#hand_P' + receiver_nmbr + ' .wood').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                                    } else {
+                                                        $('#hand_P' + giver_nmbr + ' .wood .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
+                                                        $('#hand_P' + giver_nmbr + ' .wood').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
+                                                        $('#hand_P' + receiver_nmbr + ' .wood .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
+                                                        $('#hand_P' + receiver_nmbr + ' .wood').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
+                                                    }
+
+                                                    if (gives_wool - receives_wool < 0) {
+                                                        $('#hand_P' + giver_nmbr + ' .wool .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                                                        $('#hand_P' + giver_nmbr + ' .wool').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                                        $('#hand_P' + receiver_nmbr + ' .wool .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
+                                                        $('#hand_P' + receiver_nmbr + ' .wool').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
+                                                    } else if (gives_wool - receives_wool > 0) {
+                                                        $('#hand_P' + giver_nmbr + ' .wool .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down')
+                                                        $('#hand_P' + giver_nmbr + ' .wool').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased')
+                                                        $('#hand_P' + receiver_nmbr + ' .wool .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                                                        $('#hand_P' + receiver_nmbr + ' .wool').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                                    } else {
+                                                        $('#hand_P' + giver_nmbr + ' .wool .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
+                                                        $('#hand_P' + giver_nmbr + ' .wool').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
+                                                        $('#hand_P' + receiver_nmbr + ' .wool .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
+                                                        $('#hand_P' + receiver_nmbr + ' .wool').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
+                                                    }
+                                                    // fin añadir materiales a mano
+
                                                 } else {
                                                     html += ': Accepted | Cannot be completed (lack of materials)';
                                                 }
-                                                html += '</div>'
+                                                // cerramos todos los divs de contraoferta
+                                                for (let m = 0; m < counteroffer_counter; m++) {
+                                                    html += '</div>'
+                                                }
+                                                
                                             } else {
                                                 if (phase_obj[i]['answers'][j][n]['count'] == phase_obj[i]['answers'][j].length) {
+                                                    // se niega la oferta
                                                     html += '<span class="answers commerce_P' + (parseInt(phase_obj[i]['answers'][j][n]['receiver']) + 1) + '"> P' + (parseInt(phase_obj[i]['answers'][j][n]['receiver']) + 1) + '</span>';
                                                     html += ': Denied';
-                                                    html += '</div>'
+                                                    // cerramos todos los divs de contraoferta
+                                                    for (let m = 0; m < counteroffer_counter; m++) {
+                                                        html += '</div>'
+                                                    }
                                                 } else {
+                                                    // se niega la oferta pero se ofrece contraoferta (se comprueba viendo si la cuenta es la misma que la longitud del array)
+                                                    counteroffer_counter++;
                                                     html += '<div class="answers">'
                                                 }
                                             }
@@ -1130,36 +1485,12 @@
                                 }
                                 html += '</div>' // div.answers
                                 html += '</div>'
-
-
                                 html += '<hr/>'
 
-                                //                                html += phase_obj[i]['trade_offer']['gives']['cereal']
                             }
-
-
                         }
 
                         commerce_log_text.append(html)
-
-
-                        //                        for (let i = 0; i < phase_obj.length; i++) {
-                        //                            if (phase_obj[i]['trade_offer'] !== 'None' && !phase_obj[i]['inviable']) {
-                        //                                if (phase_obj[i]['harbor_trade']) {
-                        //                                    // TODO:
-                        //                                } else {
-                        //
-                        //                                    html += '<div class="answers">';
-                        //
-
-                        //
-                        //                                    html += '</div>'
-                        //                                }
-                        //
-                        //                                commerce_log.append(html)
-                        //                            }
-                        //
-                        //                        }
                         break;
                     case 2:
                         phase_obj = turn_obj['build_phase'];

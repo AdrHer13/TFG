@@ -120,7 +120,7 @@ class DevelopmentCardsHand:
         """
         Al usar esta función indicas que quieres jugar esta carta pasando el índice de la carta en el array,
         lo que se la pasa al gameManager y la borra de la mano
-        :param id:
+        :param index:
         :return:
         """
         if len(self.hand):

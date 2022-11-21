@@ -90,18 +90,18 @@ class GameManager:
 
         return
 
-    def send_trade_with_everyone(self, trade_offer=TradeOffer()):
+    def send_trade_to_everyone(self, trade_offer=TradeOffer()):
         """
         Permite enviar una oferta a todos los jugadores en la mesa. Si alguno acepta se hará el intercambio
         :param trade_offer: Oferta de comercio con el jugador, debe incluir qué se entrega y qué se recibe
-        :return: void
+        :return: array []
         """
         # receivers = self.bot_manager.get_other_players_except_int(self.turn_manager.whoseTurnIsIt)
         answer_object = []
 
         receivers = []
         for index in range(4):
-            if index != self.turn_manager.whoseTurnIsIt:
+            if index != self.turn_manager.whose_turn_is_it:
                 receivers.append(self.bot_manager.players[index])
 
         # Se aleatorizan el orden en el que se va a recibir la oferta para evitar que J1 tenga ventaja
@@ -111,7 +111,7 @@ class GameManager:
             current_index -= 1
             (receivers[current_index], receivers[random_index]) = (receivers[random_index], receivers[current_index])
 
-        giver = self.bot_manager.players[self.turn_manager.whoseTurnIsIt]
+        giver = self.bot_manager.players[self.turn_manager.whose_turn_is_it]
         for receiver in receivers:
             on_tradeoffer_response = []
 
@@ -132,7 +132,7 @@ class GameManager:
 
             if on_tradeoffer_response[(len(on_tradeoffer_response) - 1)]['response']:
                 if count % 2 == 0:
-                    print('J' + str(self.turn_manager.whoseTurnIsIt) + ' ha aceptado')
+                    print('J' + str(self.turn_manager.whose_turn_is_it) + ' ha aceptado')
                     done = self.trade_with_player(trade_offer, giver, receiver)
                 else:
                     print('J' + str(receiver['id']) + ' ha aceptado')
@@ -327,7 +327,8 @@ class GameManager:
                 self.bot_manager.players[player_id][
                     'development_cards'].hand
             if card_drawn is not None:
-                return {'response': True, 'card_id': card_drawn.id, 'card_type': card_drawn.type, 'card_effect': card_drawn.effect}
+                return {'response': True, 'card_id': card_drawn.id, 'card_type': card_drawn.type,
+                        'card_effect': card_drawn.effect}
             else:
                 return {'response': True, 'card_type': None, 'card_effect': None}
         else:
@@ -387,11 +388,10 @@ class GameManager:
             return material_id
         return None
 
-    def on_game_start_built_nodes_and_roads(self, player):
+    def on_game_start_build_towns_and_roads(self, player):
         """
         Función que te permite poner un pueblo y una carretera. Te las pone automáticamente si no pones un nodo válido
         :param player: contador externo que indica a qué jugador le toca
-        :param count: contador interno que lleva la cuenta de cuantas veces han intentado poner un nodo
         :return: node_id, road_to
         """
 
@@ -481,7 +481,8 @@ class GameManager:
         Función que calcula la carretera más larga a partir de un nodo
         :param node:
         :param depth:
-        :param longest_road:
+        :param longest_road_obj:
+        :param player_id:
         :param visited_nodes:
         :return:
         """
@@ -489,8 +490,8 @@ class GameManager:
             # print('. . . . . . . ')
             # print('Road to: ' + str(road['nodeID']))
             if ((road['nodeID'] not in visited_nodes) and
-                (road['playerID'] == player_id or player_id == -1) and
-                (road['playerID'] == node['player'] or node['player'] == -1)):
+                    (road['playerID'] == player_id or player_id == -1) and
+                    (road['playerID'] == node['player'] or node['player'] == -1)):
                 visited_nodes.append(road['nodeID'])
                 # print(visited_nodes)
                 # print(node)
@@ -499,11 +500,16 @@ class GameManager:
                     longest_road_obj['player'] = player_id
                 # print('depth: ' + str(depth))
                 # print('player: ' + str(player_id))
-                longest_road_obj = self.longest_road_calculator(self.board.nodes[road['nodeID']], depth + 1, longest_road_obj, road['playerID'], visited_nodes)
+                longest_road_obj = self.longest_road_calculator(self.board.nodes[road['nodeID']], depth + 1,
+                                                                longest_road_obj, road['playerID'], visited_nodes)
         return {'longest_road': longest_road_obj['longest_road'], 'player': longest_road_obj['player']}
 
-
     def play_development_card(self, player_id, card):
+        """
+        :param player_id:
+        :param card:
+        :return:
+        """
         # Si la carta que llega existe en la mano del BotManager se elimina y se hace el efecto. Si no, se hace un return nulo
         #  Si la carta es un punto de victoria no se borra de la mano
         #  Después se iguala la mano del jugador a la del BotManager para evitar trampas.

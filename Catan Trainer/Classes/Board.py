@@ -45,7 +45,7 @@ class Board:
                     "roads": [],
                     "hasCity": False,
                     "player": -1,
-                    "contactingTerrain": self.__get_contacting_terrain(i),
+                    "contactingTerrain": self.__get_contacting_terrain__(i),
                 })
                 i += 1
         else:
@@ -124,7 +124,7 @@ class Board:
     def get_board(self):
         return self.__class__()
 
-    def __get_contacting_terrain(self, node_id):
+    def __get_contacting_terrain__(self, node_id):
         """
         Indica todas las piezas de terreno a los que el nodo es adyacente, para cosas como por ejemplo repartir materiales
         :param node_id: La ID de la pieza del terreno actual

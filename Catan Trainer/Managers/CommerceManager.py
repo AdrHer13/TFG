@@ -35,7 +35,7 @@ class CommerceManager:
         if player_hand.get_from_id(gives) >= 3:
             player_hand.remove_material(gives, 3)
             player_hand.add_material(receives, 1)
-            return True
+            return player_hand
         else:
             return False
 
@@ -50,6 +50,6 @@ class CommerceManager:
         if player_hand.get_from_id(gives) >= 2:
             player_hand.remove_material(gives, 2)
             player_hand.add_material(receives, 1)
-            return True
+            return player_hand
         else:
             return False

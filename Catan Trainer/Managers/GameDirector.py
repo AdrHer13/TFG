@@ -129,7 +129,7 @@ class GameDirector:
                         commerce_response.gives):
                     commerce_phase_object['inviable'] = False
                     print('Puede hacer la oferta')
-                    answer_object = self.game_manager.send_trade_with_everyone(commerce_response)
+                    answer_object = self.game_manager.send_trade_to_everyone(commerce_response)
                     commerce_phase_object['answers'] = answer_object
                 else:
                     commerce_phase_object['inviable'] = True
@@ -411,7 +411,7 @@ class GameDirector:
             self.game_manager.turn_manager.set_whose_turn_is_it(i)
 
             # función recursiva a introducir
-            node_id, road_to = self.game_manager.on_game_start_built_nodes_and_roads(i)
+            node_id, road_to = self.game_manager.on_game_start_build_towns_and_roads(i)
             setup_object["P" + str(i)].append({"id": node_id, "road": road_to})
 
         for i in range(3, -1, -1):
@@ -419,7 +419,7 @@ class GameDirector:
             self.game_manager.turn_manager.set_whose_turn_is_it(i)
 
             # función recursiva a introducir
-            node_id, road_to = self.game_manager.on_game_start_built_nodes_and_roads(i)
+            node_id, road_to = self.game_manager.on_game_start_build_towns_and_roads(i)
             setup_object["P" + str(i)].append({"id": node_id, "road": road_to})
 
         ######################################################

@@ -12,7 +12,7 @@ class BotInterface:
     """
     Interfaz que implementa a un bot
     """
-    materialConstants = MaterialConstants()
+    material_constants = MaterialConstants()
     board = Board()
     hand = Hand()
     development_cards_hand = DevelopmentCardsHand()
@@ -21,7 +21,7 @@ class BotInterface:
     def __init__(self, bot_id):
         self.hand = Hand()
         self.board = Board()
-        self.materialConstants = MaterialConstants()
+        self.material_constants = MaterialConstants()
         self.development_cards_hand = DevelopmentCardsHand()
         self.id = bot_id
         pass

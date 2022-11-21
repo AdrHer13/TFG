@@ -8,7 +8,7 @@ class BotManager:
     Clase que se encarga de los bots. De momento solo los carga en la partida, sin embargo cabe la posibilidad de que sea
     el bot manager el que se encargue de darle paso a los bots a hacer sus turnos
     """
-    actualPlayer = 0
+    actual_player = 0
     # playerOne = BotInterface(1)
     # playerTwo = BotInterface(2)
     # playerThree = BotInterface(3)
@@ -72,8 +72,8 @@ class BotManager:
         return
 
     def get_actual_player(self):
-        return self.actualPlayer
+        return self.actual_player
 
     def set_actual_player(self, player_id=0):
-        self.actualPlayer = player_id
+        self.actual_player = player_id
         return

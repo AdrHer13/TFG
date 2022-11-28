@@ -196,18 +196,18 @@ class GameDirector:
         build_phase_object = {}
 
         self.game_manager.turn_manager.set_phase(2)
-        build_response = self.game_manager.bot_manager.players[player]['player'].on_build_phase(self.game_manager.board)
+        build_response = self.game_manager.bot_manager.players[player]['player'].on_build_phase()
         if isinstance(build_response, dict):
             build_phase_object = build_response
             built = False
             if build_response['building'] == BuildConstants.TOWN:
                 built = self.game_manager.build_town(player, build_response['nodeID'])
                 if built['response']:
-                    self.game_manager.bot_manager.players[player]['victoryPoints'] += 1
+                    self.game_manager.bot_manager.players[player]['victory_points'] += 1
             elif build_response['building'] == BuildConstants.CITY:
                 built = self.game_manager.build_city(player, build_response['nodeID'])
                 if built['response']:
-                    self.game_manager.bot_manager.players[player]['victoryPoints'] += 1
+                    self.game_manager.bot_manager.players[player]['victory_points'] += 1
             elif build_response['building'] == BuildConstants.ROAD:
                 built = self.game_manager.build_road(player, build_response['nodeID'], build_response['roadTo'])
             elif build_response['building'] == BuildConstants.CARD:
@@ -280,7 +280,7 @@ class GameDirector:
         for player in self.game_manager.bot_manager.players:
             if player['longest_road'] == 1:
                 player['longest_road'] = 0
-                player['victoryPoints'] -= 2
+                player['victory_points'] -= 2
                 break
 
         # Calculamos quien tiene la carretera más larga
@@ -297,7 +297,7 @@ class GameDirector:
         # Se le da el titulo a quien tenga la carretera más larga
         if real_longest_road['player'] != -1:
             self.game_manager.bot_manager.players[real_longest_road['player']]['longest_road'] = 1
-            self.game_manager.bot_manager.players[real_longest_road['player']]['victoryPoints'] += 2
+            self.game_manager.bot_manager.players[real_longest_road['player']]['victory_points'] += 2
         # print('-- -- -- -- -- -- -- -- --')
         # print('Longest: ')
         # print(real_longest_road)
@@ -305,8 +305,8 @@ class GameDirector:
 
         vp = {}
         for i in range(4):
-            vp['J' + str(i)] = str(self.game_manager.bot_manager.players[i]['victoryPoints'])
-            print('J' + str(i) + ': ' + str(self.game_manager.bot_manager.players[i]['victoryPoints']) + ' (' + str(
+            vp['J' + str(i)] = str(self.game_manager.bot_manager.players[i]['victory_points'])
+            print('J' + str(i) + ': ' + str(self.game_manager.bot_manager.players[i]['victory_points']) + ' (' + str(
                 self.game_manager.bot_manager.players[i]['largest_army']) + ')' + ' (' + str(
                 self.game_manager.bot_manager.players[i]['longest_road']) + ')')
         print('----- FIN Puntos de victoria de los jugadores ------')
@@ -376,10 +376,10 @@ class GameDirector:
 
         winner = False
         for player in self.game_manager.bot_manager.players:
-            if player['victoryPoints'] >= 10:
-                # if (player['victoryPoints'] >= 10 or
-                # (player['victoryPoints'] >= 8 and (player['largest_army'] == 1 or player['longest_road'] == 1)) or
-                # (player['victoryPoints'] >= 6 and player['largest_army'] == 1 and player['longest_road'] == 1)):
+            if player['victory_points'] >= 10:
+                # if (player['victory_points'] >= 10 or
+                # (player['victory_points'] >= 8 and (player['largest_army'] == 1 or player['longest_road'] == 1)) or
+                # (player['victory_points'] >= 6 and player['largest_army'] == 1 and player['longest_road'] == 1)):
                 winner = True
 
         self.game_manager.turn_manager.set_round(self.game_manager.turn_manager.get_round() + 1)
@@ -461,5 +461,7 @@ class GameDirector:
 
 if __name__ == '__main__':
     print('vvvvvvvvvvvvvvvvvvvvvvvvvvvvv')
-    GameDirector().game_start()
+    game_director = GameDirector()
+
+    game_director.game_start()
     print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')

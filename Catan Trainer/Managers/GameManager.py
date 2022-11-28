@@ -166,7 +166,7 @@ class GameManager:
             'receiver': receiver['id'],
         }
 
-        response = receiver['player'].on_trade_offer(trade_offer)
+        response = receiver['player'].on_trade_offer()
         if isinstance(response, TradeOffer):
             if count > self.MAX_COMMERCE_DEPTH:
                 json_obj['response'] = False
@@ -321,7 +321,7 @@ class GameManager:
             if (len(development_card_hand) and
                     development_card_hand[len(development_card_hand) - 1][
                         'type'] == DevelopmentCardConstants.VICTORY_POINT):
-                self.bot_manager.players[player_id]['hiddenVictoryPoints'] += 1
+                self.bot_manager.players[player_id]['hidden_victory_points'] += 1
             print(development_card_hand)
             self.bot_manager.players[player_id]['player'].development_cards_hand.hand = \
                 self.bot_manager.players[player_id][
@@ -418,7 +418,7 @@ class GameManager:
                     self.bot_manager.players[player]['resources'].add_material(materials, 1)
                     self.bot_manager.players[player]['player'].hand.add_material(materials, 1)
 
-                    self.bot_manager.players[player]['victoryPoints'] += 1
+                    self.bot_manager.players[player]['victory_points'] += 1
 
                     # Parte carreteras
                     if self.board.nodes[node_id]['player'] == self.turn_manager.get_whose_turn_is_it():
@@ -433,48 +433,48 @@ class GameManager:
                         print("el jugador " + str(self.turn_manager.get_whose_turn_is_it()) +
                               " ha intentado poner una carretera en un nodo que no le pertenece: " + str(road_to))
 
-            else:
-                illegal = True
-                random_node_id = 0
-                while illegal:
-                    # random_node_id = random.randint(0, 53)
-                    valid_nodes = self.board.valid_starting_nodes()
-                    i = random.randint(0, (valid_nodes.__len__() - 1))
-                    random_node_id = valid_nodes[i]
-                    if (self.board.nodes[random_node_id]['player'] == -1 and
-                            self.board.adyacent_nodes_dont_have_towns(random_node_id) and
-                            not self.board.is_it_a_coastal_node(random_node_id)):
-                        illegal = False
-                    else:
-                        illegal = True
+                else:
+                    illegal = True
+                    random_node_id = 0
+                    while illegal:
+                        # random_node_id = random.randint(0, 53)
+                        valid_nodes = self.board.valid_starting_nodes()
+                        i = random.randint(0, (valid_nodes.__len__() - 1))
+                        random_node_id = valid_nodes[i]
+                        if (self.board.nodes[random_node_id]['player'] == -1 and
+                                self.board.adyacent_nodes_dont_have_towns(random_node_id) and
+                                not self.board.is_it_a_coastal_node(random_node_id)):
+                            illegal = False
+                        else:
+                            illegal = True
 
-                terrain_ids = self.board.nodes[random_node_id]['contactingTerrain']
-                materials = []
-                for ter_id in terrain_ids:
-                    materials.append(self.board.terrain[ter_id]['terrainType'])
+                    terrain_ids = self.board.nodes[random_node_id]['contactingTerrain']
+                    materials = []
+                    for ter_id in terrain_ids:
+                        materials.append(self.board.terrain[ter_id]['terrainType'])
 
-                self.board.nodes[random_node_id]['player'] = self.turn_manager.get_whose_turn_is_it()
+                    self.board.nodes[random_node_id]['player'] = self.turn_manager.get_whose_turn_is_it()
 
-                # Se le dan materiales a la mano del botManager a la de los bots para que sepan cuantos tienen en realidad
-                self.bot_manager.players[player]['resources'].add_material(materials, 1)
-                self.bot_manager.players[player]['player'].hand.add_material(materials, 1)
+                    # Se le dan materiales a la mano del botManager a la de los bots para que sepan cuantos tienen en realidad
+                    self.bot_manager.players[player]['resources'].add_material(materials, 1)
+                    self.bot_manager.players[player]['player'].hand.add_material(materials, 1)
 
-                self.bot_manager.players[player]['victoryPoints'] += 1
+                    self.bot_manager.players[player]['victory_points'] += 1
 
-                illegal = True
-                while illegal:
-                    possible_roads = self.board.nodes[random_node_id]['adjacent']
-                    random_road_to = possible_roads[random.randint(0, len(possible_roads) - 1)]
+                    illegal = True
+                    while illegal:
+                        possible_roads = self.board.nodes[random_node_id]['adjacent']
+                        random_road_to = possible_roads[random.randint(0, len(possible_roads) - 1)]
 
-                    response = self.board.build_road(self.turn_manager.get_whose_turn_is_it(), random_node_id,
-                                                     random_road_to)
-                    if response['response']:
-                        print('J' + str(self.turn_manager.get_whose_turn_is_it()))
-                        print('random_node_id: ' + str(random_node_id) + ' | random_road_to: ' + str(random_road_to))
-                        return random_node_id, random_road_to
-                    else:
-                        illegal = True
-                        print(response['errorMsg'])
+                        response = self.board.build_road(self.turn_manager.get_whose_turn_is_it(), random_node_id,
+                                                         random_road_to)
+                        if response['response']:
+                            print('J' + str(self.turn_manager.get_whose_turn_is_it()))
+                            print('random_node_id: ' + str(random_node_id) + ' | random_road_to: ' + str(random_road_to))
+                            return random_node_id, random_road_to
+                        else:
+                            illegal = True
+                            print(response['errorMsg'])
 
     def longest_road_calculator(self, node, depth, longest_road_obj, player_id, visited_nodes):
         """
@@ -557,16 +557,16 @@ class GameManager:
                     # Definimos el nuevo poseedor con el ejército más grande
                     self.largest_army_player = self.bot_manager.players[player_id]
                     self.largest_army_player['largest_army'] = 1
-                    self.largest_army_player['victoryPoints'] += 2
+                    self.largest_army_player['victory_points'] += 2
                 else:
                     # Le quitamos los beneficios al anterior poseedor del ejército grande
                     self.largest_army_player['largest_army'] = 0
-                    self.largest_army_player['victoryPoints'] -= 2
+                    self.largest_army_player['victory_points'] -= 2
 
                     # Definimos el nuevo poseedor con el ejército más grande
                     self.largest_army_player = self.bot_manager.players[player_id]
                     self.largest_army_player['largest_army'] = 1
-                    self.largest_army_player['victoryPoints'] += 2
+                    self.largest_army_player['victory_points'] += 2
 
             for terrain in self.board.terrain:
                 if terrain['hasThief']:
@@ -588,12 +588,12 @@ class GameManager:
             # Si tienen suficientes puntos de victoria para ganar. Ganan automáticamente, si no, no pasa nada
 
             print('SE JUEGA PUNTOS DE VICTORIA')
-            if (self.bot_manager.players[player_id]['victoryPoints'] +
-                self.bot_manager.players[player_id]['hiddenVictoryPoints']) >= 10:
+            if (self.bot_manager.players[player_id]['victory_points'] +
+                self.bot_manager.players[player_id]['hidden_victory_points']) >= 10:
                 print('SUPERAN 10')
 
                 card_obj['played_card'] = 'victory_point'
-                self.bot_manager.players[player_id]['victoryPoints'] = 10
+                self.bot_manager.players[player_id]['victory_points'] = 10
             else:
                 print('NO SUPERAN 10')
                 card_obj['played_card'] = 'failed_victory_point'
@@ -608,6 +608,9 @@ class GameManager:
                 material_chosen = self.bot_manager.players[player_id]['player'].on_monopoly_card_use()
                 material_sum = 0
                 print('ELIGE MATERIAL: ' + str(material_chosen))
+
+                if material_chosen is None:
+                    material_chosen = random.randint(0, 4)
 
                 for i in range(4):
                     print('PRE Hand_P' + str(i))
@@ -715,6 +718,10 @@ class GameManager:
                 card_obj['materials_selected'] = materials_selected
                 print('MATERIALES ELEGIDOS:')
                 print(materials_selected)
+
+                if materials_selected is None:
+                    material, material2 = random.randint(0, 4), random.randint(0, 4)
+                    materials_selected = {'material': material, 'material_2': material2}
 
                 print('MANO PRE')
                 print(self.bot_manager.players[player_id]['resources'])

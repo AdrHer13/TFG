@@ -1,5 +1,3 @@
-import random
-
 from Classes.Board import Board
 from Classes.Hand import Hand
 from Classes.Materials import Materials
@@ -32,33 +30,15 @@ class BotInterface:
         """
         Trigger para cuando llega una oferta. Devuelve si la acepta, la niega o envía una contraoferta
         :param incoming_trade_offer: Oferta de comercio que le llega al bot
-        :return: true, TradeOffer, false, None
+        :return: true, TradeOffer, false
         """
-        answer = random.randint(0, 2)
-        if answer:
-            if answer == 2:
-                gives = Materials(random.randint(0, self.hand.get_cereal()), random.randint(0, self.hand.get_mineral()),
-                                  random.randint(0, self.hand.get_clay()), random.randint(0, self.hand.get_wood()),
-                                  random.randint(0, self.hand.get_wool()))
-                receives = Materials(random.randint(0, self.hand.get_cereal()),
-                                     random.randint(0, self.hand.get_mineral()),
-                                     random.randint(0, self.hand.get_clay()), random.randint(0, self.hand.get_wood()),
-                                     random.randint(0, self.hand.get_wool()))
-                return TradeOffer(gives, receives)
-            else:
-                return True
-        else:
-            return False
+        return False
 
     def on_turn_start(self):
         """
         Trigger para cuando empieza el turno. Termina cuando hace un return. Se hace antes que tirar dados. Sirve para jugar cartas de desarrollo
         :return: void, None
         """
-        print('Player on turn start')
-        # self.development_cards_hand.add_card(DevelopmentCard(99, 0, 0))
-        if len(self.development_cards_hand.check_hand()) and random.randint(0, 1):
-            return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[0].id)
         return None
 
     def on_having_more_than_7_materials(self):
@@ -76,21 +56,19 @@ class BotInterface:
         jugador adyacente a la ficha de terreno seleccionada
         :return: {terrain, player}
         """
-        terrain = random.randint(0, 18)
-        player = -1
-        for node in self.board.terrain[terrain]['contactingNodes']:
-            if self.board.nodes[node]['player'] != -1:
-                player = self.board.nodes[node]['player']
-        return {'terrain': terrain, 'player': player}
+        terrain_id = 0
+        for terrain in self.board.terrain:
+            if terrain['hasThief']:
+                terrain_id = terrain['id']
+                break
+
+        return {'terrain': terrain_id, 'player': -1}
 
     def on_turn_end(self):
         """
         Trigger para cuando acaba el turno. Termina cuando hace un return. Sirve para jugar cartas de desarrollo
         :return: void, None
         """
-        print('Player on turn end')
-        if len(self.development_cards_hand.check_hand()) and random.randint(0, 1):
-            return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[0].id)
         return None
 
     def on_commerce_phase(self):
@@ -98,76 +76,13 @@ class BotInterface:
         Trigger para cuando empieza la fase de comercio. Devuelve una oferta
         :return: TradeOffer, Dictionary, None
         """
-        print('Player on commerce phase')
-
-        if len(self.development_cards_hand.check_hand()) and random.randint(0, 1):
-            return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[0].id)
-
-        answer = random.randint(0, 1)
-        if answer:
-            print(' - Jugador intenta comerciar por puerto - ')
-            if self.hand.get_cereal() >= 4:
-                return {'gives': MaterialConstants.CEREAL, 'receives': MaterialConstants.MINERAL}
-            if self.hand.get_mineral() >= 4:
-                return {'gives': MaterialConstants.MINERAL, 'receives': MaterialConstants.CEREAL}
-            if self.hand.get_clay() >= 4:
-                return {'gives': MaterialConstants.CLAY, 'receives': MaterialConstants.CEREAL}
-            if self.hand.get_wood() >= 4:
-                return {'gives': MaterialConstants.WOOD, 'receives': MaterialConstants.CEREAL}
-            if self.hand.get_wool() >= 4:
-                return {'gives': MaterialConstants.WOOL, 'receives': MaterialConstants.CEREAL}
-            print('Jugador no quiere comerciar')
-            return None
-        else:
-            gives = Materials(random.randint(0, self.hand.get_cereal()), random.randint(0, self.hand.get_mineral()),
-                              random.randint(0, self.hand.get_clay()), random.randint(0, self.hand.get_wood()),
-                              random.randint(0, self.hand.get_wool()))
-            receives = Materials(random.randint(0, self.hand.get_cereal()), random.randint(0, self.hand.get_mineral()),
-                                 random.randint(0, self.hand.get_clay()), random.randint(0, self.hand.get_wood()),
-                                 random.randint(0, self.hand.get_wool()))
-            trade_offer = TradeOffer(gives, receives)
-            return trade_offer
+        return None
 
     def on_build_phase(self, board_instance):
         """
         Trigger para cuando empieza la fase de construcción. Devuelve un string indicando qué quiere construir
         :return: dict{'building': str, 'nodeID': int, 'roadTo': int/None}, None
         """
-        print('Player on build phase')
-        self.board = board_instance
-
-        if len(self.development_cards_hand.check_hand()) and random.randint(0, 1):
-            return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[0].id)
-
-        answer = random.randint(0, 2)
-        # Pueblo / carretera
-        if self.hand.resources.has_this_more_materials(BuildConstants.TOWN) and answer == 0:
-            answer = random.randint(0, 1)
-            # Elegimos aleatoriamente si hacer un pueblo o una carretera
-            if answer:
-                valid_nodes = self.board.valid_town_nodes(self.id)
-                if len(valid_nodes):
-                    town_node = random.randint(0, len(valid_nodes) - 1)
-                    return {'building': BuildConstants.TOWN, 'nodeID': valid_nodes[town_node]}
-            else:
-                valid_nodes = self.board.valid_road_nodes(self.id)
-                if len(valid_nodes):
-                    road_node = random.randint(0, len(valid_nodes) - 1)
-                    return {'building': BuildConstants.ROAD,
-                            'nodeID': valid_nodes[road_node]['startingNode'],
-                            'roadTo': valid_nodes[road_node]['finishingNode']}
-
-        # Ciudad
-        elif self.hand.resources.has_this_more_materials(BuildConstants.CITY) and answer == 1:
-            valid_nodes = self.board.valid_city_nodes(self.id)
-            if len(valid_nodes):
-                city_node = random.randint(0, len(valid_nodes) - 1)
-                return {'building': BuildConstants.CITY, 'nodeID': valid_nodes[city_node]}
-
-        # Carta de desarrollo
-        elif self.hand.resources.has_this_more_materials(BuildConstants.CARD) and answer == 2:
-            return {'building': BuildConstants.CARD}
-
         return None
 
     def on_game_start(self, board_instance):
@@ -192,31 +107,13 @@ class BotInterface:
         4: Wool
         :return: int, representa el material elegido
         """
-        material = random.randint(0, 4)
-        return material
+        return None
 
     def on_road_building_card_use(self):
         """
         Se eligen 2 lugares válidos donde construir carreteras. Si no son válidos, el programa pondrá aleatorios
         :return:
         """
-        valid_nodes = self.board.valid_road_nodes(self.id)
-        if len(valid_nodes) > 1:
-            while True:
-                road_node = random.randint(0, len(valid_nodes) - 1)
-                road_node_2 = random.randint(0, len(valid_nodes) - 1)
-                if road_node != road_node_2:
-                    return {'nodeID': valid_nodes[road_node]['startingNode'],
-                            'roadTo': valid_nodes[road_node]['finishingNode'],
-                            'nodeID_2': valid_nodes[road_node]['startingNode'],
-                            'roadTo_2': valid_nodes[road_node]['finishingNode'],
-                            }
-        elif len(valid_nodes) == 1:
-            return {'nodeID': valid_nodes[0]['startingNode'],
-                    'roadTo': valid_nodes[0]['finishingNode'],
-                    'nodeID_2': None,
-                    'roadTo_2': None,
-                    }
         return None
 
     def on_year_of_plenty_card_use(self):
@@ -224,5 +121,4 @@ class BotInterface:
         Se eligen dos materiales (puede elegirse el mismo 2 veces). Te llevas una carta de ese material
         :return:
         """
-        material, material2 = random.randint(0, 4), random.randint(0, 4)
-        return {'material': material, 'material_2': material2}
+        return None

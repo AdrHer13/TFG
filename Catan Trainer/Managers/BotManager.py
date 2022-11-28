@@ -1,5 +1,7 @@
+from pydoc import locate
+
+from Bots import RandomBot
 from Classes.Hand import Hand
-from Interfaces.BotInterface import BotInterface
 from Classes.DevelopmentCards import DevelopmentCardsHand
 
 
@@ -19,12 +21,17 @@ class BotManager:
     # TODO: Pedir al ejecutar el programa el nombre de las clases que se quieren gastar para los bots
     # TODO: Añadir mano a self.players para que los bots puedan solicitarla pero no modificarla
     def __init__(self):
+        first_bot_class = self.import_bot_class_from_input('primer')
+        second_bot_class = self.import_bot_class_from_input('segundo')
+        third_bot_class = self.import_bot_class_from_input('tercer')
+        fourth_bot_class = self.import_bot_class_from_input('cuarto')
+
         self.players = [
             {
                 'id': 0,
-                'victoryPoints': 0,
-                'hiddenVictoryPoints': 0,
-                'player': BotInterface(0),
+                'victory_points': 0,
+                'hidden_victory_points': 0,
+                'player': first_bot_class(0),
                 'resources': Hand(),
                 'development_cards': DevelopmentCardsHand(),
                 'knights': 0,
@@ -34,9 +41,9 @@ class BotManager:
             },
             {
                 'id': 1,
-                'victoryPoints': 0,
-                'hiddenVictoryPoints': 0,
-                'player': BotInterface(1),
+                'victory_points': 0,
+                'hidden_victory_points': 0,
+                'player': second_bot_class(1),
                 'resources': Hand(),
                 'development_cards': DevelopmentCardsHand(),
                 'knights': 0,
@@ -46,9 +53,9 @@ class BotManager:
             },
             {
                 'id': 2,
-                'victoryPoints': 0,
-                'hiddenVictoryPoints': 0,
-                'player': BotInterface(2),
+                'victory_points': 0,
+                'hidden_victory_points': 0,
+                'player': third_bot_class(2),
                 'resources': Hand(),
                 'development_cards': DevelopmentCardsHand(),
                 'knights': 0,
@@ -58,9 +65,9 @@ class BotManager:
             },
             {
                 'id': 3,
-                'victoryPoints': 0,
-                'hiddenVictoryPoints': 0,
-                'player': BotInterface(3),
+                'victory_points': 0,
+                'hidden_victory_points': 0,
+                'player': fourth_bot_class(3),
                 'resources': Hand(),
                 'development_cards': DevelopmentCardsHand(),
                 'knights': 0,
@@ -77,3 +84,14 @@ class BotManager:
     def set_actual_player(self, player_id=0):
         self.actual_player = player_id
         return
+
+    def import_bot_class_from_input(self, strng=''):
+        module_class = input('Módulo y clase del ' + strng + ' bot (ej: mymodule.myclass)(dejar en blanco para usar la por defecto): ')
+        if module_class == '':
+            klass = RandomBot
+        else:
+            components = module_class.split('.')
+            module = __import__('Bots.' + components[0], fromlist=[components[1]])
+            klass = getattr(module, components[1])
+
+        return klass

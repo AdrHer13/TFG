@@ -88,7 +88,7 @@ class BotManager:
     def import_bot_class_from_input(self, strng=''):
         module_class = input('Módulo y clase del ' + strng + ' bot (ej: mymodule.myclass)(dejar en blanco para usar la por defecto): ')
         if module_class == '':
-            klass = RandomBot
+            klass = RandomBot.RandomBot
         else:
             components = module_class.split('.')
             module = __import__('Bots.' + components[0], fromlist=[components[1]])

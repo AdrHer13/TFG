@@ -48,6 +48,10 @@ class Hand:
                 pass
             # else:
             #     print('add_desert')
+
+        # TODO: arreglar el problema con los negativos. Esto es un fix temporal que puede ser abusable
+        if not isinstance(resource, list) and self.get_from_id(resource) < 0:
+            self.add_material(resource, (self.get_from_id(resource) * -1))
         return
 
     def remove_material(self, resource, amount):

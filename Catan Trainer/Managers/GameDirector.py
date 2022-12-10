@@ -196,7 +196,8 @@ class GameDirector:
         build_phase_object = {}
 
         self.game_manager.turn_manager.set_phase(2)
-        build_response = self.game_manager.bot_manager.players[player]['player'].on_build_phase()
+        # TODO: No pasar directamente la instancia del tablero del GameManager, pasar una copia
+        build_response = self.game_manager.bot_manager.players[player]['player'].on_build_phase(self.game_manager.board)
         if isinstance(build_response, dict):
             build_phase_object = build_response
             built = False

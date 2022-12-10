@@ -395,6 +395,8 @@ class GameManager:
         :return: node_id, road_to
         """
 
+        # TODO: no asumir que los bots van a devolver siempre algo. Comprobar, y si no devuelven nada entonces elegir por ellos
+        # Le da a los jugadores 2 intentos de poner bien los pueblos y carreteras. Si no lo hace el GameDirecto por ellos
         for count in range(3):
             if count < 2:
                 node_id, road_to = self.bot_manager.players[player]['player'].on_game_start(self.board)

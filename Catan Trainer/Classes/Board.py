@@ -569,11 +569,11 @@ class Board:
         """
         valid_nodes = []
         for node in self.nodes:
-            for adjacent in node['adjacent']:
-                for road in self.nodes[adjacent]['roads']:
+            for adjacent_node_id in node['adjacent']:
+                for road in self.nodes[adjacent_node_id]['roads']:
                     if road['playerID'] == player_id and road['nodeID'] != node['id'] and (
                             node['player'] == player_id or node['player'] == -1):
-                        valid_nodes.append({'startingNode': node['id'], 'finishingNode': adjacent})
+                        valid_nodes.append({'startingNode': node['id'], 'finishingNode': adjacent_node_id})
         print('````````````````````````````')
         print('valid_road_nodes: ')
         print(valid_nodes)
@@ -582,7 +582,8 @@ class Board:
 
     def valid_starting_nodes(self):
         """
-        Devuelve un array con las IDs de todos los nodos viables para el posicionamiento inicial
+        Devuelve un array con las IDs de todos los nodos viables para el posicionamiento inicial.
+        No necesita número de jugador, porque es cualquier nodo que no tenga un jugador en él y no sea costero
         :return: [int]
         """
 

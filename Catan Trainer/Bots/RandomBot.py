@@ -135,8 +135,8 @@ class RandomBot(BotInterface):
                 if road_node != road_node_2:
                     return {'nodeID': valid_nodes[road_node]['startingNode'],
                             'roadTo': valid_nodes[road_node]['finishingNode'],
-                            'nodeID_2': valid_nodes[road_node]['startingNode'],
-                            'roadTo_2': valid_nodes[road_node]['finishingNode'],
+                            'nodeID_2': valid_nodes[road_node_2]['startingNode'],
+                            'roadTo_2': valid_nodes[road_node_2]['finishingNode'],
                             }
         elif len(valid_nodes) == 1:
             return {'nodeID': valid_nodes[0]['startingNode'],

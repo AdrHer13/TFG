@@ -814,7 +814,7 @@
                     }
 
                     let str = 'node: ' + setup_obj['P' + i][j]['id'] + ' | ' + 'type: ' + 'T' + '\r\n';
-                    str += 'node: ' + setup_obj['P' + i][j]['id'] + ' | ' + 'roadTo: ' + setup_obj['P' + i][j]['road'] + ' | ' + 'type: ' + 'R' + '\r\n';
+                    str += 'node: ' + setup_obj['P' + i][j]['id'] + ' | ' + 'road_to: ' + setup_obj['P' + i][j]['road'] + ' | ' + 'type: ' + 'R' + '\r\n';
 
                     textarea.text(textarea.text() + str);
 
@@ -847,7 +847,7 @@
 
                 terrain_number.html(html);
                 terrain_div.removeClass(['terrain_cereal', 'terrain_mineral', 'terrain_clay', 'terrain_wood', 'terrain_wool', 'terrain_desert'])
-                terrain_div.addClass(getTerrainTypeClass(terrain[i]['terrainType']));
+                terrain_div.addClass(getTerrainTypeClass(terrain[i]['terrain_type']));
                 //                terrain_div.text(terrain_div.text() + '');
             }
         }
@@ -1501,34 +1501,34 @@
                                 switch (building['building']) {
                                     case 'town':
                                         if (building['finished']) {
-                                            let node = jQuery('#node_' + building['nodeID']);
+                                            let node = jQuery('#node_' + building['node_id']);
                                             paint_it_player_color((parseInt(contador_turnos.val()) - 1), node);
                                             node.html('<i class="fa-solid fa-house"></i>');
 
-                                            let str = 'node: ' + building['nodeID'] + ' | ' + 'type: ' + 'T' + '\r\n';
+                                            let str = 'node: ' + building['node_id'] + ' | ' + 'type: ' + 'T' + '\r\n';
                                             //                                            textarea.text(textarea.text() + str);
                                         }
                                         break;
                                     case 'city':
                                         if (building['finished']) {
-                                            let node = jQuery('#node_' + building['nodeID']);
+                                            let node = jQuery('#node_' + building['node_id']);
                                             node.html('<i class="fa-solid fa-chess-rook"></i>');
                                             //                                            node.text(node.text() + ' C ');
 
-                                            let str = 'node: ' + building['nodeID'] + ' | ' + 'type: ' + 'C' + '\r\n';
+                                            let str = 'node: ' + building['node_id'] + ' | ' + 'type: ' + 'C' + '\r\n';
                                             //                                            textarea.text(textarea.text() + str);
                                         }
                                         break;
                                     case 'road':
                                         if (building['finished']) {
                                             let road = '';
-                                            if (building['nodeID'] < building['roadTo']) {
-                                                road = jQuery('#road_' + building['nodeID'] + '_' + building['roadTo']);
+                                            if (building['node_id'] < building['road_to']) {
+                                                road = jQuery('#road_' + building['node_id'] + '_' + building['road_to']);
                                             } else {
-                                                road = jQuery('#road_' + building['roadTo'] + '_' + building['nodeID']);
+                                                road = jQuery('#road_' + building['road_to'] + '_' + building['node_id']);
                                             }
                                             paint_it_player_color((parseInt(contador_turnos.val()) - 1), road);
-                                            let str = 'node: ' + building['nodeID'] + ' | ' + 'roadTo: ' + building['roadTo'] + ' | ' + 'type: ' + 'R' + '\r\n'
+                                            let str = 'node: ' + building['node_id'] + ' | ' + 'road_to: ' + building['road_to'] + ' | ' + 'type: ' + 'R' + '\r\n'
                                             //                                            textarea.text(textarea.text() + str)
                                         }
                                         break;

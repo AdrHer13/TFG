@@ -11,8 +11,8 @@
 
 #gamefield_external {
     height: 70vh;
-/*    background: #00aacc;*/
-    background: url('../Images/textures/water.jpg')!important;
+    background: #00aacc;
+/*    background: url('../Images/textures/water.jpg')!important;*/
 
     display: flex;
     justify-content: center;

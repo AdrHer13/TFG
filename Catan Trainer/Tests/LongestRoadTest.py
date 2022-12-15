@@ -58,11 +58,11 @@ class LongestRoadTest:
 
         for road in node['roads']:
             # print('. . . . . . . ')
-            # print('Road to: ' + str(road['nodeID']))
-            if ((road['nodeID'] not in visited_nodes) and
-                (road['playerID'] == player_id or player_id == -1) and
-                (road['playerID'] == node['player'] or node['player'] == -1)):
-                visited_nodes.append(road['nodeID'])
+            # print('Road to: ' + str(road['node_id']))
+            if ((road['node_id'] not in visited_nodes) and
+                (road['player_id'] == player_id or player_id == -1) and
+                (road['player_id'] == node['player'] or node['player'] == -1)):
+                visited_nodes.append(road['node_id'])
                 # print(visited_nodes)
                 # print(node)
                 if depth > longest_road_obj['longest_road']:
@@ -70,7 +70,7 @@ class LongestRoadTest:
                     longest_road_obj['player'] = player_id
                 # print('depth: ' + str(depth))
                 # print('player: ' + str(player_id))
-                longest_road_obj = self.longest_road_calculator(self.board.nodes[road['nodeID']], depth + 1, longest_road_obj, road['playerID'], visited_nodes)
+                longest_road_obj = self.longest_road_calculator(self.board.nodes[road['node_id']], depth + 1, longest_road_obj, road['player_id'], visited_nodes)
         return {'longest_road': longest_road_obj['longest_road'], 'player': longest_road_obj['player']}
 
     def longest_road_test(self):
@@ -80,24 +80,24 @@ class LongestRoadTest:
         real_longest_road = {'longest_road': 5, 'player': -1}
         for node in self.board.nodes:
             longest_road_obj = self.longest_road_calculator(node, 1, {'longest_road': 0, 'player': -1}, -1, [node['id']])
-            print('. . . . . . . . .')
-            print('Node start: ' + str(node['id']))
-            print('Longer:')
-            print(longest_road_obj)
+            # print('. . . . . . . . .')
+            # print('Node start: ' + str(node['id']))
+            # print('Longer:')
+            # print(longest_road_obj)
             if longest_road_obj['longest_road'] > real_longest_road['longest_road']:
                 real_longest_road = longest_road_obj
 
-        print('-- -- -- -- -- -- -- -- --')
-        print('Longest: ')
-        print(real_longest_road)
+        # print('-- -- -- -- -- -- -- -- --')
+        # print('Longest: ')
+        # print(real_longest_road)
 
         #     for road in node['roads']:
-        #         if road['nodeID'] not in visited_nodes:
-        #             visited_nodes.append(road['nodeID'])
+        #         if road['node_id'] not in visited_nodes:
+        #             visited_nodes.append(road['node_id'])
         #
-        #             for road_2 in self.board.nodes[road['nodeID']]:
-        #                 if road_2['nodeID'] not in visited_nodes:
-        #                     visited_nodes.append(road['nodeID'])
+        #             for road_2 in self.board.nodes[road['node_id']]:
+        #                 if road_2['node_id'] not in visited_nodes:
+        #                     visited_nodes.append(road['node_id'])
         # pass
 
 

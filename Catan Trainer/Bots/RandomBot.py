@@ -43,7 +43,7 @@ class RandomBot(BotInterface):
     def on_moving_thief(self):
         terrain = random.randint(0, 18)
         player = -1
-        for node in self.board.terrain[terrain]['contactingNodes']:
+        for node in self.board.terrain[terrain]['contacting_nodes']:
             if self.board.nodes[node]['player'] != -1:
                 player = self.board.nodes[node]['player']
         return {'terrain': terrain, 'player': player}
@@ -59,7 +59,7 @@ class RandomBot(BotInterface):
 
         answer = random.randint(0, 1)
         if answer:
-            print(' - Jugador intenta comerciar por puerto - ')
+            # print(' - Jugador intenta comerciar por puerto - ')
             if self.hand.get_cereal() >= 4:
                 return {'gives': MaterialConstants.CEREAL, 'receives': MaterialConstants.MINERAL}
             if self.hand.get_mineral() >= 4:
@@ -70,7 +70,7 @@ class RandomBot(BotInterface):
                 return {'gives': MaterialConstants.WOOD, 'receives': MaterialConstants.CEREAL}
             if self.hand.get_wool() >= 4:
                 return {'gives': MaterialConstants.WOOL, 'receives': MaterialConstants.CEREAL}
-            print('Jugador no quiere comerciar')
+            # print('Jugador no quiere comerciar')
             return None
         else:
             gives = Materials(random.randint(0, self.hand.get_cereal()), random.randint(0, self.hand.get_mineral()),
@@ -97,21 +97,21 @@ class RandomBot(BotInterface):
                 valid_nodes = self.board.valid_town_nodes(self.id)
                 if len(valid_nodes):
                     town_node = random.randint(0, len(valid_nodes) - 1)
-                    return {'building': BuildConstants.TOWN, 'nodeID': valid_nodes[town_node]}
+                    return {'building': BuildConstants.TOWN, 'node_id': valid_nodes[town_node]}
             else:
                 valid_nodes = self.board.valid_road_nodes(self.id)
                 if len(valid_nodes):
                     road_node = random.randint(0, len(valid_nodes) - 1)
                     return {'building': BuildConstants.ROAD,
-                            'nodeID': valid_nodes[road_node]['startingNode'],
-                            'roadTo': valid_nodes[road_node]['finishingNode']}
+                            'node_id': valid_nodes[road_node]['starting_node'],
+                            'road_to': valid_nodes[road_node]['finishing_node']}
 
         # Ciudad
         elif self.hand.resources.has_this_more_materials(BuildConstants.CITY) and answer == 1:
             valid_nodes = self.board.valid_city_nodes(self.id)
             if len(valid_nodes):
                 city_node = random.randint(0, len(valid_nodes) - 1)
-                return {'building': BuildConstants.CITY, 'nodeID': valid_nodes[city_node]}
+                return {'building': BuildConstants.CITY, 'node_id': valid_nodes[city_node]}
 
         # Carta de desarrollo
         elif self.hand.resources.has_this_more_materials(BuildConstants.CARD) and answer == 2:
@@ -133,16 +133,16 @@ class RandomBot(BotInterface):
                 road_node = random.randint(0, len(valid_nodes) - 1)
                 road_node_2 = random.randint(0, len(valid_nodes) - 1)
                 if road_node != road_node_2:
-                    return {'nodeID': valid_nodes[road_node]['startingNode'],
-                            'roadTo': valid_nodes[road_node]['finishingNode'],
-                            'nodeID_2': valid_nodes[road_node_2]['startingNode'],
-                            'roadTo_2': valid_nodes[road_node_2]['finishingNode'],
+                    return {'node_id': valid_nodes[road_node]['starting_node'],
+                            'road_to': valid_nodes[road_node]['finishing_node'],
+                            'node_id_2': valid_nodes[road_node_2]['starting_node'],
+                            'road_to_2': valid_nodes[road_node_2]['finishing_node'],
                             }
         elif len(valid_nodes) == 1:
-            return {'nodeID': valid_nodes[0]['startingNode'],
-                    'roadTo': valid_nodes[0]['finishingNode'],
-                    'nodeID_2': None,
-                    'roadTo_2': None,
+            return {'node_id': valid_nodes[0]['starting_node'],
+                    'road_to': valid_nodes[0]['finishing_node'],
+                    'node_id_2': None,
+                    'road_to_2': None,
                     }
         return None
 

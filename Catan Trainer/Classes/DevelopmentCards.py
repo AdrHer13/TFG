@@ -127,7 +127,7 @@ class DevelopmentCardsHand:
             card_obj = self.hand[index]
             # self.delete_card(self.hand[index].id)
             return card_obj
-        print('no tenía esa carta en mano id ' + str(id))
+        # print('no tenía esa carta en mano id ' + str(id))
         pass
 
     def play_card_by_id(self, id):
@@ -138,11 +138,11 @@ class DevelopmentCardsHand:
         """
         for card in self.hand:
             if card.get_id() == id:
-                print('se juega carta con id ' + str(id))
+                # print('se juega carta con id ' + str(id))
                 card_obj = card
                 # self.delete_card(id)
                 return card_obj
-        print('no tenía esa carta en mano id ' + str(id))
+        # print('no tenía esa carta en mano id ' + str(id))
         pass
 
     def delete_card(self, id):
@@ -151,7 +151,7 @@ class DevelopmentCardsHand:
         :param id:
         :return:
         """
-        print('borra carta de mano')
+        # print('borra carta de mano')
         rest_of_hand = []
         # Borra la carta que con la id correcta de la mano
         for card in self.hand:

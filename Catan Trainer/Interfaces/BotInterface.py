@@ -10,7 +10,6 @@ class BotInterface:
     """
     Interfaz que implementa a un bot
     """
-    material_constants = MaterialConstants()
     board = Board()
     hand = Hand()
     development_cards_hand = DevelopmentCardsHand()
@@ -19,7 +18,6 @@ class BotInterface:
     def __init__(self, bot_id):
         self.hand = Hand()
         self.board = Board()
-        self.material_constants = MaterialConstants()
         self.development_cards_hand = DevelopmentCardsHand()
         self.id = bot_id
         pass
@@ -58,7 +56,7 @@ class BotInterface:
         """
         terrain_id = 0
         for terrain in self.board.terrain:
-            if terrain['hasThief']:
+            if terrain['has_thief']:
                 terrain_id = terrain['id']
                 break
 
@@ -81,7 +79,7 @@ class BotInterface:
     def on_build_phase(self, board_instance):
         """
         Trigger para cuando empieza la fase de construcción. Devuelve un string indicando qué quiere construir
-        :return: dict{'building': str, 'nodeID': int, 'roadTo': int/None}, None
+        :return: dict{'building': str, 'node_id': int, 'road_to': int/None}, None
         """
         return None
 

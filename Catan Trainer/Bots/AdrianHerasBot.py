@@ -68,7 +68,7 @@ class AdrianHerasBot(BotInterface):
         # Si no se dan las condiciones lo deja donde está, lo que hace que el GameManager lo ponga en un lugar cualquiera
         terrain_with_thief_id = -1
         for terrain in self.board.terrain:
-            if not terrain['hasThief']:
+            if not terrain['has_thief']:
                 if terrain['probability'] == 6 or terrain['probability'] == 8:
                     nodes = self.board.__get_contacting_nodes__(terrain['id'])
                     has_own_town = False
@@ -232,19 +232,19 @@ class AdrianHerasBot(BotInterface):
         if self.hand.resources.has_this_more_materials(BuildConstants.CITY) and self.town_number > 0:
             possibilities = self.board.valid_city_nodes(self.id)
             for node_id in possibilities:
-                for terrain_piece_id in self.board.nodes[node_id]['contactingTerrain']:
+                for terrain_piece_id in self.board.nodes[node_id]['contacting_terrain']:
                     # Hacemos una ciudad solo si la probabilidad de que salga el número es mayor o igual a 4/36
                     if self.board.terrain[terrain_piece_id]['probability'] == 5 or \
                             self.board.terrain[terrain_piece_id]['probability'] == 6 or \
                             self.board.terrain[terrain_piece_id]['probability'] == 8 or \
                             self.board.terrain[terrain_piece_id]['probability'] == 9:
                         self.town_number -= 1  # Transformamos un pueblo en una ciudad
-                        return {'building': BuildConstants.CITY, 'nodeID': node_id}
+                        return {'building': BuildConstants.CITY, 'node_id': node_id}
 
         if self.hand.resources.has_this_more_materials(BuildConstants.TOWN):
             possibilities = self.board.valid_town_nodes(self.id)
             for node_id in possibilities:
-                for terrain_piece_id in self.board.nodes[node_id]['contactingTerrain']:
+                for terrain_piece_id in self.board.nodes[node_id]['contacting_terrain']:
                     # Hacemos un pueblo solo si la probabilidad de que salga el número es mayor o igual a 3/36
                     # O si el nodo es costero y posee un puerto
                     if self.board.terrain[terrain_piece_id]['probability'] == 4 or \
@@ -254,7 +254,7 @@ class AdrianHerasBot(BotInterface):
                             self.board.terrain[terrain_piece_id]['probability'] == 9 or \
                             self.board.terrain[terrain_piece_id]['probability'] == 10:
                         self.town_number += 1  # Añadimos un pueblo creado
-                        return {'building': BuildConstants.CITY, 'nodeID': node_id}
+                        return {'building': BuildConstants.TOWN, 'node_id': node_id}
 
         if self.hand.resources.has_this_more_materials(BuildConstants.ROAD):
             # Construye sí o sí carretera si acaba en un nodo costero, pero si no lo busca aleatoriamente?
@@ -267,11 +267,11 @@ class AdrianHerasBot(BotInterface):
             # TODO: Sería ideal que funcionase pero hay poco tiempo, que coja una aleatoria, pero si es costero y tiene puerto lo coge siempre
             possibilities = self.board.valid_road_nodes(self.id)
             for road_obj in possibilities:
-                if self.board.is_it_a_coastal_node(road_obj['finishingNode']) and \
-                        self.board.nodes[road_obj['finishingNode']]['harbor'] != HarborConstants.NONE:
+                if self.board.is_it_a_coastal_node(road_obj['finishing_node']) and \
+                        self.board.nodes[road_obj['finishing_node']]['harbor'] != HarborConstants.NONE:
                     return {'building': BuildConstants.ROAD,
-                            'nodeID': road_obj['startingNode'],
-                            'roadTo': road_obj['finishingNode']}
+                            'node_id': road_obj['starting_node'],
+                            'road_to': road_obj['finishing_node']}
 
             # Asumiendo que no hay ninguna ideal (es decir, robarse los puertos),
             #   construye una carretera aleatoria, el 60% de las veces
@@ -280,8 +280,8 @@ class AdrianHerasBot(BotInterface):
                 if len(possibilities):
                     road_node = random.randint(0, len(possibilities) - 1)
                     return {'building': BuildConstants.ROAD,
-                            'nodeID': possibilities[road_node]['startingNode'],
-                            'roadTo': possibilities[road_node]['finishingNode']}
+                            'node_id': possibilities[road_node]['starting_node'],
+                            'road_to': possibilities[road_node]['finishing_node']}
 
         if self.hand.resources.has_this_more_materials(BuildConstants.CARD):
             # Si tiene materiales para hacer una carta, la construye. Como va la última en la pila,
@@ -299,7 +299,7 @@ class AdrianHerasBot(BotInterface):
         chosen_node_id = -1
         chosen_road_to_id = -1
         for node_id in possibilities:
-            for terrain_id in self.board.nodes[node_id]['contactingTerrain']:
+            for terrain_id in self.board.nodes[node_id]['contacting_terrain']:
                 if self.board.terrain[terrain_id]['probability'] == 6 or self.board.terrain[terrain_id]['probability'] == 8:
                     chosen_node_id = node_id
 
@@ -329,16 +329,16 @@ class AdrianHerasBot(BotInterface):
                 road_node = random.randint(0, len(valid_nodes) - 1)
                 road_node_2 = random.randint(0, len(valid_nodes) - 1)
                 if road_node != road_node_2:
-                    return {'nodeID': valid_nodes[road_node]['startingNode'],
-                            'roadTo': valid_nodes[road_node]['finishingNode'],
-                            'nodeID_2': valid_nodes[road_node_2]['startingNode'],
-                            'roadTo_2': valid_nodes[road_node_2]['finishingNode'],
+                    return {'node_id': valid_nodes[road_node]['starting_node'],
+                            'road_to': valid_nodes[road_node]['finishing_node'],
+                            'node_id_2': valid_nodes[road_node_2]['starting_node'],
+                            'road_to_2': valid_nodes[road_node_2]['finishing_node'],
                             }
         elif len(valid_nodes) == 1:
-            return {'nodeID': valid_nodes[0]['startingNode'],
-                    'roadTo': valid_nodes[0]['finishingNode'],
-                    'nodeID_2': None,
-                    'roadTo_2': None,
+            return {'node_id': valid_nodes[0]['starting_node'],
+                    'road_to': valid_nodes[0]['finishing_node'],
+                    'node_id_2': None,
+                    'road_to_2': None,
                     }
         return None
 

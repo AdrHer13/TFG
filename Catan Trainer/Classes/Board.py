@@ -11,16 +11,16 @@ class Board:
     nodes: [{"id": int,
              "adjacent": [int...],
              "harbor": int,
-             "roads": [{"playerID": id, "nodeID": int}...],
-             "hasCity": bool,
+             "roads": [{"player_id": id, "node_id": int}...],
+             "has_city": bool,
              "player": int,
-             "contactingTerrain": [int...]}] Representa los nodos del tablero. Poseen información de los puertos y nodos adyacentes
+             "contacting_terrain": [int...]}] Representa los nodos del tablero. Poseen información de los puertos y nodos adyacentes
 
     terrain: [{"id": int,
-               "hasThief": bool,
+               "has_thief": bool,
                "probability": int(2,12),
-               "terrainType": int,
-               "contactingNodes": [int...]}]
+               "terrain_type": int,
+               "contacting_nodes": [int...]}]
 
               Representa una ficha de terreno del tablero. Poseen información de los nodos con
                  los que hacen contacto, si posee al ladrón actualmente y su probabilidad de salir
@@ -43,9 +43,9 @@ class Board:
                     "adjacent": self.__get_adjacent_nodes__(i),
                     "harbor": self.__get_harbors__(i),
                     "roads": [],
-                    "hasCity": False,
+                    "has_city": False,
                     "player": -1,
-                    "contactingTerrain": self.__get_contacting_terrain__(i),
+                    "contacting_terrain": self.__get_contacting_terrain__(i),
                 })
                 i += 1
         else:
@@ -57,18 +57,18 @@ class Board:
                 if probability != 7:
                     self.terrain.append({
                         "id": j,
-                        "hasThief": False,
+                        "has_thief": False,
                         "probability": probability,
-                        "terrainType": self.__get_terrain_type__(j),
-                        "contactingNodes": self.__get_contacting_nodes__(j),
+                        "terrain_type": self.__get_terrain_type__(j),
+                        "contacting_nodes": self.__get_contacting_nodes__(j),
                     })
                 else:
                     self.terrain.append({
                         "id": j,
-                        "hasThief": True,
+                        "has_thief": True,
                         "probability": 0,
-                        "terrainType": self.__get_terrain_type__(j),
-                        "contactingNodes": self.__get_contacting_nodes__(j),
+                        "terrain_type": self.__get_terrain_type__(j),
+                        "contacting_nodes": self.__get_contacting_nodes__(j),
                     })
                 j += 1
         else:
@@ -91,8 +91,8 @@ class Board:
         # while m < 19:
         # print(self.terrain[m]['id'])
         # print(self.terrain[m]['probability'])
-        # print(self.terrain[m]['contactingNodes'])
-        # print(self.terrain[m]['terrainType'])
+        # print(self.terrain[m]['contacting_nodes'])
+        # print(self.terrain[m]['terrain_type'])
         # print('#######################\n')
 
         # m += 1
@@ -116,8 +116,8 @@ class Board:
         while m < 19:
             print(self.terrain[m]['id'])
             print(self.terrain[m]['probability'])
-            print(self.terrain[m]['contactingNodes'])
-            print(self.terrain[m]['terrainType'])
+            print(self.terrain[m]['contacting_nodes'])
+            print(self.terrain[m]['terrain_type'])
             print('#######################\n')
             m += 1
 
@@ -300,7 +300,7 @@ class Board:
         """
         Función que obtiene los nodos adyacentes de manera automática
         :param node_id: Id del nodo del que se quieren las IDs de los nodos adyacentes
-        :return: Array(ID)
+        :return: [int, ...]
         """
         adjacent_nodes = []
 
@@ -396,20 +396,20 @@ class Board:
         if self.nodes[node]['player'] == -1:
             can_build = False
             for roads in self.nodes[node]['roads']:
-                if roads['playerID'] == player:
+                if roads['player_id'] == player:
                     can_build = True
 
-            if not self.adyacent_nodes_dont_have_towns(node):
-                return {'response': False, 'errorMsg': 'Hay un pueblo o ciudad muy cercano al nodo'}
+            if not self.adjacent_nodes_dont_have_towns(node):
+                return {'response': False, 'error_msg': 'Hay un pueblo o ciudad muy cercano al nodo'}
             if can_build:
                 self.nodes[node]['player'] = player
-                self.nodes[node]['hasCity'] = False
-                return {'response': True, 'errorMsg': ''}
+                self.nodes[node]['has_city'] = False
+                return {'response': True, 'error_msg': ''}
             else:
                 return {'response': False,
-                        'errorMsg': 'Debes poseer una carretera hasta el nodo para poder construir un pueblo'}
+                        'error_msg': 'Debes poseer una carretera hasta el nodo para poder construir un pueblo'}
         else:
-            return {'response': False, 'errorMsg': 'No se puede construir en un nodo que le pertenece a otro jugador'}
+            return {'response': False, 'error_msg': 'No se puede construir en un nodo que le pertenece a otro jugador'}
 
     def build_city(self, player, node=-1):
         """
@@ -420,15 +420,15 @@ class Board:
         :return: {bool, string}. Envía si se ha podido construir la ciudad y en caso de no haberse podido el porqué
         """
         if self.nodes[node]['player'] == player:
-            if self.nodes[node]['hasCity']:
-                return {'response': False, 'errorMsg': 'Ya hay una ciudad tuya en el nodo'}
+            if self.nodes[node]['has_city']:
+                return {'response': False, 'error_msg': 'Ya hay una ciudad tuya en el nodo'}
             # self.nodes[node]['player'] = player
-            self.nodes[node]['hasCity'] = True
-            return {'response': True, 'errorMsg': ''}
+            self.nodes[node]['has_city'] = True
+            return {'response': True, 'error_msg': ''}
         elif self.nodes[node]['player'] == -1:
-            return {'response': True, 'errorMsg': 'Primero debe construirse un poblado'}
+            return {'response': True, 'error_msg': 'Primero debe construirse un poblado'}
         else:
-            return {'response': False, 'errorMsg': 'Ya posee el nodo otro jugador'}
+            return {'response': False, 'error_msg': 'Ya posee el nodo otro jugador'}
 
     def build_road(self, player, starting_node=-1, finishing_node=-1):
         """
@@ -442,28 +442,28 @@ class Board:
         can_build = False
         # Comprueba si ya había una carretera puesta que le pertenezca al jugador
         for road in self.nodes[starting_node]['roads']:
-            if road['nodeID'] == finishing_node:
+            if road['node_id'] == finishing_node:
                 # Dejamos de mirar si ya hay una carretera hacia el nodo final
-                return {'response': False, 'errorMsg': 'Ya hay una carretera aquí'}
-            if road['playerID'] == player:
+                return {'response': False, 'error_msg': 'Ya hay una carretera aquí'}
+            if road['player_id'] == player:
                 can_build = True
 
         for road in self.nodes[finishing_node]['roads']:
-            if road['nodeID'] == starting_node:
+            if road['node_id'] == starting_node:
                 # Dejamos de mirar si ya hay una carretera hacia el nodo final
-                return {'response': False, 'errorMsg': 'Ya hay una carretera aquí'}
-            if road['playerID'] == player:
+                return {'response': False, 'error_msg': 'Ya hay una carretera aquí'}
+            if road['player_id'] == player:
                 can_build = True
 
         # Si le pertenece el nodo inicial o tiene una carretera, deja construir
         if self.nodes[starting_node]['player'] == player or can_build:
-            self.nodes[starting_node]['roads'].append({'playerID': player, 'nodeID': finishing_node})
-            self.nodes[finishing_node]['roads'].append({'playerID': player, 'nodeID': starting_node})
+            self.nodes[starting_node]['roads'].append({'player_id': player, 'node_id': finishing_node})
+            self.nodes[finishing_node]['roads'].append({'player_id': player, 'node_id': starting_node})
 
-            return {'response': True, 'errorMsg': ''}
+            return {'response': True, 'error_msg': ''}
         else:
             return {'response': False,
-                    'errorMsg': 'No puedes hacer una carretera aquí,' +
+                    'error_msg': 'No puedes hacer una carretera aquí,' +
                                 ' no hay una carretera o nodo adyacente que te pertenezca'}
 
     def move_thief(self, terrain=-1):
@@ -473,29 +473,29 @@ class Board:
         :param terrain: Número que representa un hexágono en el tablero
         :return: {bool, string}. Envía si se ha podido move al ladrón y en caso de no haberse podido el porqué
         """
-        if self.terrain[terrain]['hasThief']:
-            self.terrain[terrain]['hasThief'] = False
+        if self.terrain[terrain]['has_thief']:
+            self.terrain[terrain]['has_thief'] = False
 
             rand_terrain = random.randint(0, 18)
-            self.terrain[rand_terrain]['hasThief'] = True
+            self.terrain[rand_terrain]['has_thief'] = True
             return {'response': False,
-                    'errorMsg': 'No se puede mover al ladrón a la misma casilla',
-                    'terrainId': rand_terrain,
-                    'lastThiefTerrain': terrain}
+                    'error_msg': 'No se puede mover al ladrón a la misma casilla',
+                    'terrain_id': rand_terrain,
+                    'last_thief_terrain': terrain}
         else:
             # Quitamos el ladrón del terreno que lo posea
             last_terrain_id = -1
             for square in self.terrain:
-                if square['hasThief']:
-                    square['hasThief'] = False
+                if square['has_thief']:
+                    square['has_thief'] = False
                     last_terrain_id = square['id']
                     break
 
-            self.terrain[terrain]['hasThief'] = True
+            self.terrain[terrain]['has_thief'] = True
             return {'response': True,
-                    'errorMsg': '',
-                    'terrainId': terrain,
-                    'lastThiefTerrain': last_terrain_id}
+                    'error_msg': '',
+                    'terrain_id': terrain,
+                    'last_thief_terrain': last_terrain_id}
 
     # def update_board(self):
     #     """
@@ -504,7 +504,7 @@ class Board:
     #     """
     #     return
 
-    def adyacent_nodes_dont_have_towns(self, node_id):
+    def adjacent_nodes_dont_have_towns(self, node_id):
         """
         Comprueba si los nodos a una casilla de distancia del node_id tienen pueblo o ciudad
         :param node_id:
@@ -534,15 +534,15 @@ class Board:
             # print('foreach node: ')
             # print(node)
             for road in node['roads']:
-                if (road['playerID'] == player_id
-                        and self.adyacent_nodes_dont_have_towns(node['id'])
+                if (road['player_id'] == player_id
+                        and self.adjacent_nodes_dont_have_towns(node['id'])
                         and node['player'] == -1
                         and node['id'] not in valid_nodes):
                     valid_nodes.append(node['id'])
-        print('````````````````````````````')
-        print('valid_town_nodes: ')
-        print(valid_nodes)
-        print('````````````````````````````')
+        # print('````````````````````````````')
+        # print('valid_town_nodes: ')
+        # print(valid_nodes)
+        # print('````````````````````````````')
         return valid_nodes
 
     def valid_city_nodes(self, player_id):
@@ -553,31 +553,31 @@ class Board:
         """
         valid_nodes = []
         for node in self.nodes:
-            if node['player'] == player_id and not node['hasCity']:
+            if node['player'] == player_id and not node['has_city']:
                 valid_nodes.append(node['id'])
-        print('````````````````````````````')
-        print('valid_city_nodes: ')
-        print(valid_nodes)
-        print('````````````````````````````')
+        # print('````````````````````````````')
+        # print('valid_city_nodes: ')
+        # print(valid_nodes)
+        # print('````````````````````````````')
         return valid_nodes
 
     def valid_road_nodes(self, player_id):
         """
         Devuelve un array de diccionarios con los nodos iniciales y finales en los que se puede hacer una carretera
         :param player_id:
-        :return: [{'startingNode': int, 'finishingNode': int}, ...]
+        :return: [{'starting_node': int, 'finishing_node': int}, ...]
         """
         valid_nodes = []
         for node in self.nodes:
             for adjacent_node_id in node['adjacent']:
                 for road in self.nodes[adjacent_node_id]['roads']:
-                    if road['playerID'] == player_id and road['nodeID'] != node['id'] and (
+                    if road['player_id'] == player_id and road['node_id'] != node['id'] and (
                             node['player'] == player_id or node['player'] == -1):
-                        valid_nodes.append({'startingNode': node['id'], 'finishingNode': adjacent_node_id})
-        print('````````````````````````````')
-        print('valid_road_nodes: ')
-        print(valid_nodes)
-        print('````````````````````````````')
+                        valid_nodes.append({'starting_node': node['id'], 'finishing_node': adjacent_node_id})
+        # print('````````````````````````````')
+        # print('valid_road_nodes: ')
+        # print(valid_nodes)
+        # print('````````````````````````````')
         return valid_nodes
 
     def valid_starting_nodes(self):
@@ -590,34 +590,34 @@ class Board:
         valid_nodes = []
         for node in self.nodes:
             if (node['player'] == -1 and
-                    self.adyacent_nodes_dont_have_towns(node['id']) and
+                    self.adjacent_nodes_dont_have_towns(node['id']) and
                     not self.is_it_a_coastal_node(node['id'])):
                 valid_nodes.append(node['id'])
 
         return valid_nodes
 
-    def check_for_player_harbors(self, player, material_gives):
+    def check_for_player_harbors(self, player, material_harbor=None):
         """
-        Comprueba qué puertos tiene el jugador. Material gives sirve para buscar puertos 2:1 de ese tipo
+        Comprueba qué puertos tiene el jugador. Material_harbor sirve para buscar puertos 2:1 de ese tipo
         :param player:
-        :param material_gives:
+        :param material_harbor:
         :return:
         """
         harbor_3_1_nodes = [7, 17, 26, 37, 45, 46, 47, 48]
 
-        if material_gives == MaterialConstants.CEREAL:
+        if material_harbor == MaterialConstants.CEREAL:
             if self.nodes[3]['player'] == player or self.nodes[4]['player'] == player:
                 return HarborConstants.CEREAL
-        elif material_gives == MaterialConstants.MINERAL:
+        elif material_harbor == MaterialConstants.MINERAL:
             if self.nodes[28]['player'] == player or self.nodes[38]['player'] == player:
                 return HarborConstants.MINERAL
-        elif material_gives == MaterialConstants.CLAY:
+        elif material_harbor == MaterialConstants.CLAY:
             if self.nodes[14]['player'] == player or self.nodes[15]['player'] == player:
                 return HarborConstants.CLAY
-        elif material_gives == MaterialConstants.WOOD:
+        elif material_harbor == MaterialConstants.WOOD:
             if self.nodes[0]['player'] == player or self.nodes[1]['player'] == player:
                 return HarborConstants.WOOD
-        elif material_gives == MaterialConstants.WOOL:
+        elif material_harbor == MaterialConstants.WOOL:
             if self.nodes[50]['player'] == player or self.nodes[51]['player'] == player:
                 return HarborConstants.WOOL
 

@@ -31,8 +31,8 @@ class GameDirector:
         :return: object
         """
         start_turn_object = {'development_card_played': []}
-        print('----------')
-        print('start turn: ' + str(self.game_manager.turn_manager.get_turn()))
+        # print('----------')
+        # print('start turn: ' + str(self.game_manager.turn_manager.get_turn()))
         self.game_manager.turn_manager.set_phase(0)
         self.game_manager.bot_manager.set_actual_player(player)
 
@@ -51,13 +51,13 @@ class GameDirector:
         start_turn_object['dice'] = self.game_manager.last_dice_roll
         start_turn_object['actual_player'] = str(self.game_manager.turn_manager.get_whose_turn_is_it())
 
-        print('Jugador: ' + str(self.game_manager.turn_manager.get_whose_turn_is_it()))
+        # print('Jugador: ' + str(self.game_manager.turn_manager.get_whose_turn_is_it()))
         # print('Resources ActualPlayer: ' + str(self.game_manager.bot_manager.players[player]['player'].hand.resources))
 
-        for i in range(4):
-            print('Resources J' + str(i) + ': ' + str(
-                self.game_manager.bot_manager.players[i]['resources'].resources) + ' | Total: ' + str(
-                self.game_manager.bot_manager.players[i]['resources'].get_total()))
+        # for i in range(4):
+            # print('Resources J' + str(i) + ': ' + str(
+            #     self.game_manager.bot_manager.players[i]['resources'].resources) + ' | Total: ' + str(
+            #     self.game_manager.bot_manager.players[i]['resources'].get_total()))
 
         if self.game_manager.last_dice_roll == 7:
             for obj in self.game_manager.bot_manager.players:
@@ -80,19 +80,19 @@ class GameDirector:
                         else:
                             obj['resources'] = obj['player'].hand
 
-            print('       -     -     -     -     -     -        ')
-            for i in range(4):
-                print('Resources J' + str(i) + ': ' + str(
-                    self.game_manager.bot_manager.players[i]['resources'].resources) + ' | Total: ' + str(
-                    self.game_manager.bot_manager.players[i]['resources'].get_total()))
+            # print('       -     -     -     -     -     -        ')
+            # for i in range(4):
+            #     print('Resources J' + str(i) + ': ' + str(
+            #         self.game_manager.bot_manager.players[i]['resources'].resources) + ' | Total: ' + str(
+            #         self.game_manager.bot_manager.players[i]['resources'].get_total()))
 
             on_moving_thief = self.game_manager.bot_manager.players[player]['player'].on_moving_thief()
             move_thief_obj = self.game_manager.move_thief(on_moving_thief['terrain'], on_moving_thief['player'])
 
-            start_turn_object['past_thief_terrain'] = move_thief_obj['lastThiefTerrain']
-            start_turn_object['thief_terrain'] = move_thief_obj['terrainId']
-            start_turn_object['robbed_player'] = move_thief_obj['robbedPlayer']
-            start_turn_object['stolen_material_id'] = move_thief_obj['stolenMaterialId']
+            start_turn_object['past_thief_terrain'] = move_thief_obj['last_thief_terrain']
+            start_turn_object['thief_terrain'] = move_thief_obj['terrain_id']
+            start_turn_object['robbed_player'] = move_thief_obj['robbed_player']
+            start_turn_object['stolen_material_id'] = move_thief_obj['stolen_material_id']
 
         for i in range(4):
             start_turn_object['hand_P' + str(i)] = \
@@ -113,7 +113,7 @@ class GameDirector:
         """
         commerce_phase_object = {}
 
-        print('Start commerce phase: ' + str(self.game_manager.turn_manager.get_turn()))
+        # print('Start commerce phase: ' + str(self.game_manager.turn_manager.get_turn()))
 
         self.game_manager.turn_manager.set_phase(1)
         commerce_response = self.game_manager.bot_manager.players[player]['player'].on_commerce_phase()
@@ -123,12 +123,12 @@ class GameDirector:
             commerce_phase_object['harbor_trade'] = False
 
             if commerce_response:
-                print('Oferta: ' + str(commerce_response))
+                # print('Oferta: ' + str(commerce_response))
 
                 if self.game_manager.bot_manager.players[player]['resources'].resources.has_this_more_materials(
                         commerce_response.gives):
                     commerce_phase_object['inviable'] = False
-                    print('Puede hacer la oferta')
+                    # print('Puede hacer la oferta')
                     answer_object = self.game_manager.send_trade_to_everyone(commerce_response)
                     commerce_phase_object['answers'] = answer_object
                 else:
@@ -138,9 +138,9 @@ class GameDirector:
 
             return commerce_phase_object
         elif isinstance(commerce_response, dict):
-            print('%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-            print('Jugador comercia por puerto')
-            print(self.game_manager.bot_manager.players[player]['player'].hand)
+            # print('%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+            # print('Jugador comercia por puerto')
+            # print(self.game_manager.bot_manager.players[player]['player'].hand)
 
             commerce_phase_object['trade_offer'] = commerce_response
             commerce_phase_object['harbor_trade'] = True
@@ -162,11 +162,11 @@ class GameDirector:
             if isinstance(response, Hand):
                 commerce_phase_object['answer'] = response.resources.__to_object__()
                 self.game_manager.bot_manager.players[player]['player'].hand = response
-                print(self.game_manager.bot_manager.players[player]['player'].hand)
+                # print(self.game_manager.bot_manager.players[player]['player'].hand)
             else:
                 commerce_phase_object['answer'] = response
-                print('pero no tiene materiales suficientes')
-            print('%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+            #     print('pero no tiene materiales suficientes')
+            # print('%%%%%%%%%%%%%%%%%%%%%%%%%%%')
             return commerce_phase_object
 
         elif isinstance(commerce_response, DevelopmentCard) and not self.already_played_development_card:
@@ -190,9 +190,9 @@ class GameDirector:
         :param player: número que representa al jugador
         :return: void
         """
-        print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
-        print('vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv')
-        print('start build phase: ' + str(self.game_manager.turn_manager.get_turn()))
+        # print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
+        # print('vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv')
+        # print('start build phase: ' + str(self.game_manager.turn_manager.get_turn()))
         build_phase_object = {}
 
         self.game_manager.turn_manager.set_phase(2)
@@ -202,15 +202,15 @@ class GameDirector:
             build_phase_object = build_response
             built = False
             if build_response['building'] == BuildConstants.TOWN:
-                built = self.game_manager.build_town(player, build_response['nodeID'])
+                built = self.game_manager.build_town(player, build_response['node_id'])
                 if built['response']:
                     self.game_manager.bot_manager.players[player]['victory_points'] += 1
             elif build_response['building'] == BuildConstants.CITY:
-                built = self.game_manager.build_city(player, build_response['nodeID'])
+                built = self.game_manager.build_city(player, build_response['node_id'])
                 if built['response']:
                     self.game_manager.bot_manager.players[player]['victory_points'] += 1
             elif build_response['building'] == BuildConstants.ROAD:
-                built = self.game_manager.build_road(player, build_response['nodeID'], build_response['roadTo'])
+                built = self.game_manager.build_road(player, build_response['node_id'], build_response['road_to'])
             elif build_response['building'] == BuildConstants.CARD:
                 built = self.game_manager.build_development_card(player)
 
@@ -223,20 +223,20 @@ class GameDirector:
                         build_phase_object['card_type'] = built['card_type']
                         build_phase_object['card_effect'] = built['card_effect']
 
-                    print('J' + str(player) + ' ha construido algo: ')
-                    print(build_response)
+                    # print('J' + str(player) + ' ha construido algo: ')
+                    # print(build_response)
                     # Si se ha construido permitir que vuelvan a construir
                     # print(build_phase_object)
                 else:
                     build_phase_object['finished'] = False
-                    print('J' + str(player) + ' ha fallado en algo: ')
-                    print(build_response)
-                    print(built['errorMsg'])
+                    # print('J' + str(player) + ' ha fallado en algo: ')
+                    # print(build_response)
+                    # print(built['error_msg'])
                     # TODO: Avisar que no se ha podido construir
             else:
                 build_phase_object['finished'] = False
-                build_phase_object['errorMsg'] = 'Falta de materiales'
-                print('No se ha podido construir por falta de materiales')
+                build_phase_object['error_msg'] = 'Falta de materiales'
+                # print('No se ha podido construir por falta de materiales')
                 # TODO: Avisar que no se ha podido construir
 
         elif isinstance(build_response, DevelopmentCard) and not self.already_played_development_card:
@@ -261,8 +261,8 @@ class GameDirector:
         :param player_id: número que representa al jugador
         :return: void
         """
-        print('start end turn: ' + str(self.game_manager.turn_manager.get_turn()))
-        print('----- Puntos de victoria de los jugadores: ------')
+        # print('start end turn: ' + str(self.game_manager.turn_manager.get_turn()))
+        # print('----- Puntos de victoria de los jugadores: ------')
 
         end_turn_object = {'development_card_played': []}
 
@@ -307,10 +307,10 @@ class GameDirector:
         vp = {}
         for i in range(4):
             vp['J' + str(i)] = str(self.game_manager.bot_manager.players[i]['victory_points'])
-            print('J' + str(i) + ': ' + str(self.game_manager.bot_manager.players[i]['victory_points']) + ' (' + str(
-                self.game_manager.bot_manager.players[i]['largest_army']) + ')' + ' (' + str(
-                self.game_manager.bot_manager.players[i]['longest_road']) + ')')
-        print('----- FIN Puntos de victoria de los jugadores ------')
+            # print('J' + str(i) + ': ' + str(self.game_manager.bot_manager.players[i]['victory_points']) + ' (' + str(
+            #     self.game_manager.bot_manager.players[i]['largest_army']) + ')' + ' (' + str(
+            #     self.game_manager.bot_manager.players[i]['longest_road']) + ')')
+        # print('----- FIN Puntos de victoria de los jugadores ------')
 
         end_turn_object['victory_points'] = vp
         return end_turn_object
@@ -322,8 +322,8 @@ class GameDirector:
         :return:
         """
         round_object = {}
-        print('---------------------')
-        print('round start')
+        # print('---------------------')
+        # print('round start')
         self.already_played_development_card = False
 
         for i in range(4):
@@ -362,8 +362,8 @@ class GameDirector:
 
             round_object['turn_P' + str(i)] = obj
 
-            print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
-            print('vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv')
+            # print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
+            # print('vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv')
 
         return round_object
 
@@ -372,8 +372,8 @@ class GameDirector:
         Esta función permite acabar una ronda empezada
         :return:
         """
-        print('round end')
-        print('---------------------')
+        # print('round end')
+        # print('---------------------')
 
         winner = False
         for player in self.game_manager.bot_manager.players:
@@ -392,7 +392,7 @@ class GameDirector:
         Esta función permite comenzar una partida nueva
         :return:
         """
-        print('game start')
+        # print('game start')
         # Se cargan los bots y se inicializa el tablero
         # self.game_manager.bot_manager.load_bots()
         self.game_manager.board.__init__()
@@ -440,7 +440,7 @@ class GameDirector:
         # for terrain in self.game_manager.board.terrain:
         #     print('ID: ' + str(terrain['id']))
         #     print('Prob: ' + str(terrain['probability']))
-        #     print('Type: ' + str(terrain['terrainType']))
+        #     print('Type: ' + str(terrain['terrain_type']))
         #     print('#######################\n')
         # ######################################################
 
@@ -454,6 +454,11 @@ class GameDirector:
         while not winner:
             game_object['round_' + str(self.game_manager.turn_manager.get_round())] = self.round_start()
             winner = self.round_end()
+
+        for i in range(4):
+            print('J' + str(i) + ': ' + str(self.game_manager.bot_manager.players[i]['victory_points']) + ' (' + str(
+                self.game_manager.bot_manager.players[i]['largest_army']) + ')' + ' (' + str(
+                self.game_manager.bot_manager.players[i]['longest_road']) + ')')
 
         self.trace_loader.current_trace["game"] = game_object
         self.trace_loader.export_to_file()

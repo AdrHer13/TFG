@@ -44,7 +44,7 @@ class GameManager:
         second_d6 = random.randint(1, 6)
         # self.last_dice_roll = random.randint(2, 12)
         self.last_dice_roll = first_d6 + second_d6
-        print('throw dice: ' + str(self.last_dice_roll))
+        # print('throw dice: ' + str(self.last_dice_roll))
         return
 
     def give_resources(self):
@@ -57,22 +57,22 @@ class GameManager:
             # Si la probabilidad coincide
             if terrain['probability'] == self.last_dice_roll:
                 # Se miran los nodos adyacentes
-                for node in terrain['contactingNodes']:
+                for node in terrain['contacting_nodes']:
                     # Si tiene jugador, implica que hay pueblo
                     if self.board.nodes[node]['player'] != -1:
                         player = self.bot_manager.players[self.board.nodes[node]['player']]
                         # Si tiene ciudad se dan 2 en lugar de 1 material
 
-                        if self.board.nodes[node]['hasCity']:
-                            print('J' + str(self.board.nodes[node]['player']) + ' | material: ' + str(
-                                terrain['terrainType']) + ' | amount: 2')
-                            player['player'].hand.add_material(terrain['terrainType'], 2)
-                            player['resources'].add_material(terrain['terrainType'], 2)
+                        if self.board.nodes[node]['has_city']:
+                            # print('J' + str(self.board.nodes[node]['player']) + ' | material: ' + str(
+                            #     terrain['terrain_type']) + ' | amount: 2')
+                            player['player'].hand.add_material(terrain['terrain_type'], 2)
+                            player['resources'].add_material(terrain['terrain_type'], 2)
                         else:
-                            print('J' + str(self.board.nodes[node]['player']) + ' | material: ' + str(
-                                terrain['terrainType']) + ' | amount: 1')
-                            player['player'].hand.add_material(terrain['terrainType'], 1)
-                            player['resources'].add_material(terrain['terrainType'], 1)
+                            # print('J' + str(self.board.nodes[node]['player']) + ' | material: ' + str(
+                            #     terrain['terrain_type']) + ' | amount: 1')
+                            player['player'].hand.add_material(terrain['terrain_type'], 1)
+                            player['resources'].add_material(terrain['terrain_type'], 1)
         return None
 
     def give_all_resources(self):
@@ -132,10 +132,10 @@ class GameManager:
 
             if on_tradeoffer_response[(len(on_tradeoffer_response) - 1)]['response']:
                 if count % 2 == 0:
-                    print('J' + str(self.turn_manager.whose_turn_is_it) + ' ha aceptado')
+                    # print('J' + str(self.turn_manager.whose_turn_is_it) + ' ha aceptado')
                     done = self.trade_with_player(trade_offer, giver, receiver)
                 else:
-                    print('J' + str(receiver['id']) + ' ha aceptado')
+                    # print('J' + str(receiver['id']) + ' ha aceptado')
                     done = self.trade_with_player(trade_offer, receiver, giver)
 
                 if done:
@@ -145,7 +145,8 @@ class GameManager:
                 else:
                     on_tradeoffer_response[(len(on_tradeoffer_response) - 1)]['completed'] = False
             else:
-                print('J' + str(receiver['id']) + ' ha negado')
+                pass
+                # print('J' + str(receiver['id']) + ' ha negado')
             answer_object.append(on_tradeoffer_response)
         return answer_object
 
@@ -194,11 +195,11 @@ class GameManager:
         # Si receiver o giver no tiene materiales se le ignora
         if (receiver['resources'].resources.has_this_more_materials(trade_offer.receives) and
                 giver['resources'].resources.has_this_more_materials(trade_offer.gives)):
-            print('Puede hacerse el intercambio: ')
+            # print('Puede hacerse el intercambio: ')
             # Se hace el intercambio
 
-            print('Giver: ' + str(giver['resources']))
-            print('Receiver: ' + str(receiver['resources']))
+            # print('Giver: ' + str(giver['resources']))
+            # print('Receiver: ' + str(receiver['resources']))
             # Se resta lo que da del giver
             giver['resources'].remove_material(MaterialConstants.WOOL, trade_offer.gives.wool)
             giver['resources'].remove_material(MaterialConstants.WOOD, trade_offer.gives.wood)
@@ -229,12 +230,12 @@ class GameManager:
 
             giver['player'].hand = giver['resources']
             receiver['player'].hand = receiver['resources']
-            print('-------------------------')
-            print('Giver: ' + str(giver['resources']))
-            print('Receiver: ' + str(receiver['resources']))
+            # print('-------------------------')
+            # print('Giver: ' + str(giver['resources']))
+            # print('Receiver: ' + str(receiver['resources']))
             return True
         else:
-            print('No tienen materiales suficientes para completar la oferta')
+            # print('No tienen materiales suficientes para completar la oferta')
             return False
 
     ########### Board functions ###################
@@ -258,7 +259,7 @@ class GameManager:
 
             return build_town_obj
         else:
-            return {'response': False, 'errorMsg': 'Falta de materiales'}
+            return {'response': False, 'error_msg': 'Falta de materiales'}
 
     def build_city(self, player_id, node):
         """
@@ -278,7 +279,7 @@ class GameManager:
 
             return build_city_obj
         else:
-            return {'response': False, 'errorMsg': 'Falta de materiales'}
+            return {'response': False, 'error_msg': 'Falta de materiales'}
 
     def build_road(self, player_id, node, road, free=False):
         """
@@ -299,7 +300,7 @@ class GameManager:
 
             return build_road_obj
         else:
-            return {'response': False, 'errorMsg': 'Falta de materiales'}
+            return {'response': False, 'error_msg': 'Falta de materiales'}
 
     def build_development_card(self, player_id):
         """
@@ -316,13 +317,13 @@ class GameManager:
             card_drawn = self.development_cards_deck.draw_card()
             self.bot_manager.players[player_id]['development_cards'].add_card(card_drawn)
             development_card_hand = self.bot_manager.players[player_id]['development_cards'].check_hand()
-            print('BUSCAR:')
-            print(development_card_hand)
+            # print('BUSCAR:')
+            # print(development_card_hand)
             if (len(development_card_hand) and
                     development_card_hand[len(development_card_hand) - 1][
                         'type'] == DevelopmentCardConstants.VICTORY_POINT):
                 self.bot_manager.players[player_id]['hidden_victory_points'] += 1
-            print(development_card_hand)
+            # print(development_card_hand)
             self.bot_manager.players[player_id]['player'].development_cards_hand.hand = \
                 self.bot_manager.players[player_id][
                     'development_cards'].hand
@@ -332,7 +333,7 @@ class GameManager:
             else:
                 return {'response': True, 'card_type': None, 'card_effect': None}
         else:
-            return {'response': False, 'errorMsg': 'Falta de materiales'}
+            return {'response': False, 'error_msg': 'Falta de materiales'}
 
     def move_thief(self, terrain, adjacent_player):
         """
@@ -343,17 +344,17 @@ class GameManager:
         :return: void
         """
         move_thief_obj = self.board.move_thief(terrain)
-        move_thief_obj['robbedPlayer'] = -1
-        move_thief_obj['stolenMaterialId'] = -1
+        move_thief_obj['robbed_player'] = -1
+        move_thief_obj['stolen_material_id'] = -1
         if move_thief_obj['response']:
             if adjacent_player != -1:
-                for node in self.board.terrain[move_thief_obj['terrainId']]['contactingNodes']:
+                for node in self.board.terrain[move_thief_obj['terrain_id']]['contacting_nodes']:
                     if self.board.nodes[node]['player'] == adjacent_player:
-                        move_thief_obj['stolenMaterialId'] = self.__steal_from_player__(adjacent_player)
-                        move_thief_obj['robbedPlayer'] = adjacent_player
+                        move_thief_obj['stolen_material_id'] = self.__steal_from_player__(adjacent_player)
+                        move_thief_obj['robbed_player'] = adjacent_player
                         break
                     else:
-                        move_thief_obj['errorMsg'] = \
+                        move_thief_obj['error_msg'] = \
                             'No se ha podido robar al jugador debido a que no está en un nodo adyacente'
         return move_thief_obj
 
@@ -402,16 +403,16 @@ class GameManager:
                 node_id, road_to = self.bot_manager.players[player]['player'].on_game_start(self.board)
 
                 if (self.board.nodes[node_id]['player'] == -1
-                        and self.board.adyacent_nodes_dont_have_towns(node_id)
+                        and self.board.adjacent_nodes_dont_have_towns(node_id)
                         and not self.board.is_it_a_coastal_node(node_id)):
 
                     # print('______________________')
                     # print('NODO: ' + str(node_id))
 
-                    terrain_ids = self.board.nodes[node_id]['contactingTerrain']
+                    terrain_ids = self.board.nodes[node_id]['contacting_terrain']
                     materials = []
                     for ter_id in terrain_ids:
-                        materials.append(self.board.terrain[ter_id]['terrainType'])
+                        materials.append(self.board.terrain[ter_id]['terrain_type'])
                     self.board.nodes[node_id]['player'] = self.turn_manager.get_whose_turn_is_it()
                     # print('Materiales del nodo de J' + str(self.board.nodes[node_id]['player']))
                     # print(materials)
@@ -426,15 +427,16 @@ class GameManager:
                     if self.board.nodes[node_id]['player'] == self.turn_manager.get_whose_turn_is_it():
                         response = self.board.build_road(self.turn_manager.get_whose_turn_is_it(), node_id, road_to)
                         if not response['response']:
-                            print(response['errorMsg'])
+                            # print(response['error_msg'])
+                            pass
                         else:
-                            print('J' + str(self.turn_manager.get_whose_turn_is_it()))
-                            print('actual_node_id: ' + str(node_id) + ' | actual_road_to: ' + str(road_to))
+                            # print('J' + str(self.turn_manager.get_whose_turn_is_it()))
+                            # print('actual_node_id: ' + str(node_id) + ' | actual_road_to: ' + str(road_to))
                             return node_id, road_to
                     else:
-                        print("el jugador " + str(self.turn_manager.get_whose_turn_is_it()) +
-                              " ha intentado poner una carretera en un nodo que no le pertenece: " + str(road_to))
-
+                        # print("el jugador " + str(self.turn_manager.get_whose_turn_is_it()) +
+                        #       " ha intentado poner una carretera en un nodo que no le pertenece: " + str(road_to))
+                        pass
                 else:
                     illegal = True
                     random_node_id = 0
@@ -444,16 +446,16 @@ class GameManager:
                         i = random.randint(0, (valid_nodes.__len__() - 1))
                         random_node_id = valid_nodes[i]
                         if (self.board.nodes[random_node_id]['player'] == -1 and
-                                self.board.adyacent_nodes_dont_have_towns(random_node_id) and
+                                self.board.adjacent_nodes_dont_have_towns(random_node_id) and
                                 not self.board.is_it_a_coastal_node(random_node_id)):
                             illegal = False
                         else:
                             illegal = True
 
-                    terrain_ids = self.board.nodes[random_node_id]['contactingTerrain']
+                    terrain_ids = self.board.nodes[random_node_id]['contacting_terrain']
                     materials = []
                     for ter_id in terrain_ids:
-                        materials.append(self.board.terrain[ter_id]['terrainType'])
+                        materials.append(self.board.terrain[ter_id]['terrain_type'])
 
                     self.board.nodes[random_node_id]['player'] = self.turn_manager.get_whose_turn_is_it()
 
@@ -471,12 +473,12 @@ class GameManager:
                         response = self.board.build_road(self.turn_manager.get_whose_turn_is_it(), random_node_id,
                                                          random_road_to)
                         if response['response']:
-                            print('J' + str(self.turn_manager.get_whose_turn_is_it()))
-                            print('random_node_id: ' + str(random_node_id) + ' | random_road_to: ' + str(random_road_to))
+                            # print('J' + str(self.turn_manager.get_whose_turn_is_it()))
+                            # print('random_node_id: ' + str(random_node_id) + ' | random_road_to: ' + str(random_road_to))
                             return random_node_id, random_road_to
                         else:
                             illegal = True
-                            print(response['errorMsg'])
+                            # print(response['error_msg'])
 
     def longest_road_calculator(self, node, depth, longest_road_obj, player_id, visited_nodes):
         """
@@ -490,11 +492,11 @@ class GameManager:
         """
         for road in node['roads']:
             # print('. . . . . . . ')
-            # print('Road to: ' + str(road['nodeID']))
-            if ((road['nodeID'] not in visited_nodes) and
-                    (road['playerID'] == player_id or player_id == -1) and
-                    (road['playerID'] == node['player'] or node['player'] == -1)):
-                visited_nodes.append(road['nodeID'])
+            # print('Road to: ' + str(road['node_id']))
+            if ((road['node_id'] not in visited_nodes) and
+                    (road['player_id'] == player_id or player_id == -1) and
+                    (road['player_id'] == node['player'] or node['player'] == -1)):
+                visited_nodes.append(road['node_id'])
                 # print(visited_nodes)
                 # print(node)
                 if depth > longest_road_obj['longest_road']:
@@ -502,8 +504,8 @@ class GameManager:
                     longest_road_obj['player'] = player_id
                 # print('depth: ' + str(depth))
                 # print('player: ' + str(player_id))
-                longest_road_obj = self.longest_road_calculator(self.board.nodes[road['nodeID']], depth + 1,
-                                                                longest_road_obj, road['playerID'], visited_nodes)
+                longest_road_obj = self.longest_road_calculator(self.board.nodes[road['node_id']], depth + 1,
+                                                                longest_road_obj, road['player_id'], visited_nodes)
         return {'longest_road': longest_road_obj['longest_road'], 'player': longest_road_obj['player']}
 
     def play_development_card(self, player_id, card):
@@ -517,21 +519,21 @@ class GameManager:
         #  Después se iguala la mano del jugador a la del BotManager para evitar trampas.
 
         card_obj = {}
-        print('SE JUEGA CARTA DE DESARROLLO')
-        print('CARTA QUE LLEGA: ')
-        print(card)
-        print('CARTAS EN MANO: ')
+        # print('SE JUEGA CARTA DE DESARROLLO')
+        # print('CARTA QUE LLEGA: ')
+        # print(card)
+        # print('CARTAS EN MANO: ')
 
-        print('player hand checkhand()')
-        print(self.bot_manager.players[player_id]['player'].development_cards_hand.check_hand())
-        print('botmanager hand checkhand()')
-        print(self.bot_manager.players[player_id]['development_cards'].check_hand())
+        # print('player hand checkhand()')
+        # print(self.bot_manager.players[player_id]['player'].development_cards_hand.check_hand())
+        # print('botmanager hand checkhand()')
+        # print(self.bot_manager.players[player_id]['development_cards'].check_hand())
 
-        self.check_player_hands()
+        # self.check_player_hands()
 
         if card.__to_object__() in self.bot_manager.players[player_id]['development_cards'].check_hand():
             if card.type != DevelopmentCardConstants.VICTORY_POINT:
-                print('BORRAR CARTA')
+                # print('BORRAR CARTA')
                 self.bot_manager.players[player_id]['development_cards'].delete_card(card.id)
 
                 self.bot_manager.players[player_id]['player'].development_cards_hand.hand = \
@@ -541,7 +543,7 @@ class GameManager:
         else:
             self.bot_manager.players[player_id]['player'].development_cards_hand.hand = \
                 self.bot_manager.players[player_id]['development_cards'].hand
-            print('HACEN TRAMPAS')
+            # print('HACEN TRAMPAS')
 
             card_obj['played_card'] = 'none'
             card_obj['reason'] = 'Trying to use cards they don\'t have'
@@ -550,9 +552,9 @@ class GameManager:
 
         if card.type == DevelopmentCardConstants.KNIGHT:
             # se le suma un nuevo caballero al jugador y se le pide mover al ladrón
-            print('SE JUEGA CABALLERO')
+            # print('SE JUEGA CABALLERO')
             self.bot_manager.players[player_id]['knights'] += 1
-            print('CANTIDAD CABALLEROS: ' + str(self.bot_manager.players[player_id]['knights']))
+            # print('CANTIDAD CABALLEROS: ' + str(self.bot_manager.players[player_id]['knights']))
 
             if self.bot_manager.players[player_id]['knights'] > self.largest_army:
                 if self.largest_army_player == {}:
@@ -571,53 +573,54 @@ class GameManager:
                     self.largest_army_player['victory_points'] += 2
 
             for terrain in self.board.terrain:
-                if terrain['hasThief']:
-                    print('DESDE: ' + str(terrain['id']))
+                if terrain['has_thief']:
+                    pass
+                    # print('DESDE: ' + str(terrain['id']))
             on_moving_thief = self.bot_manager.players[player_id]['player'].on_moving_thief()
             move_thief_obj = self.move_thief(on_moving_thief['terrain'], on_moving_thief['player'])
-            print('HASTA: ' + str(move_thief_obj['terrainId']))
-            print('ROBA A: P' + str(move_thief_obj['robbedPlayer']))
+            # print('HASTA: ' + str(move_thief_obj['terrain_id']))
+            # print('ROBA A: P' + str(move_thief_obj['robbed_player']))
             # se pasan los cambios al objeto
             card_obj['played_card'] = 'knight'
             card_obj['total_knights'] = self.bot_manager.players[player_id]['knights']
-            card_obj['past_thief_terrain'] = move_thief_obj['lastThiefTerrain']
-            card_obj['thief_terrain'] = move_thief_obj['terrainId']
-            card_obj['robbed_player'] = move_thief_obj['robbedPlayer']
-            card_obj['stolen_material_id'] = move_thief_obj['stolenMaterialId']
+            card_obj['past_thief_terrain'] = move_thief_obj['last_thief_terrain']
+            card_obj['thief_terrain'] = move_thief_obj['terrain_id']
+            card_obj['robbed_player'] = move_thief_obj['robbed_player']
+            card_obj['stolen_material_id'] = move_thief_obj['stolen_material_id']
 
             return card_obj
         elif card.type == DevelopmentCardConstants.VICTORY_POINT:
             # Si tienen suficientes puntos de victoria para ganar. Ganan automáticamente, si no, no pasa nada
 
-            print('SE JUEGA PUNTOS DE VICTORIA')
+            # print('SE JUEGA PUNTOS DE VICTORIA')
             if (self.bot_manager.players[player_id]['victory_points'] +
                 self.bot_manager.players[player_id]['hidden_victory_points']) >= 10:
-                print('SUPERAN 10')
+                # print('SUPERAN 10')
 
                 card_obj['played_card'] = 'victory_point'
                 self.bot_manager.players[player_id]['victory_points'] = 10
             else:
-                print('NO SUPERAN 10')
+                # print('NO SUPERAN 10')
                 card_obj['played_card'] = 'failed_victory_point'
 
             return card_obj
         elif card.type == DevelopmentCardConstants.PROGRESS_CARD:
-            print('SE JUEGA CARTA DE PROGRESO:')
+            # print('SE JUEGA CARTA DE PROGRESO:')
 
             if card.effect == DevelopmentCardConstants.MONOPOLY_EFFECT:
-                print('  -  MONOPOLIO')
+                # print('  -  MONOPOLIO')
                 # Elige material
                 material_chosen = self.bot_manager.players[player_id]['player'].on_monopoly_card_use()
                 material_sum = 0
-                print('ELIGE MATERIAL: ' + str(material_chosen))
+                # print('ELIGE MATERIAL: ' + str(material_chosen))
 
                 if material_chosen is None:
                     material_chosen = random.randint(0, 4)
 
-                for i in range(4):
-                    print('PRE Hand_P' + str(i))
-                    print(self.bot_manager.players[i]['resources'].resources.__to_object__())
-                print('    -    -    -    -    -    -    -    -    -    -    -    -')
+                # for i in range(4):
+                    # print('PRE Hand_P' + str(i))
+                    # print(self.bot_manager.players[i]['resources'].resources.__to_object__())
+                # print('    -    -    -    -    -    -    -    -    -    -    -    -')
                 # Se elimina el material de la mano de todos los jugadores
                 for player in self.bot_manager.players:
                     material_sum += player['resources'].get_from_id(material_chosen)
@@ -629,9 +632,9 @@ class GameManager:
                 self.bot_manager.players[player_id]['resources'].add_material(material_chosen, material_sum)
                 self.bot_manager.players[player_id]['player'].hand = self.bot_manager.players[player_id]['resources']
 
-                for i in range(4):
-                    print('POST Hand_P' + str(i))
-                    print(self.bot_manager.players[i]['resources'].resources.__to_object__())
+                # for i in range(4):
+                    # print('POST Hand_P' + str(i))
+                    # print(self.bot_manager.players[i]['resources'].resources.__to_object__())
 
                 # Se añade al objeto el material, la suma, y las nuevas manos tras la resta de materiales
                 card_obj['played_card'] = 'monopoly'
@@ -643,19 +646,19 @@ class GameManager:
                 return card_obj
 
             elif card.effect == DevelopmentCardConstants.ROAD_BUILDING_EFFECT:
-                print('  -  CONSTRUCCIÓN CARRETERAS')
+                # print('  -  CONSTRUCCIÓN CARRETERAS')
 
                 # Se piden en qué puntos quieren construir carreteras
                 road_nodes = self.bot_manager.players[player_id]['player'].on_road_building_card_use()
-                print('NODOS ELEGIDOS: ')
-                print(road_nodes)
+                # print('NODOS ELEGIDOS: ')
+                # print(road_nodes)
                 card_obj['played_card'] = 'road_building'
 
                 # Si hay al menos una carretera
                 if road_nodes is not None:
                     built = {'response': False}
                     # Si existe una segunda carretera
-                    if road_nodes['nodeID_2'] is not None:
+                    if road_nodes['node_id_2'] is not None:
                         built_2 = {'response': False}
                     else:
                         built_2 = {'response': True}
@@ -664,9 +667,9 @@ class GameManager:
                     while not built['response'] and not built_2['response']:
                         # Si ya está construida se ignora
                         if not built['response']:
-                            built = self.build_road(player_id, road_nodes['nodeID'], road_nodes['roadTo'], free=True)
+                            built = self.build_road(player_id, road_nodes['node_id'], road_nodes['road_to'], free=True)
                         if not built_2['response']:
-                            built_2 = self.build_road(player_id, road_nodes['nodeID_2'], road_nodes['roadTo_2'],
+                            built_2 = self.build_road(player_id, road_nodes['node_id_2'], road_nodes['road_to_2'],
                                                       free=True)
 
                         if isinstance(built, dict):
@@ -679,8 +682,8 @@ class GameManager:
                                 valid_nodes = self.board.valid_road_nodes(player_id)
                                 if len(valid_nodes):
                                     road_node = random.randint(0, len(valid_nodes) - 1)
-                                    road_nodes['nodeID'] = valid_nodes[road_node]['startingNode']
-                                    road_nodes['roadTo'] = valid_nodes[road_node]['finishingNode']
+                                    road_nodes['node_id'] = valid_nodes[road_node]['starting_node']
+                                    road_nodes['road_to'] = valid_nodes[road_node]['finishing_node']
                                 else:
                                     # Si no hay más carreteras posibles se rompe el bucle
                                     card_obj['error_msg'] = 'No hay más nodos válidos para construir una carretera'
@@ -694,15 +697,15 @@ class GameManager:
                                 valid_nodes = self.board.valid_road_nodes(player_id)
                                 if len(valid_nodes):
                                     road_node = random.randint(0, len(valid_nodes) - 1)
-                                    road_nodes['nodeID_2'] = valid_nodes[road_node]['startingNode']
-                                    road_nodes['roadTo_2'] = valid_nodes[road_node]['finishingNode']
+                                    road_nodes['node_id_2'] = valid_nodes[road_node]['starting_node']
+                                    road_nodes['road_to_2'] = valid_nodes[road_node]['finishing_node']
                                 else:
                                     card_obj['error_msg'] = 'No hay más nodos válidos para construir una carretera'
                                     break
 
-                    print('    -    -    -    -    -    -    -    -    -    -    ')
-                    print('NODOS COLOCADOS:')
-                    print(road_nodes)
+                    # print('    -    -    -    -    -    -    -    -    -    -    ')
+                    # print('NODOS COLOCADOS:')
+                    # print(road_nodes)
                     # Después del bucle ponemos donde se han construido las carreteras y devolvemos el objeto
                     card_obj['roads'] = road_nodes
                     return card_obj
@@ -712,21 +715,21 @@ class GameManager:
                     return card_obj
 
             elif card.effect == DevelopmentCardConstants.YEAR_OF_PLENTY_EFFECT:
-                print('  -  AÑO DE LA ABUNDANCIA')
+                # print('  -  AÑO DE LA ABUNDANCIA')
                 card_obj['played_card'] = 'year_of_plenty'
 
                 # Eligen 2 materiales (puede ser el mismo 2 veces)
                 materials_selected = self.bot_manager.players[player_id]['player'].on_year_of_plenty_card_use()
                 card_obj['materials_selected'] = materials_selected
-                print('MATERIALES ELEGIDOS:')
-                print(materials_selected)
+                # print('MATERIALES ELEGIDOS:')
+                # print(materials_selected)
 
                 if materials_selected is None:
                     material, material2 = random.randint(0, 4), random.randint(0, 4)
                     materials_selected = {'material': material, 'material_2': material2}
 
-                print('MANO PRE')
-                print(self.bot_manager.players[player_id]['resources'])
+                # print('MANO PRE')
+                # print(self.bot_manager.players[player_id]['resources'])
                 # Obtienen una carta de ese material elegido
                 self.bot_manager.players[player_id]['resources'].add_material(materials_selected['material'], 1)
                 self.bot_manager.players[player_id]['resources'].add_material(materials_selected['material_2'], 1)
@@ -734,9 +737,9 @@ class GameManager:
                 # Se actualiza la mano
                 self.bot_manager.players[player_id]['player'].hand = self.bot_manager.players[player_id]['resources']
 
-                print('    -    -    -    -    -    -    -    -    -    -    ')
-                print('MANO POST')
-                print(self.bot_manager.players[player_id]['player'].hand)
+                # print('    -    -    -    -    -    -    -    -    -    -    ')
+                # print('MANO POST')
+                # print(self.bot_manager.players[player_id]['player'].hand)
 
                 card_obj['hand_P' + str(player_id)] = self.bot_manager.players[player_id][
                     'resources'].resources.__to_object__()
@@ -745,9 +748,9 @@ class GameManager:
         return card_obj
 
     def check_player_hands(self):
-        print('.  -  .  -  .  -  .  -  .  -  .  -  .  -  .')
-        print('CHECK HANDS')
-        print('Bot Manager: ')
+        # print('.  -  .  -  .  -  .  -  .  -  .  -  .  -  .')
+        # print('CHECK HANDS')
+        # print('Bot Manager: ')
         for i in range(4):
             print('P' + str(i + 1))
             print(self.bot_manager.players[i]['development_cards'].check_hand())

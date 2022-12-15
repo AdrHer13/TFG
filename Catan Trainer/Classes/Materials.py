@@ -102,27 +102,27 @@ class Materials:
             elif materials == 'card':
                 materials = Materials(1, 0, 0, 1, 1)
             else:
-                print('has_this_more_materials(): El string es invalido')
+                # print('has_this_more_materials(): El string es invalido')
                 return False
         if isinstance(materials, Materials):
             if self.wood < materials.wood:
-                print('has_this_more_materials(): Menos madera de la que piden')
+                # print('has_this_more_materials(): Menos madera de la que piden')
                 return False
             if self.wool < materials.wool:
-                print('has_this_more_materials(): Menos lana de la que piden')
+                # print('has_this_more_materials(): Menos lana de la que piden')
                 return False
             if self.clay < materials.clay:
-                print('has_this_more_materials(): Menos arcilla de la que piden')
+                # print('has_this_more_materials(): Menos arcilla de la que piden')
                 return False
             if self.mineral < materials.mineral:
-                print('has_this_more_materials(): Menos mineral del que piden')
+                # print('has_this_more_materials(): Menos mineral del que piden')
                 return False
             if self.cereal < materials.cereal:
-                print('has_this_more_materials(): Menos cereal del que piden')
+                # print('has_this_more_materials(): Menos cereal del que piden')
                 return False
             return True
         else:
-            print('has_this_more_materials(): No es una instancia de materiales')
+            # print('has_this_more_materials(): No es una instancia de materiales')
             return False
 
     def __str__(self):

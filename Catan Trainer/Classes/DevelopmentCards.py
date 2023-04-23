@@ -25,12 +25,12 @@ class DevelopmentDeck:
         # Hay 14 soldados
         # 6 cartas de progreso (2 de cada)
         # 5 de puntos de victoria
-        # for i in range(0, 14):
-        #     self.deck.append(DevelopmentCard(i, Dcc.KNIGHT, Dcc.KNIGHT_EFFECT))
+        for i in range(0, 14):
+            self.deck.append(DevelopmentCard(i, Dcc.KNIGHT, Dcc.KNIGHT_EFFECT))
         for i in range(14, 19):
             self.deck.append(DevelopmentCard(i, Dcc.VICTORY_POINT, Dcc.VICTORY_POINT_EFFECT))
-        # for i in range(19, 21):
-        #     self.deck.append(DevelopmentCard(i, Dcc.PROGRESS_CARD, Dcc.ROAD_BUILDING_EFFECT))
+        for i in range(19, 21):
+            self.deck.append(DevelopmentCard(i, Dcc.PROGRESS_CARD, Dcc.ROAD_BUILDING_EFFECT))
         for i in range(21, 23):
             self.deck.append(DevelopmentCard(i, Dcc.PROGRESS_CARD, Dcc.YEAR_OF_PLENTY_EFFECT))
         for i in range(23, 25):

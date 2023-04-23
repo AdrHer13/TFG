@@ -445,7 +445,7 @@ class GameDirector:
             game_object['round_' + str(self.game_manager.turn_manager.get_round())] = self.round_start()
             winner = self.round_end()
 
-        print('Game (' + str(game_number + 1) + ') results')
+        print('Game (' + str(game_number) + ') results')
         for i in range(4):
             print('J' + str(i) + ': ' + str(self.game_manager.bot_manager.players[i]['victory_points']) + ' (' + str(
                 self.game_manager.bot_manager.players[i]['largest_army']) + ')' + ' (' + str(
@@ -464,7 +464,7 @@ class GameDirector:
         if isinstance(games_to_play, int):
             for i in range(games_to_play):
                 print('......')
-                game_director.game_start(i)
+                game_director.game_start(i+1)
         else:
             print('......')
             game_director.game_start()

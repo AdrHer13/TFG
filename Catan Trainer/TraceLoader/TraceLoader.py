@@ -10,6 +10,13 @@ class TraceLoader:
     full_path = ''
 
     def __init__(self):
+        # Si no existe la carpeta "Traces" la crea
+        absolute_path = os.path.dirname(__file__)
+        relative_path = "..\\Traces"
+        traces_path = os.path.join(absolute_path, relative_path)
+        if not os.path.exists(traces_path):
+            os.makedirs(traces_path)
+
         # Cogemos el día y hora para ponerle el nombre a la carpeta a crear en trazas
         today = str(datetime.today()).replace(':', '_')
 

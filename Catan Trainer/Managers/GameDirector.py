@@ -24,7 +24,13 @@ class GameDirector:
         return
 
     def reset_game_values(self):
+        # Reseteamos la traza actual
+        self.trace_loader.current_trace = {}
+
+        # Reseteamos el game_manager
         self.game_manager.reset_game_values()
+
+        # Se inicia el nuevo tablero
         self.game_manager.board.__init__()
         return
 
@@ -446,20 +452,27 @@ class GameDirector:
                 self.game_manager.bot_manager.players[i]['longest_road']) + ')')
 
         self.trace_loader.current_trace["game"] = game_object
-        self.trace_loader.export_to_file()
+        self.trace_loader.export_to_file(game_number)
+        return
+
+    def main(self):
+        games_to_play = 0
+        try:
+            games_to_play = int(input('Cantidad de partidas a jugar: '))
+        except ValueError:
+            games_to_play = 0
+        if isinstance(games_to_play, int):
+            for i in range(games_to_play):
+                print('......')
+                game_director.game_start(i)
+        else:
+            print('......')
+            game_director.game_start()
+        print('------------------------')
+        game_director.trace_loader.export_every_game_to_file()
         return
 
 
 if __name__ == '__main__':
     game_director = GameDirector()
-    games_to_play = 0
-    try:
-        games_to_play = int(input('Cantidad de partidas a jugar: '))
-    except ValueError:
-        games_to_play = 0
-    print('------------------------')
-    if isinstance(games_to_play, int):
-        for i in range(games_to_play):
-            game_director.game_start(i)
-    else:
-        game_director.game_start()
+    game_director.main()

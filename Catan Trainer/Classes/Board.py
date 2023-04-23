@@ -426,7 +426,7 @@ class Board:
             self.nodes[node]['has_city'] = True
             return {'response': True, 'error_msg': ''}
         elif self.nodes[node]['player'] == -1:
-            return {'response': True, 'error_msg': 'Primero debe construirse un poblado'}
+            return {'response': False, 'error_msg': 'Primero debe construirse un poblado'}
         else:
             return {'response': False, 'error_msg': 'Ya posee el nodo otro jugador'}
 
@@ -445,7 +445,8 @@ class Board:
             if road['node_id'] == finishing_node:
                 # Dejamos de mirar si ya hay una carretera hacia el nodo final
                 return {'response': False, 'error_msg': 'Ya hay una carretera aquí'}
-            if road['player_id'] == player:
+            if road['player_id'] == player and \
+                    (self.nodes[starting_node]['player'] == -1 or self.nodes[starting_node]['player'] == player):
                 can_build = True
 
         for road in self.nodes[finishing_node]['roads']:
@@ -455,8 +456,11 @@ class Board:
             if road['player_id'] == player:
                 can_build = True
 
+        if self.nodes[starting_node]['player'] == player:
+            can_build = True
+
         # Si le pertenece el nodo inicial o tiene una carretera, deja construir
-        if self.nodes[starting_node]['player'] == player or can_build:
+        if can_build:
             self.nodes[starting_node]['roads'].append({'player_id': player, 'node_id': finishing_node})
             self.nodes[finishing_node]['roads'].append({'player_id': player, 'node_id': starting_node})
 
@@ -496,13 +500,6 @@ class Board:
                     'error_msg': '',
                     'terrain_id': terrain,
                     'last_thief_terrain': last_terrain_id}
-
-    # def update_board(self):
-    #     """
-    #     Actualiza visualmente el tablero con todos los cambios habidos desde el último update
-    #     :return: void
-    #     """
-    #     return
 
     def adjacent_nodes_dont_have_towns(self, node_id):
         """

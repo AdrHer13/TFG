@@ -23,6 +23,11 @@ class GameDirector:
     def __init__(self):
         return
 
+    def reset_game_values(self):
+        self.game_manager.reset_game_values()
+        self.game_manager.board.__init__()
+        return
+
     # Turn #
     def start_turn(self, player=-1):
         """
@@ -55,9 +60,9 @@ class GameDirector:
         # print('Resources ActualPlayer: ' + str(self.game_manager.bot_manager.players[player]['player'].hand.resources))
 
         # for i in range(4):
-            # print('Resources J' + str(i) + ': ' + str(
-            #     self.game_manager.bot_manager.players[i]['resources'].resources) + ' | Total: ' + str(
-            #     self.game_manager.bot_manager.players[i]['resources'].get_total()))
+        # print('Resources J' + str(i) + ': ' + str(
+        #     self.game_manager.bot_manager.players[i]['resources'].resources) + ' | Total: ' + str(
+        #     self.game_manager.bot_manager.players[i]['resources'].get_total()))
 
         if self.game_manager.last_dice_roll == 7:
             for obj in self.game_manager.bot_manager.players:
@@ -387,7 +392,7 @@ class GameDirector:
         return winner
 
     # Game #
-    def game_start(self):
+    def game_start(self, game_number=0):
         """
         Esta función permite comenzar una partida nueva
         :return:
@@ -395,7 +400,7 @@ class GameDirector:
         # print('game start')
         # Se cargan los bots y se inicializa el tablero
         # self.game_manager.bot_manager.load_bots()
-        self.game_manager.board.__init__()
+        self.reset_game_values()
 
         # Se añade el tablero al setup, para que el intérprete sepa cómo es el tablero
         setup_object = {
@@ -423,38 +428,18 @@ class GameDirector:
             node_id, road_to = self.game_manager.on_game_start_build_towns_and_roads(i)
             setup_object["P" + str(i)].append({"id": node_id, "road": road_to})
 
-        ######################################################
-        ##       Por si quieres ver el tablero              ##
-        ######################################################
-        # print('---------------------\n')
-        # print('Nodos:')
-        # for node in self.game_manager.board.nodes:
-        #     print('ID: ' + str(node['id']))
-        #     print('Player: ' + str(node['player']))
-        #     print('Roads: ')
-        #     print(node['roads'])
-        #     print('---------------------\n')
-        # ######################################################
-        # print('#######################\n')
-        # print('Terreno:')
-        # for terrain in self.game_manager.board.terrain:
-        #     print('ID: ' + str(terrain['id']))
-        #     print('Prob: ' + str(terrain['probability']))
-        #     print('Type: ' + str(terrain['terrain_type']))
-        #     print('#######################\n')
-        # ######################################################
-
         self.trace_loader.current_trace["setup"] = setup_object
-        self.game_loop()
+        self.game_loop(game_number)
         return
 
-    def game_loop(self):
+    def game_loop(self, game_number):
         game_object = {}
         winner = False
         while not winner:
             game_object['round_' + str(self.game_manager.turn_manager.get_round())] = self.round_start()
             winner = self.round_end()
 
+        print('Game (' + str(game_number + 1) + ') results')
         for i in range(4):
             print('J' + str(i) + ': ' + str(self.game_manager.bot_manager.players[i]['victory_points']) + ' (' + str(
                 self.game_manager.bot_manager.players[i]['largest_army']) + ')' + ' (' + str(
@@ -466,8 +451,15 @@ class GameDirector:
 
 
 if __name__ == '__main__':
-    print('vvvvvvvvvvvvvvvvvvvvvvvvvvvvv')
     game_director = GameDirector()
-
-    game_director.game_start()
-    print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
+    games_to_play = 0
+    try:
+        games_to_play = int(input('Cantidad de partidas a jugar: '))
+    except ValueError:
+        games_to_play = 0
+    print('------------------------')
+    if isinstance(games_to_play, int):
+        for i in range(games_to_play):
+            game_director.game_start(i)
+    else:
+        game_director.game_start()

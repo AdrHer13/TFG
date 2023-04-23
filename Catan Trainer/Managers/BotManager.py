@@ -11,27 +11,38 @@ class BotManager:
     el bot manager el que se encargue de darle paso a los bots a hacer sus turnos
     """
     actual_player = 0
-    # playerOne = BotInterface(1)
-    # playerTwo = BotInterface(2)
-    # playerThree = BotInterface(3)
-    # playerFour = BotInterface(4)
+    first_bot_class = ''
+    second_bot_class = ''
+    third_bot_class = ''
+    fourth_bot_class = ''
 
     players = []
 
     # TODO: Pedir al ejecutar el programa el nombre de las clases que se quieren gastar para los bots
     # TODO: Añadir mano a self.players para que los bots puedan solicitarla pero no modificarla
     def __init__(self):
-        first_bot_class = self.import_bot_class_from_input('primer')
-        second_bot_class = self.import_bot_class_from_input('segundo')
-        third_bot_class = self.import_bot_class_from_input('tercer')
-        fourth_bot_class = self.import_bot_class_from_input('cuarto')
+        self.first_bot_class = self.import_bot_class_from_input('primer')
+        self.second_bot_class = self.import_bot_class_from_input('segundo')
+        self.third_bot_class = self.import_bot_class_from_input('tercer')
+        self.fourth_bot_class = self.import_bot_class_from_input('cuarto')
 
+        self.reset_game_values()
+        return
+
+    def get_actual_player(self):
+        return self.actual_player
+
+    def set_actual_player(self, player_id=0):
+        self.actual_player = player_id
+        return
+
+    def reset_game_values(self):
         self.players = [
             {
                 'id': 0,
                 'victory_points': 0,
                 'hidden_victory_points': 0,
-                'player': first_bot_class(0),
+                'player': self.first_bot_class(0),
                 'resources': Hand(),
                 'development_cards': DevelopmentCardsHand(),
                 'knights': 0,
@@ -43,7 +54,7 @@ class BotManager:
                 'id': 1,
                 'victory_points': 0,
                 'hidden_victory_points': 0,
-                'player': second_bot_class(1),
+                'player': self.second_bot_class(1),
                 'resources': Hand(),
                 'development_cards': DevelopmentCardsHand(),
                 'knights': 0,
@@ -55,7 +66,7 @@ class BotManager:
                 'id': 2,
                 'victory_points': 0,
                 'hidden_victory_points': 0,
-                'player': third_bot_class(2),
+                'player': self.third_bot_class(2),
                 'resources': Hand(),
                 'development_cards': DevelopmentCardsHand(),
                 'knights': 0,
@@ -67,7 +78,7 @@ class BotManager:
                 'id': 3,
                 'victory_points': 0,
                 'hidden_victory_points': 0,
-                'player': fourth_bot_class(3),
+                'player': self.fourth_bot_class(3),
                 'resources': Hand(),
                 'development_cards': DevelopmentCardsHand(),
                 'knights': 0,
@@ -76,13 +87,6 @@ class BotManager:
                 'longest_road': 0,
             }
         ]
-        return
-
-    def get_actual_player(self):
-        return self.actual_player
-
-    def set_actual_player(self, player_id=0):
-        self.actual_player = player_id
         return
 
     def import_bot_class_from_input(self, strng=''):

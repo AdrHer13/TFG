@@ -20,11 +20,11 @@ class GameManager:
     Clase que representa el game manager, entidad que tiene todas las acciones que pueden hacer los jugadores
     """
     last_dice_roll = 0
-    board = Board()
-    development_cards_deck = DevelopmentDeck()
-    turn_manager = TurnManager()
-    commerce_manager = CommerceManager()
-    bot_manager = BotManager()
+    board = ''
+    development_cards_deck = ''
+    turn_manager = ''
+    commerce_manager = ''
+    bot_manager = ''
 
     MAX_COMMERCE_DEPTH = 2
 
@@ -33,6 +33,20 @@ class GameManager:
 
     def __init__(self):
         self.development_cards_deck = DevelopmentDeck()
+        self.bot_manager = BotManager()
+
+        return
+
+    def reset_game_values(self):
+        self.last_dice_roll = 0
+        self.board = Board()
+        self.development_cards_deck = DevelopmentDeck()
+        self.turn_manager = TurnManager()
+        self.commerce_manager = CommerceManager()
+        self.bot_manager.reset_game_values()
+
+        self.largest_army_player = {}
+        self.largest_army = 2
         return
 
     def throw_dice(self):

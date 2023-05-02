@@ -468,7 +468,7 @@ class Board:
         else:
             return {'response': False,
                     'error_msg': 'No puedes hacer una carretera aquí,' +
-                                ' no hay una carretera o nodo adyacente que te pertenezca'}
+                                 ' no hay una carretera o nodo adyacente que te pertenezca'}
 
     def move_thief(self, terrain=-1):
         """
@@ -480,7 +480,10 @@ class Board:
         if self.terrain[terrain]['has_thief']:
             self.terrain[terrain]['has_thief'] = False
 
-            rand_terrain = random.randint(0, 18)
+            rand_terrain = terrain
+            while rand_terrain == terrain:
+                rand_terrain = random.randint(0, 18)
+
             self.terrain[rand_terrain]['has_thief'] = True
             return {'response': False,
                     'error_msg': 'No se puede mover al ladrón a la misma casilla',
@@ -565,12 +568,37 @@ class Board:
         :return: [{'starting_node': int, 'finishing_node': int}, ...]
         """
         valid_nodes = []
+        # Por cada nodo que existe
         for node in self.nodes:
+            # Se comprueban sus nodos adyacentes
             for adjacent_node_id in node['adjacent']:
-                for road in self.nodes[adjacent_node_id]['roads']:
-                    if road['player_id'] == player_id and road['node_id'] != node['id'] and (
-                            node['player'] == player_id or node['player'] == -1):
-                        valid_nodes.append({'starting_node': node['id'], 'finishing_node': adjacent_node_id})
+                # Se crea una variable para ver si se puede construir
+                allowed_to_build = False
+                # Se comprueba que el nodo ADYACENTE sea del jugador o no tenga jugador antes siquiera de mirar si se puede construir
+                #  Dado que si se quiere llegar al pueblo de otro jugador, cuando se esté en ese nodo, al mirar el adyacente verá que puede
+                #  construir y dejará hacer la carretera. Sin embargo, esto evitará que se pueda atravesar pueblos de otros jugadores
+
+                # if (node['player'] == player_id or node['player'] == -1) \
+                #         and (self.nodes[adjacent_node_id] == player_id or self.nodes[adjacent_node_id] == -1):
+                if self.nodes[adjacent_node_id]['player'] == player_id or self.nodes[adjacent_node_id]['player'] == -1:
+
+                    # Por cada carretera que haya en el nodo adyacente
+                    for road in self.nodes[adjacent_node_id]['roads']:
+                        # Si la carretera no es una carretera de vuelta
+                        if road['node_id'] != node['id']:
+                            if road['player_id'] == player_id:
+                                # En caso de que sea legal Y no sea una carretera de vuelta, se permite construir
+                                allowed_to_build = True
+                            # En caso de que no sea legal, no se permite construir
+                            else:
+                                allowed_to_build = False
+                        # En caso de haber una carretera de vuelta, independientemente de qué jugador, se corta inmediatamente y se prohíbe construir
+                        else:
+                            allowed_to_build = False
+                            break
+                if allowed_to_build:
+                    valid_nodes.append({'starting_node': adjacent_node_id, 'finishing_node': node['id']})
+
         # print('````````````````````````````')
         # print('valid_road_nodes: ')
         # print(valid_nodes)

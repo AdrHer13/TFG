@@ -35,13 +35,16 @@ class DevelopmentDeck:
             self.deck.append(DevelopmentCard(i, Dcc.PROGRESS_CARD, Dcc.YEAR_OF_PLENTY_EFFECT))
         for i in range(23, 25):
             self.deck.append(DevelopmentCard(i, Dcc.PROGRESS_CARD, Dcc.MONOPOLY_EFFECT))
+        return
 
+    def shuffle_deck(self):
         # Se barajan las cartas de desarrollo
         current_index, random_index = len(self.deck), 0
         while current_index != 0:
             random_index = math.floor(random.random() * current_index)
             current_index -= 1
             (self.deck[current_index], self.deck[random_index]) = (self.deck[random_index], self.deck[current_index])
+        return
 
     def draw_card(self):
         if self.current_index == len(self.deck):
@@ -99,7 +102,7 @@ class DevelopmentCardsHand:
         pass
 
     def add_card(self, card):
-        if card is not None:
+        if isinstance(card, DevelopmentCard):
             self.hand.append(card)
         else:
             return
@@ -163,6 +166,7 @@ class DevelopmentCardsHand:
 
 if __name__ == '__main__':
     deck = DevelopmentDeck()
+    deck.shuffle_deck()
     hand = DevelopmentCardsHand()
     hand_2 = DevelopmentCardsHand()
 

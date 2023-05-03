@@ -35,12 +35,14 @@ class GameManager:
         self.development_cards_deck = DevelopmentDeck()
         self.bot_manager = BotManager()
 
+        self.development_cards_deck.shuffle_deck()
         return
 
     def reset_game_values(self):
         self.last_dice_roll = 0
         self.board = Board()
         self.development_cards_deck = DevelopmentDeck()
+        self.development_cards_deck.shuffle_deck()
         self.turn_manager = TurnManager()
         self.commerce_manager = CommerceManager()
         self.bot_manager.reset_game_values()

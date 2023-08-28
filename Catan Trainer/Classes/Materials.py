@@ -104,6 +104,7 @@ class Materials:
             else:
                 # print('has_this_more_materials(): El string es invalido')
                 return False
+
         if isinstance(materials, Materials):
             if self.wood < materials.wood:
                 # print('has_this_more_materials(): Menos madera de la que piden')

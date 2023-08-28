@@ -1,5 +1,4 @@
 from Classes.Hand import *
-from Classes.Constants import *
 
 
 class TestHand:

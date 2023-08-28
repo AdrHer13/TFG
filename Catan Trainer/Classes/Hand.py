@@ -27,29 +27,18 @@ class Hand:
             # print('###########')
         else:
             if resource == 0:
-                # print('add_cereal')
                 self.resources.add_cereal(amount)
-                pass
             elif resource == 1:
-                # print('add_mineral')
                 self.resources.add_mineral(amount)
-                pass
             elif resource == 2:
-                # print('add_clay')
                 self.resources.add_clay(amount)
-                pass
             elif resource == 3:
-                # print('add_wood')
                 self.resources.add_wood(amount)
-                pass
             elif resource == 4:
-                # print('add_wool')
                 self.resources.add_wool(amount)
-                pass
-            # else:
-            #     print('add_desert')
 
         # TODO: arreglar el problema con los negativos. Esto es un fix temporal que puede ser abusable
+        # Acabo de ver que lo que hace es añadir los materiales negativos como positivos
         if not isinstance(resource, list) and self.get_from_id(resource) < 0:
             self.add_material(resource, (self.get_from_id(resource) * -1))
         return
@@ -61,13 +50,19 @@ class Hand:
         :param amount: cantidad del material a añadir
         :return: true/false?
         """
-        if self.get_from_id(resource) >= 1:
-            self.add_material(resource, (amount * -1))
-            return True
+        if isinstance(resource, list):
+            for material in resource:
+                self.remove_material(material, amount)
         else:
-            # TODO: comprobar por qué la excepción se lanza cuando alguien tiene 1 material pese a estar como válido si es >=1
-            # raise Exception("Cantidad de materiales negativa. Cancelando partida")
-            return False
+            if self.get_from_id(resource) >= amount:
+                self.add_material(resource, (amount * -1))
+                return True
+            else:
+                # TODO: comprobar por qué la excepción se lanza cuando alguien tiene 1 material pese a estar como válido si es >=1
+                #       En caso de sacar un 7 hay un bucle puesto para saber si ha quitado o no materiales usando esta parte. La excepción
+                #       tendría que estar en otro lugar
+                # raise Exception("Cantidad de materiales negativa. Cancelando partida")
+                return False
 
     def get_from_id(self, material_id):
         return self.resources.get_from_id(material_id)

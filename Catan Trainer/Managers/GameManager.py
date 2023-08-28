@@ -91,7 +91,7 @@ class GameManager:
                             player['resources'].add_material(terrain['terrain_type'], 1)
         return None
 
-    def give_all_resources(self):
+    def __give_all_resources__(self):
         """
         Función que otorga a todos los jugadores 5 de todos los recursos. Usado solo para debugging
         :return:

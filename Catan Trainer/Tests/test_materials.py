@@ -1,5 +1,5 @@
 from Classes.Constants import BuildConstants as bc
-from Classes.Hand import *
+from Classes.Materials import *
 
 
 class TestMaterials:

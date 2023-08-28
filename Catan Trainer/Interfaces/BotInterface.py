@@ -1,9 +1,7 @@
 from Classes.Board import Board
-from Classes.Hand import Hand
-from Classes.Materials import Materials
-from Classes.TradeOffer import TradeOffer
-from Classes.Constants import MaterialConstants, BuildConstants
 from Classes.DevelopmentCards import *
+from Classes.Hand import Hand
+from Classes.TradeOffer import TradeOffer
 
 
 class BotInterface:

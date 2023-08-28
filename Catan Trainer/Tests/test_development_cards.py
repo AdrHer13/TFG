@@ -1,5 +1,5 @@
-from Classes.DevelopmentCards import *
 from Classes.Constants import *
+from Classes.DevelopmentCards import *
 
 
 class TestDevelopmentCards:

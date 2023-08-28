@@ -1,8 +1,6 @@
-from pydoc import locate
-
 from Bots import RandomBot
-from Classes.Hand import Hand
 from Classes.DevelopmentCards import DevelopmentCardsHand
+from Classes.Hand import Hand
 
 
 class BotManager:

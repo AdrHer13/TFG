@@ -1,7 +1,7 @@
 import math
 import random
 
-from Classes.Constants import DevelopmentCardConstants as Dcc, DevelopmentCardConstants
+from Classes.Constants import DevelopmentCardConstants as Dcc
 
 
 # Debido a como funciona el juego, en caso de querer lanzar una carta de desarrollo debería de lanzarse siempre que un jugador devuelva

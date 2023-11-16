@@ -127,6 +127,7 @@ class GameDirector:
         # print('Start commerce phase: ' + str(self.game_manager.turn_manager.get_turn()))
 
         self.game_manager.turn_manager.set_phase(1)
+        # TODO: Desacoplar el game director del resto de managers. Ej: self.game_manager.on_commerce_phase() en lugar de este chorro raro
         commerce_response = self.game_manager.bot_manager.players[player]['player'].on_commerce_phase()
 
         if isinstance(commerce_response, TradeOffer) and depth <= self.MAX_COMMERCE_TRADES:
@@ -269,6 +270,7 @@ class GameDirector:
     def end_turn(self, player_id=-1):
         """
         Esta función permite finalizar el turno
+        TODO: falta por cortar la partida aquí no en la ronda
         :param player_id: número que representa al jugador
         :return: void
         """

@@ -1,3 +1,4 @@
+from Classes.Constants import MaterialConstants as mc
 from Classes.Hand import *
 
 
@@ -9,11 +10,11 @@ class TestHand:
         assert hand.get_total() == 0
 
         # Comprobamos que add_material añade materiales correctamente
-        hand.add_material(0, 1)
-        hand.add_material(1, 1)
-        hand.add_material(2, 1)
-        hand.add_material(3, 1)
-        hand.add_material(4, 1)
+        hand.add_material(mc.CEREAL, 1)
+        hand.add_material(mc.MINERAL, 1)
+        hand.add_material(mc.CLAY, 1)
+        hand.add_material(mc.WOOD, 1)
+        hand.add_material(mc.WOOL, 1)
         assert hand.get_cereal() == 1 and hand.get_mineral() == 1 and hand.get_clay() == 1 and hand.get_wood() == 1 and \
                hand.get_wool() == 1 and hand.get_total() == 5
 

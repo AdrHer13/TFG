@@ -18,11 +18,17 @@ class BotManager:
 
     # TODO: Pedir al ejecutar el programa el nombre de las clases que se quieren gastar para los bots
     # TODO: Añadir mano a self.players para que los bots puedan solicitarla pero no modificarla
-    def __init__(self):
-        self.first_bot_class = self.import_bot_class_from_input('primer')
-        self.second_bot_class = self.import_bot_class_from_input('segundo')
-        self.third_bot_class = self.import_bot_class_from_input('tercer')
-        self.fourth_bot_class = self.import_bot_class_from_input('cuarto')
+    def __init__(self, for_test=False):
+        if not for_test:
+            self.first_bot_class = self.import_bot_class_from_input('primer')
+            self.second_bot_class = self.import_bot_class_from_input('segundo')
+            self.third_bot_class = self.import_bot_class_from_input('tercer')
+            self.fourth_bot_class = self.import_bot_class_from_input('cuarto')
+        else:
+            self.first_bot_class = RandomBot.RandomBot
+            self.second_bot_class = RandomBot.RandomBot
+            self.third_bot_class = RandomBot.RandomBot
+            self.fourth_bot_class = RandomBot.RandomBot
 
         self.reset_game_values()
         return
@@ -88,7 +94,8 @@ class BotManager:
         return
 
     def import_bot_class_from_input(self, strng=''):
-        module_class = input('Módulo y clase del ' + strng + ' bot (ej: mymodule.myclass)(dejar en blanco para usar la por defecto): ')
+        module_class = input(
+            'Módulo y clase del ' + strng + ' bot (ej: mymodule.myclass)(dejar en blanco para usar la por defecto): ')
         if module_class == '':
             klass = RandomBot.RandomBot
         else:

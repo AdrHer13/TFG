@@ -1,6 +1,7 @@
 class Materials:
     """
     Clase que representa los materiales. Se usa tanto en la mano de los jugadores como en las ofertas
+    TODO: Hay que poner lo que lleva la clase
     """
 
     def __init__(self, cereal=0, mineral=0, clay=0, wood=0, wool=0):
@@ -9,7 +10,7 @@ class Materials:
         self.clay = clay
         self.wood = wood
         self.wool = wool
-        # self.array_ids = [cereal, mineral, clay, wood, wool]
+        self.array_ids = [cereal, mineral, clay, wood, wool]
         return
 
     def get_from_id(self, material_constant):

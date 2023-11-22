@@ -4,11 +4,11 @@ from Classes.Materials import Materials
 class Hand:
     """
     Clase que representa la mano de los jugadores
+    TODO: Hay que poner lo que lleva la clase
     """
-    resources = Materials(0, 0, 0, 0, 0)
 
     def __init__(self):
-        self.resources = Materials(0, 0, 0, 0, 0)
+        self.resources = Materials()
         return
 
     def add_material(self, resource, amount):
@@ -46,9 +46,9 @@ class Hand:
     def remove_material(self, resource, amount):
         """
         Resta amount al material seleccionado
-        :param resource: tipo de recurso a añadir
-        :param amount: cantidad del material a añadir
-        :return: true/false?
+        :param resource: tipo de recurso a quitar
+        :param amount: cantidad del material a quitar
+        :return: void
         """
         if isinstance(resource, list):
             for material in resource:
@@ -56,13 +56,13 @@ class Hand:
         else:
             if self.get_from_id(resource) >= amount:
                 self.add_material(resource, (amount * -1))
-                return True
+                return
             else:
                 # TODO: comprobar por qué la excepción se lanza cuando alguien tiene 1 material pese a estar como válido si es >=1
                 #       En caso de sacar un 7 hay un bucle puesto para saber si ha quitado o no materiales usando esta parte. La excepción
                 #       tendría que estar en otro lugar
                 # raise Exception("Cantidad de materiales negativa. Cancelando partida")
-                return False
+                return
 
     def get_from_id(self, material_id):
         return self.resources.get_from_id(material_id)

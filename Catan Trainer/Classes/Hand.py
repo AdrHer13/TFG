@@ -56,13 +56,13 @@ class Hand:
         else:
             if self.get_from_id(resource) >= amount:
                 self.add_material(resource, (amount * -1))
-                return
+                return True
             else:
                 # TODO: comprobar por qué la excepción se lanza cuando alguien tiene 1 material pese a estar como válido si es >=1
                 #       En caso de sacar un 7 hay un bucle puesto para saber si ha quitado o no materiales usando esta parte. La excepción
                 #       tendría que estar en otro lugar
                 # raise Exception("Cantidad de materiales negativa. Cancelando partida")
-                return
+                return False
 
     def get_from_id(self, material_id):
         return self.resources.get_from_id(material_id)

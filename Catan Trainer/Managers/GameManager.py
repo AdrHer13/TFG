@@ -3,7 +3,7 @@
 #
 
 from Classes.Board import Board
-from Classes.Constants import MaterialConstants
+from Classes.Constants import MaterialConstants, DevelopmentCardConstants
 from Classes.DevelopmentCards import *
 from Classes.Materials import Materials
 from Classes.TradeOffer import TradeOffer

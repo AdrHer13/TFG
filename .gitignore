@@ -2,3 +2,4 @@
 Catan Trainer/Traces/game.json
 Catan Trainer/Traces/*
 *.json
+*.pyc

@@ -12,24 +12,19 @@ class GameManager:
     """
     Clase que representa el game manager, entidad que tiene todas las acciones que pueden hacer los jugadores
     """
+    MAX_COMMERCE_DEPTH = 2
 
     def __init__(self, for_test=False):
         self.last_dice_roll = 0
-        self.board = ''
-        self.development_cards_deck = ''
-        self.turn_manager = ''
-        self.commerce_manager = ''
-        self.bot_manager = ''
-
-        self.MAX_COMMERCE_DEPTH = 2
-
-        self.largest_army_player = {}
         self.largest_army = 2
+        self.largest_army_player = {}
 
+        self.board = Board()
         self.development_cards_deck = DevelopmentDeck()
-        self.bot_manager = BotManager(for_test)
-
         self.development_cards_deck.shuffle_deck()
+        self.turn_manager = TurnManager()
+        self.commerce_manager = CommerceManager()
+        self.bot_manager = BotManager(for_test)
         return
 
     def board_init(self):
@@ -37,15 +32,15 @@ class GameManager:
 
     def reset_game_values(self):
         self.last_dice_roll = 0
+        self.largest_army = 2
+        self.largest_army_player = {}
+
         self.board = Board()
         self.development_cards_deck = DevelopmentDeck()
         self.development_cards_deck.shuffle_deck()
         self.turn_manager = TurnManager()
         self.commerce_manager = CommerceManager()
         self.bot_manager.reset_game_values()
-
-        self.largest_army_player = {}
-        self.largest_army = 2
         return
 
     def throw_dice(self):

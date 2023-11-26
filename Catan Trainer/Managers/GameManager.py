@@ -1,9 +1,5 @@
-#
-# Clase que se encarga de dirigir una partida de Catan
-#
-
 from Classes.Board import Board
-from Classes.Constants import MaterialConstants
+from Classes.Constants import MaterialConstants, DevelopmentCardConstants
 from Classes.DevelopmentCards import *
 from Classes.Materials import Materials
 from Classes.TradeOffer import TradeOffer
@@ -16,24 +12,28 @@ class GameManager:
     """
     Clase que representa el game manager, entidad que tiene todas las acciones que pueden hacer los jugadores
     """
-    last_dice_roll = 0
-    board = ''
-    development_cards_deck = ''
-    turn_manager = ''
-    commerce_manager = ''
-    bot_manager = ''
 
-    MAX_COMMERCE_DEPTH = 2
+    def __init__(self, for_test=False):
+        self.last_dice_roll = 0
+        self.board = ''
+        self.development_cards_deck = ''
+        self.turn_manager = ''
+        self.commerce_manager = ''
+        self.bot_manager = ''
 
-    largest_army_player = {}
-    largest_army = 2
+        self.MAX_COMMERCE_DEPTH = 2
 
-    def __init__(self):
+        self.largest_army_player = {}
+        self.largest_army = 2
+
         self.development_cards_deck = DevelopmentDeck()
-        self.bot_manager = BotManager()
+        self.bot_manager = BotManager(for_test)
 
         self.development_cards_deck.shuffle_deck()
         return
+
+    def board_init(self):
+        self.board.__init__()
 
     def reset_game_values(self):
         self.last_dice_roll = 0
@@ -260,7 +260,7 @@ class GameManager:
         :return: void
         """
         player_hand = self.bot_manager.players[player_id]['resources']
-        if player_hand.resources.has_this_more_materials(Materials(1, 0, 1, 1, 1)):
+        if player_hand.resources.has_this_more_materials('town'):
             build_town_obj = self.board.build_town(self.turn_manager.get_whose_turn_is_it(), node)
 
             if build_town_obj['response']:

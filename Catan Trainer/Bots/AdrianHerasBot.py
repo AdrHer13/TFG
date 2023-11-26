@@ -44,7 +44,7 @@ class AdrianHerasBot(BotInterface):
                     return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[i].id)
         return None
 
-    def on_having_more_than_7_materials(self):
+    def on_having_more_than_7_materials_when_thief_is_called(self):
         # comprueba si tiene materiales para construir una ciudad. Si los tiene, descarta el resto que no le sirvan.
         if self.hand.resources.has_this_more_materials(BuildConstants.CITY):
             while self.hand.get_total() > 7:

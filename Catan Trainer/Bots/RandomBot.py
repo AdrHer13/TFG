@@ -37,7 +37,7 @@ class RandomBot(BotInterface):
             return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[0].id)
         return None
 
-    def on_having_more_than_7_materials(self):
+    def on_having_more_than_7_materials_when_thief_is_called(self):
         return self.hand
 
     def on_moving_thief(self):

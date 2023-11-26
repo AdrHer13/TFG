@@ -37,7 +37,7 @@ class BotInterface:
         """
         return None
 
-    def on_having_more_than_7_materials(self):
+    def on_having_more_than_7_materials_when_thief_is_called(self):
         """
         Trigger que se llama cuando se debe descartar materiales. Si no los descarta el bot, los descartará
         el GameDirector aleatoriamente.
@@ -70,7 +70,7 @@ class BotInterface:
     def on_commerce_phase(self):
         """
         Trigger para cuando empieza la fase de comercio. Devuelve una oferta
-        :return: TradeOffer, Dictionary, None
+        :return: TradeOffer, dict{'gives': int, 'receives': int}, None
         """
         return None
 

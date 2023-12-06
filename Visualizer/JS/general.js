@@ -15,10 +15,10 @@ function init_events() {
         input.val('')
 
         // resetear el tablero
-        jQuery('.node').add('.road').add('.vertical_road').css('background', 'none').css('border', 'none').text('')
-        $('#contador_rondas').val('').change()
-        $('#contador_turnos').val('').change()
-        $('#contador_fases').val('').change()
+        jQuery('.node').add('.road').add('.vertical_road').css('background', 'none').css('border', 'none').text('');
+        $('#contador_rondas').val('').change();
+        $('#contador_turnos').val('').change();
+        $('#contador_fases').val('').change();
     })
 
     input.on('change', function (e) {
@@ -29,29 +29,29 @@ function init_events() {
             reader.onload = function (evt) {
                 game_obj = JSON.parse(evt.target.result);
 
-                init_events_with_game_obj()
-                addLogFromJSON()
-                setup()
+                init_events_with_game_obj();
+                addLogFromJSON();
+                setup();
             }
             reader.onerror = function (evt) {
-                console.log('Error al cargar el archivo')
+                console.log('Error al cargar el archivo');
             }
         }
 
         for (let i = 1; i < 5; i++) {
-            let textarea = $('#buildings_P' + i)
-            textarea.text('')
+            let textarea = $('#buildings_P' + i);
+            textarea.text('');
         }
-        game_obj = {}
-        round_obj = {}
-        turn_obj = {}
-        phase_obj = {}
+        game_obj = {};
+        round_obj = {};
+        turn_obj = {};
+        phase_obj = {};
 
 
-        jQuery('#puntos_victoria_J1').text(0)
-        jQuery('#puntos_victoria_J2').text(0)
-        jQuery('#puntos_victoria_J3').text(0)
-        jQuery('#puntos_victoria_J4').text(0)
+        jQuery('#puntos_victoria_J1').text(0);
+        jQuery('#puntos_victoria_J2').text(0);
+        jQuery('#puntos_victoria_J3').text(0);
+        jQuery('#puntos_victoria_J4').text(0);
     });
 
 
@@ -193,6 +193,10 @@ function init_events_with_game_obj() {
     let playIntervalNumber = 0;
 
     contador_rondas.off().on('change', function (e) {
+        if (contador_rondas.val() === '') {
+            return;
+        }
+
         if (parseInt(contador_rondas.val()) < 1) {
             contador_rondas.val(1).change();
         }
@@ -208,6 +212,9 @@ function init_events_with_game_obj() {
         contador_turnos.val(1).change();
     })
     contador_turnos.off().on('change', function (e) {
+        if (contador_turnos.val() === '') {
+            return;
+        }
 
         if (parseInt(contador_turnos.val()) > 4) {
             contador_rondas.val(parseInt(contador_rondas.val()) + 1).change()
@@ -251,6 +258,10 @@ function init_events_with_game_obj() {
         contador_fases.val(1).change();
     })
     contador_fases.off().on('change', function (e) {
+        if (contador_fases.val() === '') {
+            return;
+        }
+        
         let commerce_log_text = jQuery('#commerce_log_text');
 
         if (parseInt(contador_fases.val()) > 4) {

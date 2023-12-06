@@ -8,10 +8,6 @@ class BotInterface:
     """
     Interfaz que implementa a un bot
     """
-    board = Board()
-    hand = Hand()
-    development_cards_hand = DevelopmentCardsHand()
-    id = 0
 
     def __init__(self, bot_id):
         self.hand = Hand()

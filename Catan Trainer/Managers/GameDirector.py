@@ -28,9 +28,6 @@ class GameDirector:
 
         # Reseteamos el game_manager
         self.game_manager.reset_game_values()
-
-        # Se inicia el nuevo tablero
-        self.game_manager.board_init()
         return
 
     # Turn #

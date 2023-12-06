@@ -25,16 +25,10 @@ class Board:
               Representa una ficha de terreno del tablero. Poseen información de los nodos con
                  los que hacen contacto, si posee al ladrón actualmente y su probabilidad de salir
     """
-    nodes = []  # 0 a 53
-    terrain = []  # 0 a 18 | Al recorrer este array para mirar la probabilidad cortar si se han encontrado 2 respuestas
 
     def __init__(self, nodes=None, terrain=None):
-        self.nodes = []
-        self.terrain = []
-        """
-        Cuando se llama al init se establece el valor inicial del tablero antes de que se pongan pueblos y carreteras.
-        Aquí se pone el terreno y su probabilidad
-        """
+        self.nodes = []  # 0 a 53
+        self.terrain = []  # 0 a 18
         if nodes is None:
             i = 0
             while i < 54:

@@ -52,7 +52,6 @@ class Hand:
                 self.add_material(resource, (amount * -1))
         return
 
-
     def get_from_id(self, material_id):
         return self.resources.get_from_id(material_id)
 

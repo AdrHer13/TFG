@@ -80,7 +80,7 @@ class GameDirector:
             #####
             for obj in self.game_manager.bot_manager.players:
                 if obj['resources'].get_total() > 7:
-                    total = obj['resources'].get_total()
+                    total = obj['player'].on_having_more_than_7_materials_when_thief_is_called().get_total()
                     max_hand = (total / 2).__floor__()
 
                     while total > max_hand:

@@ -67,9 +67,6 @@ class Hand:
     def get_from_id(self, material_id):
         return self.resources.get_from_id(material_id)
 
-    def get_resources(self):
-        return self.resources
-
     def get_cereal(self):
         return self.resources.cereal
 

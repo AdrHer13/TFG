@@ -33,51 +33,25 @@ class Materials:
     def get_wool(self):
         return self.wool
 
-    ##### setters #####
-    def set_cereal(self, amount=0):
-        self.cereal = amount
-        return None
-
-    def set_mineral(self, amount=0):
-        self.mineral = amount
-        return None
-
-    def set_clay(self, amount=0):
-        self.clay = amount
-        return None
-
-    def set_wood(self, amount=0):
-        self.wood = amount
-        return None
-
-    def set_wool(self, amount=0):
-        self.wool = amount
-        return None
-
     ##### adders #####
-    def add_cereal(self, amount=0):
-        cereal = self.get_cereal() + amount
-        self.set_cereal(cereal)
+    def add_cereal(self, amount):
+        self.cereal = self.get_cereal() + amount
         return None
 
-    def add_mineral(self, amount=0):
-        mineral = self.get_mineral() + amount
-        self.set_mineral(mineral)
+    def add_mineral(self, amount):
+        self.mineral = self.get_mineral() + amount
         return None
 
-    def add_clay(self, amount=0):
-        clay = self.get_clay() + amount
-        self.set_clay(clay)
+    def add_clay(self, amount):
+        self.clay = self.get_clay() + amount
         return None
 
-    def add_wood(self, amount=0):
-        wood = self.get_wood() + amount
-        self.set_wood(wood)
+    def add_wood(self, amount):
+        self.wood = self.get_wood() + amount
         return None
 
-    def add_wool(self, amount=0):
-        wool = self.get_wool() + amount
-        self.set_wool(wool)
+    def add_wool(self, amount):
+        self.wool = self.get_wool() + amount
         return None
 
     def has_this_more_materials(self, materials):

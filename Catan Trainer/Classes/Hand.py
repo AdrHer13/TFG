@@ -15,16 +15,14 @@ class Hand:
         """
         Suma amount al material seleccionado (si es negativo lo resta de la cantidad actual)
         :param resource: tipo de recurso a añadir
-        :param amount: cantidad del material a añadir
+        :param amount: cantidad del recurso a añadir
         :return: void
         """
         # print('material: ' + str(resource) + ' | amount: ' + str(amount))
         if isinstance(resource, list):
-            # print('###########')
-            # print(str(len(resource)))
             for material in resource:
                 self.add_material(material, amount)
-            # print('###########')
+
         else:
             if resource == 0:
                 self.resources.add_cereal(amount)
@@ -37,17 +35,13 @@ class Hand:
             elif resource == 4:
                 self.resources.add_wool(amount)
 
-        # TODO: arreglar el problema con los negativos. Esto es un fix temporal que puede ser abusable
-        # Acabo de ver que lo que hace es añadir los materiales negativos como positivos
-        if not isinstance(resource, list) and self.get_from_id(resource) < 0:
-            self.add_material(resource, (self.get_from_id(resource) * -1))
         return
 
     def remove_material(self, resource, amount):
         """
         Resta amount al material seleccionado
         :param resource: tipo de recurso a quitar
-        :param amount: cantidad del material a quitar
+        :param amount: cantidad del recurso a quitar
         :return: void
         """
         if isinstance(resource, list):
@@ -56,13 +50,8 @@ class Hand:
         else:
             if self.get_from_id(resource) >= amount:
                 self.add_material(resource, (amount * -1))
-                return True
-            else:
-                # TODO: comprobar por qué la excepción se lanza cuando alguien tiene 1 material pese a estar como válido si es >=1
-                #       En caso de sacar un 7 hay un bucle puesto para saber si ha quitado o no materiales usando esta parte. La excepción
-                #       tendría que estar en otro lugar
-                # raise Exception("Cantidad de materiales negativa. Cancelando partida")
-                return False
+        return
+
 
     def get_from_id(self, material_id):
         return self.resources.get_from_id(material_id)

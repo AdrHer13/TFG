@@ -67,38 +67,33 @@ class GameDirector:
         # print('Jugador: ' + str(self.game_manager.turn_manager.get_whose_turn_is_it()))
         # print('Resources ActualPlayer: ' + str(self.game_manager.bot_manager.players[player]['player'].hand.resources))
 
-        # for i in range(4):
-        # print('Resources J' + str(i) + ': ' + str(
-        #     self.game_manager.bot_manager.players[i]['resources'].resources) + ' | Total: ' + str(
-        #     self.game_manager.bot_manager.players[i]['resources'].get_total()))
+
 
         # TODO: mover lógica al GameManager dentro del método "check_if_thief_is_called()".
         #  Debe devolver un objeto que hace lo que "start_turn_object" hace aquí para poder agregarlo a start_turn_object aquí
         if self.game_manager.last_dice_roll == 7:
+            #####
+            # for i in range(4):
+            #     print('Resources J' + str(i) + ': ' + str(
+            #         self.game_manager.bot_manager.players[i]['resources'].resources) + ' | Total: ' + str(
+            #         self.game_manager.bot_manager.players[i]['resources'].get_total()))
+            #####
             for obj in self.game_manager.bot_manager.players:
-                if obj['resources'].get_total():
+                if obj['resources'].get_total() > 7:
                     total = obj['resources'].get_total()
-                    if total > 7:
-                        max_hand = (total / 2).__ceil__()
-                        new_total = obj['player'].on_having_more_than_7_materials_when_thief_is_called().get_total()
+                    max_hand = (total / 2).__floor__()
 
-                        # print('Total: ' + str(total))
-                        # print('Mano máxima: ' + str(max_hand))
-                        # print('Debe descartar: ' + str(new_total - max_hand))
-
-                        if new_total > max_hand:
-                            for i in range(0, (new_total - max_hand)):
-                                response = False
-                                while not response:
-                                    response = obj['resources'].remove_material(random.randint(0, 4), 1)
-                                obj['player'].hand = obj['resources']
-                        else:
-                            obj['resources'] = obj['player'].hand
+                    while total > max_hand:
+                        obj['resources'].remove_material(random.randint(0, 4), 1)
+                        total = obj['resources'].get_total()
+            #####
             # print('       -     -     -     -     -     -        ')
             # for i in range(4):
             #     print('Resources J' + str(i) + ': ' + str(
             #         self.game_manager.bot_manager.players[i]['resources'].resources) + ' | Total: ' + str(
             #         self.game_manager.bot_manager.players[i]['resources'].get_total()))
+            # print("\n")
+            #####
 
             on_moving_thief = self.game_manager.bot_manager.players[player]['player'].on_moving_thief()
             move_thief_obj = self.game_manager.move_thief(on_moving_thief['terrain'], on_moving_thief['player'])

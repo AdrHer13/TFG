@@ -405,10 +405,15 @@ class GameManager:
         """
 
         # TODO: no asumir que los bots van a devolver siempre algo. Comprobar, y si no devuelven nada entonces elegir por ellos
-        # Le da a los jugadores 2 intentos de poner bien los pueblos y carreteras. Si no lo hace el GameDirecto por ellos
+        # Le da a los jugadores 2 intentos de poner bien los pueblos y carreteras. Si no lo hace el GameDirector lo hará por ellos
         for count in range(3):
             if count < 2:
                 node_id, road_to = self.bot_manager.players[player]['player'].on_game_start(self.board)
+
+                terrain_ids = self.board.nodes[node_id]['contacting_terrain']
+                materials = []
+                for ter_id in terrain_ids:
+                    materials.append(self.board.terrain[ter_id]['terrain_type'])
 
                 if (self.board.nodes[node_id]['player'] == -1
                         and self.board.adjacent_nodes_dont_have_towns(node_id)
@@ -417,10 +422,6 @@ class GameManager:
                     # print('______________________')
                     # print('NODO: ' + str(node_id))
 
-                    terrain_ids = self.board.nodes[node_id]['contacting_terrain']
-                    materials = []
-                    for ter_id in terrain_ids:
-                        materials.append(self.board.terrain[ter_id]['terrain_type'])
                     self.board.nodes[node_id]['player'] = self.turn_manager.get_whose_turn_is_it()
                     # print('Materiales del nodo de J' + str(self.board.nodes[node_id]['player']))
                     # print(materials)
@@ -442,7 +443,7 @@ class GameManager:
                             # print('actual_node_id: ' + str(node_id) + ' | actual_road_to: ' + str(road_to))
                             return node_id, road_to
                     else:
-                        # print("el jugador " + str(self.turn_manager.get_whose_turn_is_it()) +
+                        # print("el jugador "+ str(self.turn_manager.get_whose_turn_is_it()) +
                         #       " ha intentado poner una carretera en un nodo que no le pertenece: " + str(road_to))
                         pass
                 else:
@@ -459,11 +460,6 @@ class GameManager:
                             illegal = False
                         else:
                             illegal = True
-
-                    terrain_ids = self.board.nodes[random_node_id]['contacting_terrain']
-                    materials = []
-                    for ter_id in terrain_ids:
-                        materials.append(self.board.terrain[ter_id]['terrain_type'])
 
                     self.board.nodes[random_node_id]['player'] = self.turn_manager.get_whose_turn_is_it()
 

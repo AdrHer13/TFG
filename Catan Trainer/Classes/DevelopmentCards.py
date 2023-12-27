@@ -47,8 +47,8 @@ class DevelopmentDeck:
         return
 
     def draw_card(self):
-        if self.current_index == len(self.deck):
-            return None
+        if self.current_index == len(self.deck):  # No quedan cartas que robar
+            pass
         else:
             card = self.deck[self.current_index]
             self.current_index += 1
@@ -80,11 +80,11 @@ class DevelopmentCard:
     def __str__(self):
         return "{'id': " + str(self.id) + ", 'type': " + str(self.type) + ", 'effect': " + str(self.effect) + "}"
 
-    def get_type(self):
-        return self.type
-
     def get_id(self):
         return self.id
+
+    def get_type(self):
+        return self.type
 
     def get_effect(self):
         return self.effect

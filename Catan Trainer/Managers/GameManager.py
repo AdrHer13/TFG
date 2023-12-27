@@ -317,31 +317,31 @@ class GameManager:
         Permite construir una carta de desarrollo
         :param player_id: Número que representa al jugador
         :return: {bool, string, string, string}. Devuelve si se ha podido o no construir la carta de desarrollo,
-                                                 el id de la carta, el tipo de carta que es, el efecto de la carta,
+                                                 el ID de la carta, el tipo de carta que es, el efecto de la carta
                                                  y si no se ha podido hacer, la razón
         """
-        player_hand = self.bot_manager.players[player_id]['resources']
-        if player_hand.resources.has_this_more_materials(Materials(1, 1, 0, 0, 1)):
-            player_hand.remove_material(MaterialConstants.CEREAL, 1)
-            player_hand.remove_material(MaterialConstants.MINERAL, 1)
-            player_hand.remove_material(MaterialConstants.WOOL, 1)
+        card_drawn = self.development_cards_deck.draw_card()
+        if card_drawn is not None:
 
-            card_drawn = self.development_cards_deck.draw_card()
-            self.bot_manager.players[player_id]['development_cards'].add_card(card_drawn)
-            development_card_hand = self.bot_manager.players[player_id]['development_cards'].check_hand()
-            if len(development_card_hand) and development_card_hand[len(development_card_hand) - 1]['type'] == \
-                    DevelopmentCardConstants.VICTORY_POINT:
-                self.bot_manager.players[player_id]['hidden_victory_points'] += 1
+            player_hand = self.bot_manager.players[player_id]['resources']
+            if player_hand.resources.has_this_more_materials(Materials(1, 1, 0, 0, 1)):
+                player_hand.remove_material(MaterialConstants.CEREAL, 1)
+                player_hand.remove_material(MaterialConstants.MINERAL, 1)
+                player_hand.remove_material(MaterialConstants.WOOL, 1)
 
-            self.bot_manager.players[player_id]['player'].development_cards_hand.hand = \
-                self.bot_manager.players[player_id]['development_cards'].hand
-            if card_drawn is not None:
+                if card_drawn.get_type() == DevelopmentCardConstants.VICTORY_POINT:
+                    self.bot_manager.players[player_id]['hidden_victory_points'] += 1
+
+                self.bot_manager.players[player_id]['development_cards'].add_card(card_drawn)
+                self.bot_manager.players[player_id]['player'].development_cards_hand.hand = \
+                    self.bot_manager.players[player_id]['development_cards'].hand
+
                 return {'response': True, 'card_id': card_drawn.id, 'card_type': card_drawn.type,
                         'card_effect': card_drawn.effect}
             else:
-                return {'response': True, 'card_type': None, 'card_effect': None}
+                return {'response': False, 'error_msg': 'Falta de materiales'}
         else:
-            return {'response': False, 'error_msg': 'Falta de materiales'}
+            return {'response': False, 'error_msg': 'No hay más cartas que crear'}
 
     def move_thief(self, terrain, adjacent_player):
         """

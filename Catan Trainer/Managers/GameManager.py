@@ -164,9 +164,10 @@ class GameManager:
         :param giver: Player()
         :param receiver: Player()
         :param count: Int
-        :param json_obj: Objeto json al que se le añaden datos para poder exportarlo correctamente
         :param trade_offer: TradeOffer()
-        :return: dictionary {'count': int, 'giver': Player(), 'receiver': Player(), 'trade_offer': TradeOffer(), 'response': True/False}
+        :return json_obj: Objeto json al que se le añaden datos para poder exportarlo correctamente
+        :return: json_obj {'count': int, 'giver': Player(), 'receiver': Player(),
+                             'trade_offer': TradeOffer(), 'response': True/False}
         """
         json_obj = {
             'count': count,
@@ -179,15 +180,15 @@ class GameManager:
         if isinstance(response, TradeOffer):
             if count > self.MAX_COMMERCE_DEPTH:
                 json_obj['response'] = False
-                return json_obj
 
             else:
                 # Se pasa de vuelta al bucle para que rote giver y receiver y se vuelva a preguntar por respuesta
                 json_obj['response'] = response.__to_object__()
-                return json_obj
+
         else:
             json_obj['response'] = response
-            return json_obj
+
+        return json_obj
 
     def trade_with_player(self, trade_offer=None, giver=None, receiver=None):
         """
@@ -209,6 +210,7 @@ class GameManager:
             # print('Giver: ' + str(giver['resources']))
             # print('Receiver: ' + str(receiver['resources']))
             # Se resta lo que da del giver
+
             giver['resources'].remove_material(MaterialConstants.WOOL, trade_offer.gives.wool)
             giver['resources'].remove_material(MaterialConstants.WOOD, trade_offer.gives.wood)
             giver['resources'].remove_material(MaterialConstants.CLAY, trade_offer.gives.clay)
@@ -252,7 +254,7 @@ class GameManager:
         Permite construir un pueblo en el nodo seleccionado
         :param player_id: Número que representa al jugador
         :param node: Número que representa un nodo en el tablero
-        :return: void
+        :return: {bool, string}. Devuelve si se ha podido o no construir el poblado, y en caso negativo, la razón
         """
         player_hand = self.bot_manager.players[player_id]['resources']
         if player_hand.resources.has_this_more_materials('town'):
@@ -274,7 +276,7 @@ class GameManager:
         Permite construir una ciudad en el nodo seleccionado
         :param player_id: Número que representa al jugador
         :param node: Número que representa un nodo en el tablero
-        :return: void
+        :return: {bool, string}. Devuelve si se ha podido o no construir la ciudad, y en caso negativo, la razón
         """
         player_hand = self.bot_manager.players[player_id]['resources']
         if player_hand.resources.has_this_more_materials(Materials(2, 3, 0, 0, 0)):
@@ -296,7 +298,7 @@ class GameManager:
         :param node: Número que representa
         :param road: Número que representa una carretera en el tablero
         :param free: Usado solo para cuando construyes carreteras gratis con una carta de desarrollo
-        :return: void
+        :return: {bool, string}. Devuelve si se ha podido o no construir la carretera, y en caso negativo, la razón
         """
         player_hand = self.bot_manager.players[player_id]['resources']
         if player_hand.resources.has_this_more_materials(Materials(0, 0, 1, 1, 0)) or free:
@@ -313,8 +315,10 @@ class GameManager:
     def build_development_card(self, player_id):
         """
         Permite construir una carta de desarrollo
-        :param player_id:
-        :return:
+        :param player_id: Número que representa al jugador
+        :return: {bool, string, string, string}. Devuelve si se ha podido o no construir la carta de desarrollo,
+                                                 el id de la carta, el tipo de carta que es, el efecto de la carta,
+                                                 y si no se ha podido hacer, la razón
         """
         player_hand = self.bot_manager.players[player_id]['resources']
         if player_hand.resources.has_this_more_materials(Materials(1, 1, 0, 0, 1)):
@@ -325,16 +329,12 @@ class GameManager:
             card_drawn = self.development_cards_deck.draw_card()
             self.bot_manager.players[player_id]['development_cards'].add_card(card_drawn)
             development_card_hand = self.bot_manager.players[player_id]['development_cards'].check_hand()
-            # print('BUSCAR:')
-            # print(development_card_hand)
-            if (len(development_card_hand) and
-                    development_card_hand[len(development_card_hand) - 1][
-                        'type'] == DevelopmentCardConstants.VICTORY_POINT):
+            if len(development_card_hand) and development_card_hand[len(development_card_hand) - 1]['type'] == \
+                    DevelopmentCardConstants.VICTORY_POINT:
                 self.bot_manager.players[player_id]['hidden_victory_points'] += 1
-            # print(development_card_hand)
+
             self.bot_manager.players[player_id]['player'].development_cards_hand.hand = \
-                self.bot_manager.players[player_id][
-                    'development_cards'].hand
+                self.bot_manager.players[player_id]['development_cards'].hand
             if card_drawn is not None:
                 return {'response': True, 'card_id': card_drawn.id, 'card_type': card_drawn.type,
                         'card_effect': card_drawn.effect}

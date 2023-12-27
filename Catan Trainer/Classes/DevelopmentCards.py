@@ -9,7 +9,7 @@ from Classes.Constants import DevelopmentCardConstants as Dcc
 #  como un paso de fase.
 class DevelopmentDeck:
     # Solo puedes JUGAR una carta desarrollo (comprar las que sean)
-    # Sin embargo puedes jugar cualquier cantidad de cartas de desarrollo que otorguen puntos de victoria
+    # Sin embargo, puedes jugar cualquier cantidad de cartas de desarrollo que otorguen puntos de victoria
     # Las cartas que dan puntos de victoria (idealmente) se mantienen en secreto del resto de jugadores hasta que puedas ganar con ello
     # NO puedes jugar una carta que acabas de comprar
     # A MENOS que sea una que te lleve a 10 puntos de victoria
@@ -65,13 +65,15 @@ class DevelopmentDeck:
 
 
 class DevelopmentCard:
-    type = ''  # Punto de victoria, soldado, o carta de progreso (monopolio, año de la cosecha, construir 2 carreteras gratis)
-    id = 0
-    effect = 0  # En función del número de efecto que tiene, hace una cosa u otra
+    """
+    type  Punto de victoria, soldado, o carta de progreso (monopolio, año de la cosecha, construir 2 carreteras gratis)
+    id
+    effect  En función del número que tiene, hace una cosa u otra
+    """
 
-    def __init__(self, id, type, effect):
-        self.type = type
+    def __init__(self, id=0, type='', effect=0):
         self.id = id
+        self.type = type
         self.effect = effect
         pass
 
@@ -92,9 +94,10 @@ class DevelopmentCard:
 
 
 class DevelopmentCardsHand:
-    # Clase que muestra qué cartas tienes en la mano. Cada jugador solo puede ver su propia mano hasta que la juegan,
-    #   momento en el que el efecto de la carta ocurre y cada jugador puede voluntariamente hacer un seguimiento de qué ha salido
-
+    """
+    Clase que muestra qué cartas tienes en la mano. Cada jugador solo puede ver su propia mano hasta que la juegan,
+    momento en el que el efecto de la carta ocurre y cada jugador puede voluntariamente hacer un seguimiento de qué ha salido
+    """
     hand = []  # Cartas que posee en mano
 
     def __init__(self):
@@ -151,7 +154,7 @@ class DevelopmentCardsHand:
     def delete_card(self, id):
         """
         Borra la carta con la id que se le pase
-        :param id:
+        :param id: Número indicativo de la carta
         :return:
         """
         # print('borra carta de mano')

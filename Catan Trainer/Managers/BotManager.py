@@ -5,8 +5,8 @@ from Classes.Hand import Hand
 
 class BotManager:
     """
-    Clase que se encarga de los bots. De momento solo los carga en la partida, sin embargo cabe la posibilidad de que sea
-    el bot manager el que se encargue de darle paso a los bots a hacer sus turnos
+    Clase que se encarga de los bots. De momento solo los carga en la partida, sin embargo, cabe la posibilidad de que
+    sea el bot manager el que se encargue de darle paso a los bots a hacer sus turnos
     """
     actual_player = 0
     first_bot_class = ''
@@ -93,9 +93,9 @@ class BotManager:
         ]
         return
 
-    def import_bot_class_from_input(self, strng=''):
+    def import_bot_class_from_input(self, name=''):
         module_class = input(
-            'Módulo y clase del ' + strng + ' bot (ej: mymodule.myclass)(dejar en blanco para usar la por defecto): ')
+            'Módulo y clase del ' + name + ' bot (ej: mymodule.myclass)(dejar en blanco para usar la por defecto): ')
         if module_class == '':
             klass = RandomBot.RandomBot
         else:

@@ -4,15 +4,14 @@ import random
 from Classes.Constants import DevelopmentCardConstants as Dcc
 
 
-# Debido a como funciona el juego, en caso de querer lanzar una carta de desarrollo debería de lanzarse siempre que un jugador devuelva
-#  una carta como parte de su on_... Si devuelve una carta, el GameManager resuelve su efecto y cuenta cualquier otra carta que intente lanzar
-#  como un paso de fase.
+# Debido a como funciona el juego, en caso de querer lanzar una carta de desarrollo debería de lanzarse siempre que
+# un jugador devuelva una carta como parte de su on_... Si devuelve una carta, el GameManager resuelve su efecto y
+# cuenta cualquier otra carta que intente lanzar como un paso de fase.
 class DevelopmentDeck:
-    # Solo puedes JUGAR una carta desarrollo (comprar las que sean)
-    # Sin embargo, puedes jugar cualquier cantidad de cartas de desarrollo que otorguen puntos de victoria
-    # Las cartas que dan puntos de victoria (idealmente) se mantienen en secreto del resto de jugadores hasta que puedas ganar con ello
-    # NO puedes jugar una carta que acabas de comprar
-    # A MENOS que sea una que te lleve a 10 puntos de victoria
+    # Puedes construir cualquier cantidad de cartas de desarrollo PERO solo puedes jugar una.
+    # Puedes jugar cualquier cantidad de cartas de desarrollo que otorguen puntos de victoria.
+    # Las cartas que dan puntos de victoria (idealmente) se mantienen en secreto hasta que se pueda ganar con ellas
+    # NO se puede jugar una carta que se acaba de comprar SALVO que sea una que te lleve a 10 puntos de victoria
     # Se pueden jugar en cualquier momento de una ronda, incluso antes de tirar el dado (en cualquier on_... del bot)
 
     deck = []  # Deck es un array de objetos carta
@@ -97,8 +96,8 @@ class DevelopmentCard:
 
 class DevelopmentCardsHand:
     """
-    Clase que muestra qué cartas tienes en la mano. Cada jugador solo puede ver su propia mano hasta que la juegan,
-    momento en el que el efecto de la carta ocurre y cada jugador puede voluntariamente hacer un seguimiento de qué ha salido.
+    Clase que interactúa con la mano del jugador. Cada jugador solo puede ver su propia mano salvo que se use una carta,
+    en cuyo caso los demás jugadores saben la carta usada.
     """
     hand = []  # Cartas que posee en mano
 

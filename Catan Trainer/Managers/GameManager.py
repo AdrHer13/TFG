@@ -205,7 +205,7 @@ class GameManager:
         if (receiver['resources'].resources.has_this_more_materials(trade_offer.receives) and
                 giver['resources'].resources.has_this_more_materials(trade_offer.gives)):
 
-            materials = [MaterialConstants.CEREAL,MaterialConstants.MINERAL, MaterialConstants.CLAY,
+            materials = [MaterialConstants.CEREAL, MaterialConstants.MINERAL, MaterialConstants.CLAY,
                          MaterialConstants.WOOD, MaterialConstants.WOOL]
             to_gives = [trade_offer.gives.cereal, trade_offer.gives.mineral, trade_offer.gives.clay,
                         trade_offer.gives.wood, trade_offer.gives.wool]
@@ -496,8 +496,8 @@ class GameManager:
         :return:
         """
         # Si la carta que llega existe en la mano del BotManager se elimina y se hace el efecto. Si no, se hace un return nulo
-        #  Si la carta es un punto de victoria no se borra de la mano
-        #  Después se iguala la mano del jugador a la del BotManager para evitar trampas.
+        # Si la carta es un punto de victoria no se borra de la mano
+        # Después se iguala la mano del jugador a la del BotManager para evitar trampas.
 
         card_obj = {}
         # print('SE JUEGA CARTA DE DESARROLLO')
@@ -575,7 +575,7 @@ class GameManager:
 
             # print('SE JUEGA PUNTOS DE VICTORIA')
             if (self.bot_manager.players[player_id]['victory_points'] +
-                self.bot_manager.players[player_id]['hidden_victory_points']) >= 10:
+               self.bot_manager.players[player_id]['hidden_victory_points']) >= 10:
                 # print('SUPERAN 10')
 
                 card_obj['played_card'] = 'victory_point'
@@ -612,10 +612,6 @@ class GameManager:
                 # Se le dan todos los materiales eliminados al que usó la carta
                 self.bot_manager.players[player_id]['resources'].add_material(material_chosen, material_sum)
                 self.bot_manager.players[player_id]['player'].hand = self.bot_manager.players[player_id]['resources']
-
-                # for i in range(4):
-                    # print('POST Hand_P' + str(i))
-                    # print(self.bot_manager.players[i]['resources'].resources.__to_object__())
 
                 # Se añade al objeto el material, la suma, y las nuevas manos tras la resta de materiales
                 card_obj['played_card'] = 'monopoly'

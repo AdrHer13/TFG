@@ -33,8 +33,8 @@ class GameDirector:
     # Turn #
     def start_turn(self, player=-1):
         """
-        Esta función permite iniciar el turno
-        :param player: número que representa al jugador
+        Esta función permite iniciar el turno a un jugador.
+        :param player: (int) número que representa al jugador.
         :return: object
         """
         start_turn_object = {'development_card_played': []}
@@ -66,8 +66,6 @@ class GameDirector:
 
         # print('Jugador: ' + str(self.game_manager.turn_manager.get_whose_turn_is_it()))
         # print('Resources ActualPlayer: ' + str(self.game_manager.bot_manager.players[player]['player'].hand.resources))
-
-
 
         # TODO: mover lógica al GameManager dentro del método "check_if_thief_is_called()".
         #  Debe devolver un objeto que hace lo que "start_turn_object" hace aquí para poder agregarlo a start_turn_object aquí
@@ -118,9 +116,9 @@ class GameDirector:
 
     def start_commerce_phase(self, player=-1, depth=1):
         """
-        Esta función permite pasar a la fase de comercio
-        :param depth:
-        :param player: número que representa al jugador
+        Esta función permite pasar a la fase de comercio a un jugador.
+        :param depth: (int) número de veces que ha comerciado ya el jugador.
+        :param player: (int) número que representa al jugador.
         :return: object
         """
         commerce_phase_object = {}
@@ -205,9 +203,8 @@ class GameDirector:
 
     def start_build_phase(self, player=-1):
         """
-        Esta función permite pasar a la fase de construcción
-        :param build_phase_object:
-        :param player: número que representa al jugador
+        Esta función permite pasar a la fase de construcción a un jugador.
+        :param player: (int) número que representa al jugador.
         :return: void
         """
         # print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
@@ -326,7 +323,7 @@ class GameDirector:
             # print(longest_road_obj)
             if longest_road_obj['longest_road'] > real_longest_road['longest_road']:
                 real_longest_road = longest_road_obj
-        # Se le da el titulo a quien tenga la carretera más larga
+        # Se le da el título a quien tenga la carretera más larga
         if real_longest_road['player'] != -1:
             # TODO: cambiar "self.game_manager.bot_manager.players" por "self.game_manager.get_players()"
             self.game_manager.bot_manager.players[real_longest_road['player']]['longest_road'] = 1
@@ -352,8 +349,7 @@ class GameDirector:
     # Round #
     def round_start(self):
         """
-        Esta función permite comenzar una ronda nueva
-        :return:
+        Esta función permite comenzar una ronda nueva.
         """
         round_object = {}
         # print('---------------------')
@@ -385,8 +381,8 @@ class GameDirector:
                     depth += 1
             obj['commerce_phase'] = commerce_phase_array
 
-            # Se puede construir cualquier cantidad de veces en un turno mientras tengan materiales. Así que para evitar un
-            #  bucle infinito, se corta si se construye 'None' o si fallan al intentar construir
+            # Se puede construir cualquier cantidad de veces en un turno mientras tengan materiales. Así que
+            # para evitar un bucle infinito, se corta si se construye 'None' o si fallan al intentar construir
             build_phase_array = []
             while True:
                 # TODO: cambiar "self.game_manager.turn_manager.get_whose_turn_is_it" por "self.game_manager.get_whose_turn_is_it()"
@@ -409,8 +405,7 @@ class GameDirector:
 
     def round_end(self):
         """
-        Esta función permite acabar una ronda empezada
-        :return:
+        Esta función permite acabar una ronda empezada.
         """
         # print('round end')
         # print('---------------------')
@@ -432,8 +427,8 @@ class GameDirector:
     # Game #
     def game_start(self, game_number=0):
         """
-        Esta función permite comenzar una partida nueva
-        :return:
+        Esta función permite comenzar una partida nueva.
+        :param game_number: (int) número de partidas que se van a jugar.
         """
         # print('game start')
         # Se cargan los bots y se inicializa el tablero
@@ -477,6 +472,10 @@ class GameDirector:
         return
 
     def game_loop(self, game_number):
+        """
+        Esta función permite jugar varias partidas seguidas.
+        :param game_number: (int) número de partidas que se van a jugar.
+        """
         game_object = {}
         winner = False
         while not winner:

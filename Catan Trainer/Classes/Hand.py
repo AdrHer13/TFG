@@ -13,9 +13,10 @@ class Hand:
 
     def add_material(self, resource, amount):
         """
-        Suma amount al material seleccionado (si es negativo lo resta de la cantidad actual)
-        :param resource: tipo de recurso a añadir
-        :param amount: cantidad del recurso a añadir
+        Suma amount al material seleccionado (si es negativo lo resta de la cantidad actual).
+        Si se le pasa una lista se convierte en una función recusiva de sí misma.
+        :param resource: (int o list) tipo de recurso a añadir.
+        :param amount: (int) cantidad del recurso a añadir.
         :return: void
         """
         # print('material: ' + str(resource) + ' | amount: ' + str(amount))
@@ -39,9 +40,10 @@ class Hand:
 
     def remove_material(self, resource, amount):
         """
-        Resta amount al material seleccionado
-        :param resource: tipo de recurso a quitar
-        :param amount: cantidad del recurso a quitar
+        Resta amount al material seleccionado (si es negativo lo suma de la cantidad actual).
+        Si se le pasa una lista se convierte en una función recusiva de sí misma.
+        :param resource: (int o list) tipo de recurso a quitar.
+        :param amount: (int)cantidad del recurso a quitar.
         :return: void
         """
         if isinstance(resource, list):

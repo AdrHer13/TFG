@@ -66,9 +66,11 @@ class DevelopmentDeck:
 
 class DevelopmentCard:
     """
-    type  Punto de victoria, soldado, o carta de progreso (monopolio, año de la cosecha, construir 2 carreteras gratis)
-    id
-    effect  En función del número que tiene, hace una cosa u otra
+    Carta de desarrollo
+    :param id: Número que identifica la carta.
+    :param type: Punto de victoria, soldado, o carta de progreso (monopolio, año de la cosecha,
+    construir 2 carreteras gratis).
+    :param effect: En función del número que tiene, hace una cosa u otra.
     """
 
     def __init__(self, id=0, type='', effect=0):
@@ -96,7 +98,7 @@ class DevelopmentCard:
 class DevelopmentCardsHand:
     """
     Clase que muestra qué cartas tienes en la mano. Cada jugador solo puede ver su propia mano hasta que la juegan,
-    momento en el que el efecto de la carta ocurre y cada jugador puede voluntariamente hacer un seguimiento de qué ha salido
+    momento en el que el efecto de la carta ocurre y cada jugador puede voluntariamente hacer un seguimiento de qué ha salido.
     """
     hand = []  # Cartas que posee en mano
 
@@ -112,7 +114,7 @@ class DevelopmentCardsHand:
 
     def check_hand(self):
         """
-        Devuelve la mano que tiene el jugador, por si quiere por su cuenta comprobar qué cartas posee para gastar
+        Devuelve la mano que tiene el jugador, por si quiere por su cuenta comprobar qué cartas posee para gastar.
         :return:
         """
         hand_array = []
@@ -125,7 +127,7 @@ class DevelopmentCardsHand:
     def play_card_by_array_index(self, index):
         """
         Al usar esta función indicas que quieres jugar esta carta pasando el índice de la carta en el array,
-        lo que se la pasa al gameManager y la borra de la mano
+        lo que se la pasa al gameManager y la borra de la mano.
         :param index:
         :return:
         """
@@ -138,9 +140,8 @@ class DevelopmentCardsHand:
 
     def play_card_by_id(self, id):
         """
-        Al usar esta función indicas que quieres jugar esta carta, lo que se la pasa al gameManager y la borra de la mano
-        :param id:
-        :return:
+        Juega la carta con el ID que se le pase, la pasa al gameManager y la borra de la mano.
+        :param id: (int) Número indicativo de la carta.
         """
         for card in self.hand:
             if card.get_id() == id:
@@ -153,9 +154,8 @@ class DevelopmentCardsHand:
 
     def delete_card(self, id):
         """
-        Borra la carta con la id que se le pase
-        :param id: Número indicativo de la carta
-        :return:
+        Borra la carta con la ID que se le pase.
+        :param id: (int) Número indicativo de la carta.
         """
         # print('borra carta de mano')
         rest_of_hand = []

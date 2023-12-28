@@ -58,7 +58,7 @@ class Materials:
         """
         Si le llega otra clase Materials() comprobará si hay más o igual materiales que los que hay en el parámetro y
         si le llega un string con lo que se quiere construir comprobará si tiene suficiente material para hacerlo.
-        :param materials: (str o Materials()) Nombre de lo que se quiere construir o materiales
+        :param materials: (str o Materials()) Nombre de lo que se quiere construir o materiales.
         :return: bool
         """
         if isinstance(materials, str):

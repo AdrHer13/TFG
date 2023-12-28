@@ -56,8 +56,9 @@ class Materials:
 
     def has_this_more_materials(self, materials):
         """
-        Le llega otra clase materiales y compara si esta clase tiene materiales suficientes
-        :param materials:
+        Si le llega otra clase Materials() comprobará si hay más o igual materiales que los que hay en el parámetro y
+        si le llega un string con lo que se quiere construir comprobará si tiene suficiente material para hacerlo.
+        :param materials: (str o Materials()) Nombre de lo que se quiere construir o materiales
         :return: bool
         """
         if isinstance(materials, str):
@@ -70,28 +71,16 @@ class Materials:
             elif materials == 'card':
                 materials = Materials(1, 0, 0, 1, 1)
             else:
-                # print('has_this_more_materials(): El string es invalido')
                 return False
 
         if isinstance(materials, Materials):
-            if self.wood < materials.wood:
-                # print('has_this_more_materials(): Menos madera de la que piden')
+            if self.cereal < materials.cereal or self.mineral < materials.mineral or self.clay < materials.clay or \
+               self.wood < materials.wood or self.wool < materials.wool:
+
                 return False
-            if self.wool < materials.wool:
-                # print('has_this_more_materials(): Menos lana de la que piden')
-                return False
-            if self.clay < materials.clay:
-                # print('has_this_more_materials(): Menos arcilla de la que piden')
-                return False
-            if self.mineral < materials.mineral:
-                # print('has_this_more_materials(): Menos mineral del que piden')
-                return False
-            if self.cereal < materials.cereal:
-                # print('has_this_more_materials(): Menos cereal del que piden')
-                return False
+
             return True
         else:
-            # print('has_this_more_materials(): No es una instancia de materiales')
             return False
 
     def __str__(self):

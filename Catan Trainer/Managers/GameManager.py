@@ -192,10 +192,10 @@ class GameManager:
 
     def trade_with_player(self, trade_offer=None, giver=None, receiver=None):
         """
-        Función que hace el intercambio entre dos jugadores
-        :param trade_offer: TradeOffer()
-        :param giver: {BotInterface(), Hand(), int, DevelopmentCardHand()}
-        :param receiver: {BotInterface(), Hand(), int, DevelopmentCardHand()}
+        Función que hace el intercambio entre dos jugadores.
+        :param trade_offer: (TradeOffer()) El intercambio que se va a hacer.
+        :param giver: ({BotInterface(), Hand(), int, DevelopmentCardHand()}) El jugador que da materiales.
+        :param receiver: ({BotInterface(), Hand(), int, DevelopmentCardHand()}) El jugador que recibe materiales.
         :return: bool
         """
         if trade_offer is None or giver is None or receiver is None:
@@ -204,57 +204,34 @@ class GameManager:
         # Si receiver o giver no tiene materiales se le ignora
         if (receiver['resources'].resources.has_this_more_materials(trade_offer.receives) and
                 giver['resources'].resources.has_this_more_materials(trade_offer.gives)):
-            # print('Puede hacerse el intercambio: ')
-            # Se hace el intercambio
 
-            # print('Giver: ' + str(giver['resources']))
-            # print('Receiver: ' + str(receiver['resources']))
-            # Se resta lo que da del giver
+            materials = [MaterialConstants.CEREAL,MaterialConstants.MINERAL, MaterialConstants.CLAY,
+                         MaterialConstants.WOOD, MaterialConstants.WOOL]
+            to_gives = [trade_offer.gives.cereal, trade_offer.gives.mineral, trade_offer.gives.clay,
+                        trade_offer.gives.wood, trade_offer.gives.wool]
+            to_receives = [trade_offer.receives.cereal, trade_offer.receives.mineral, trade_offer.receives.clay,
+                           trade_offer.receives.wood, trade_offer.receives.wool]
 
-            giver['resources'].remove_material(MaterialConstants.WOOL, trade_offer.gives.wool)
-            giver['resources'].remove_material(MaterialConstants.WOOD, trade_offer.gives.wood)
-            giver['resources'].remove_material(MaterialConstants.CLAY, trade_offer.gives.clay)
-            giver['resources'].remove_material(MaterialConstants.CEREAL, trade_offer.gives.cereal)
-            giver['resources'].remove_material(MaterialConstants.MINERAL, trade_offer.gives.mineral)
-
-            # Se añade lo que recibe
-            giver['resources'].add_material(MaterialConstants.WOOL, trade_offer.receives.wool)
-            giver['resources'].add_material(MaterialConstants.WOOD, trade_offer.receives.wood)
-            giver['resources'].add_material(MaterialConstants.CLAY, trade_offer.receives.clay)
-            giver['resources'].add_material(MaterialConstants.CEREAL, trade_offer.receives.cereal)
-            giver['resources'].add_material(MaterialConstants.MINERAL, trade_offer.receives.mineral)
-
-            # Se resta lo que receiver entrega
-            receiver['resources'].remove_material(MaterialConstants.WOOL, trade_offer.receives.wool)
-            receiver['resources'].remove_material(MaterialConstants.WOOD, trade_offer.receives.wood)
-            receiver['resources'].remove_material(MaterialConstants.CLAY, trade_offer.receives.clay)
-            receiver['resources'].remove_material(MaterialConstants.CEREAL, trade_offer.receives.cereal)
-            receiver['resources'].remove_material(MaterialConstants.MINERAL, trade_offer.receives.mineral)
-
-            # Se añade lo que receiver recibe
-            receiver['resources'].add_material(MaterialConstants.WOOL, trade_offer.gives.wool)
-            receiver['resources'].add_material(MaterialConstants.WOOD, trade_offer.gives.wood)
-            receiver['resources'].add_material(MaterialConstants.CLAY, trade_offer.gives.clay)
-            receiver['resources'].add_material(MaterialConstants.CEREAL, trade_offer.gives.cereal)
-            receiver['resources'].add_material(MaterialConstants.MINERAL, trade_offer.gives.mineral)
+            for i in range(len(materials)):
+                giver['resources'].remove_material(materials[i], to_gives[i])  # Se resta lo que da del giver
+                giver['resources'].add_material(materials[i], to_receives[i])  # Se añade lo que recibe
+                receiver['resources'].remove_material(materials[i], to_receives[i])  # Se resta lo que receiver entrega
+                receiver['resources'].add_material(materials[i], to_gives[i])  # Se añade lo que receiver recibe
 
             giver['player'].hand = giver['resources']
             receiver['player'].hand = receiver['resources']
-            # print('-------------------------')
-            # print('Giver: ' + str(giver['resources']))
-            # print('Receiver: ' + str(receiver['resources']))
+
             return True
         else:
-            # print('No tienen materiales suficientes para completar la oferta')
             return False
 
     ########### Board functions ###################
     def build_town(self, player_id, node):
         """
-        Permite construir un pueblo en el nodo seleccionado
-        :param player_id: Número que representa al jugador
-        :param node: Número que representa un nodo en el tablero
-        :return: {bool, string}. Devuelve si se ha podido o no construir el poblado, y en caso negativo, la razón
+        Permite construir un pueblo en el nodo seleccionado.
+        :param player_id: (int) Número que representa al jugador.
+        :param node: (Tree()) Número que representa un nodo en el tablero.
+        :return: {bool, string}. Devuelve si se ha podido o no construir el poblado, y en caso negativo, la razón.
         """
         player_hand = self.bot_manager.players[player_id]['resources']
         if player_hand.resources.has_this_more_materials('town'):
@@ -273,10 +250,10 @@ class GameManager:
 
     def build_city(self, player_id, node):
         """
-        Permite construir una ciudad en el nodo seleccionado
-        :param player_id: Número que representa al jugador
-        :param node: Número que representa un nodo en el tablero
-        :return: {bool, string}. Devuelve si se ha podido o no construir la ciudad, y en caso negativo, la razón
+        Permite construir una ciudad en el nodo seleccionado.
+        :param player_id: (int) Número que representa al jugador.
+        :param node: (Tree()) Número que representa un nodo en el tablero.
+        :return: {bool, string}. Devuelve si se ha podido o no construir la ciudad, y en caso negativo, la razón.
         """
         player_hand = self.bot_manager.players[player_id]['resources']
         if player_hand.resources.has_this_more_materials(Materials(2, 3, 0, 0, 0)):
@@ -293,12 +270,12 @@ class GameManager:
 
     def build_road(self, player_id, node, road, free=False):
         """
-        Permite construir una carretera en el camino seleccionado
-        :param player_id: Número que representa al jugador
-        :param node: Número que representa
-        :param road: Número que representa una carretera en el tablero
-        :param free: Usado solo para cuando construyes carreteras gratis con una carta de desarrollo
-        :return: {bool, string}. Devuelve si se ha podido o no construir la carretera, y en caso negativo, la razón
+        Permite construir una carretera en el camino seleccionado.
+        :param player_id: (int) Número que representa al jugador.
+        :param node: (Tree()) Número que representa.
+        :param road: (Tree()) Número que representa una carretera en el tablero.
+        :param free: (bool) Usado solo para cuando construyes carreteras gratis con una carta de desarrollo.
+        :return: {bool, string}. Devuelve si se ha podido o no construir la carretera, y en caso negativo, la razón.
         """
         player_hand = self.bot_manager.players[player_id]['resources']
         if player_hand.resources.has_this_more_materials(Materials(0, 0, 1, 1, 0)) or free:
@@ -314,11 +291,11 @@ class GameManager:
 
     def build_development_card(self, player_id):
         """
-        Permite construir una carta de desarrollo
-        :param player_id: Número que representa al jugador
+        Permite construir una carta de desarrollo.
+        :param player_id: (int) Número que representa al jugador.
         :return: {bool, string, string, string}. Devuelve si se ha podido o no construir la carta de desarrollo,
                                                  el ID de la carta, el tipo de carta que es, el efecto de la carta
-                                                 y si no se ha podido hacer, la razón
+                                                 y si no se ha podido hacer, la razón.
         """
         card_drawn = self.development_cards_deck.draw_card()
         if card_drawn is not None:

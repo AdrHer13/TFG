@@ -158,21 +158,3 @@ class DevelopmentCardsHand:
                 rest_of_hand.append(card)
         self.hand = rest_of_hand
         return
-
-
-if __name__ == '__main__':
-    deck = DevelopmentDeck()
-    deck.shuffle_deck()
-    hand = DevelopmentCardsHand()
-    hand_2 = DevelopmentCardsHand()
-
-    while True:
-        hand.add_card(deck.draw_card())
-        hand_2.add_card(deck.draw_card())
-        print('--------------------------')
-        print(hand.check_hand())
-        print('##########################')
-        print(hand_2.check_hand())
-        # hand.play_card_by_array_index(0)
-    # hand.play_card_by_id(0)
-    # print(hand.check_hand())

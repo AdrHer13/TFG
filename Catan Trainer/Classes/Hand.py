@@ -19,7 +19,6 @@ class Hand:
         :param amount: (int) cantidad del recurso a añadir.
         :return: void
         """
-        # print('material: ' + str(resource) + ' | amount: ' + str(amount))
         if isinstance(resource, list):
             for material in resource:
                 self.add_material(material, amount)

@@ -132,6 +132,7 @@ class DevelopmentCardsHand:
             card_obj = self.hand[index]
             self.delete_card(self.hand[index].id)
             return card_obj
+        return
 
     def play_card_by_id(self, id):
         """
@@ -143,6 +144,8 @@ class DevelopmentCardsHand:
                 card_obj = card
                 self.delete_card(id)
                 return card_obj
+
+        return
 
     def delete_card(self, id):
         """

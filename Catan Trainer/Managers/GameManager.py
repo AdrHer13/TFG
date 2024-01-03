@@ -156,7 +156,7 @@ class GameManager:
                 else:
                     on_tradeoffer_response[(len(on_tradeoffer_response) - 1)]['completed'] = False
             else:
-                pass
+                return
                 # print('J' + str(receiver['id']) + ' ha negado')
             answer_object.append(on_tradeoffer_response)
         return answer_object
@@ -458,7 +458,7 @@ class GameManager:
                         response = self.board.build_road(self.turn_manager.get_whose_turn_is_it(), node_id, road_to)
                         if not response['response']:
                             # print(response['error_msg'])
-                            pass
+                            return
                         else:
                             # print('J' + str(self.turn_manager.get_whose_turn_is_it()))
                             # print('actual_node_id: ' + str(node_id) + ' | actual_road_to: ' + str(road_to))
@@ -466,7 +466,7 @@ class GameManager:
                     else:
                         # print("el jugador "+ str(self.turn_manager.get_whose_turn_is_it()) +
                         #       " ha intentado poner una carretera en un nodo que no le pertenece: " + str(road_to))
-                        pass
+                        return
                 else:
                     illegal = True
                     random_node_id = 0
@@ -563,7 +563,7 @@ class GameManager:
 
                 self.bot_manager.players[player_id]['player'].development_cards_hand.hand = \
                     self.bot_manager.players[player_id]['development_cards'].hand
-                pass
+                return
 
         else:
             self.bot_manager.players[player_id]['player'].development_cards_hand.hand = \
@@ -599,7 +599,7 @@ class GameManager:
 
             for terrain in self.board.terrain:
                 if terrain['has_thief']:
-                    pass
+                    return
                     # print('DESDE: ' + str(terrain['id']))
             on_moving_thief = self.bot_manager.players[player_id]['player'].on_moving_thief()
             move_thief_obj = self.move_thief(on_moving_thief['terrain'], on_moving_thief['player'])

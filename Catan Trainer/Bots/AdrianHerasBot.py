@@ -19,7 +19,6 @@ class AdrianHerasBot(BotInterface):
 
     def __init__(self, bot_id):
         super().__init__(bot_id)
-        pass
 
     def on_trade_offer(self, incoming_trade_offer=TradeOffer()):
         """

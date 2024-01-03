@@ -14,7 +14,6 @@ class BotInterface:
         self.board = Board()
         self.development_cards_hand = DevelopmentCardsHand()
         self.id = bot_id
-        pass
 
     # Los triggers son llamados por el GameDirector las veces que sean necesarias hasta que devuelvan null
     #  o el GameDirector le niegue continuar el trigger

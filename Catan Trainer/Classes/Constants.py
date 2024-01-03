@@ -9,7 +9,7 @@ class MaterialConstants:
     WOOL = 4
 
     def __init__(self):
-        pass
+        return
 
 
 class HarborConstants:
@@ -25,7 +25,7 @@ class HarborConstants:
     NONE = -1
 
     def __init__(self):
-        pass
+        return
 
 
 class TerrainConstants:
@@ -40,7 +40,7 @@ class TerrainConstants:
     DESERT = -1
 
     def __init__(self):
-        pass
+        return
 
 
 class BuildConstants:
@@ -54,7 +54,7 @@ class BuildConstants:
     CARD = 'card'
 
     def __init__(self):
-        pass
+        return
 
 
 class DevelopmentCardConstants:
@@ -73,4 +73,4 @@ class DevelopmentCardConstants:
     MONOPOLY_EFFECT = 4
 
     def __init__(self):
-        pass
+        return

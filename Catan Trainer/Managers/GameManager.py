@@ -27,10 +27,11 @@ class GameManager:
         self.bot_manager = BotManager(for_test)
         return
 
-    def board_init(self):
-        self.board.__init__()
-
     def reset_game_values(self):
+        """
+        Reinicia las variables al valor inicial
+        :return: None
+        """
         self.last_dice_roll = 0
         self.largest_army = 2
         self.largest_army_player = {}
@@ -58,7 +59,7 @@ class GameManager:
     def give_resources(self):
         """
         Función que entrega materiales a cada uno de los jugadores en función de la tirada de dados
-        :return: void
+        :return: None
         """
         # Por cada pieza de terreno en el tablero
         for terrain in self.board.terrain:
@@ -75,18 +76,20 @@ class GameManager:
                             # print('J' + str(self.board.nodes[node]['player']) + ' | material: ' + str(
                             #     terrain['terrain_type']) + ' | amount: 2')
                             player['player'].hand.add_material(terrain['terrain_type'], 2)
+                            # Es posible que la nomenclatura aquí sea un poco confusa, "resources" es la mano de materiales
+                            #  del BotManager
                             player['resources'].add_material(terrain['terrain_type'], 2)
                         else:
                             # print('J' + str(self.board.nodes[node]['player']) + ' | material: ' + str(
                             #     terrain['terrain_type']) + ' | amount: 1')
                             player['player'].hand.add_material(terrain['terrain_type'], 1)
                             player['resources'].add_material(terrain['terrain_type'], 1)
-        return None
+        return
 
-    def __give_all_resources__(self):
+    def _give_all_resources(self):
         """
         Función que otorga a todos los jugadores 5 de todos los recursos. Usado solo para debugging
-        :return:
+        :return: None
         """
         for player in self.bot_manager.players:
             player['resources'].add_material(MaterialConstants.CEREAL, 5)
@@ -102,7 +105,7 @@ class GameManager:
         """
         Permite enviar una oferta a todos los jugadores en la mesa. Si alguno acepta se hará el intercambio
         :param trade_offer: Oferta de comercio con el jugador, debe incluir qué se entrega y qué se recibe
-        :return: array []
+        :return: array [...dict {}]
         """
         # receivers = self.bot_manager.get_other_players_except_int(self.turn_manager.whoseTurnIsIt)
         answer_object = []
@@ -128,9 +131,9 @@ class GameManager:
                 # Se hace un bucle de contraofertas hasta que se llegue a una decisión de True o False
                 if count % 2 == 0:
                     # Giver toma el papel de receiver porque es una contraoferta
-                    response_obj = self.on_tradeoffer_response(giver, receiver, count, trade_offer)
+                    response_obj = self._on_tradeoffer_response(giver, receiver, count, trade_offer)
                 else:
-                    response_obj = self.on_tradeoffer_response(receiver, giver, count, trade_offer)
+                    response_obj = self._on_tradeoffer_response(receiver, giver, count, trade_offer)
 
                 on_tradeoffer_response.append(response_obj)
                 if isinstance(response_obj['response'], dict):
@@ -141,10 +144,10 @@ class GameManager:
             if on_tradeoffer_response[(len(on_tradeoffer_response) - 1)]['response']:
                 if count % 2 == 0:
                     # print('J' + str(self.turn_manager.whose_turn_is_it) + ' ha aceptado')
-                    done = self.trade_with_player(trade_offer, giver, receiver)
+                    done = self._trade_with_player(trade_offer, giver, receiver)
                 else:
                     # print('J' + str(receiver['id']) + ' ha aceptado')
-                    done = self.trade_with_player(trade_offer, receiver, giver)
+                    done = self._trade_with_player(trade_offer, receiver, giver)
 
                 if done:
                     on_tradeoffer_response[(len(on_tradeoffer_response) - 1)]['completed'] = True
@@ -153,12 +156,12 @@ class GameManager:
                 else:
                     on_tradeoffer_response[(len(on_tradeoffer_response) - 1)]['completed'] = False
             else:
-                pass
+                return
                 # print('J' + str(receiver['id']) + ' ha negado')
             answer_object.append(on_tradeoffer_response)
         return answer_object
 
-    def on_tradeoffer_response(self, receiver, giver, count, trade_offer):
+    def _on_tradeoffer_response(self, receiver, giver, count, trade_offer):
         """
         Función llamada cuando llega una oferta de comercio como respuesta a una oferta de comercio
         :param giver: Player()
@@ -190,7 +193,7 @@ class GameManager:
 
         return json_obj
 
-    def trade_with_player(self, trade_offer=None, giver=None, receiver=None):
+    def _trade_with_player(self, trade_offer=None, giver=None, receiver=None):
         """
         Función que hace el intercambio entre dos jugadores.
         :param trade_offer: (TradeOffer()) El intercambio que se va a hacer.
@@ -200,6 +203,19 @@ class GameManager:
         """
         if trade_offer is None or giver is None or receiver is None:
             return False
+
+        # TODO: revisar este fragmento de código. Esto resta líneas al total
+        # materials_to_receive = [
+        #     MaterialConstants.WOOL,
+        #     MaterialConstants.WOOD,
+        #     MaterialConstants.CLAY,
+        #     MaterialConstants.CEREAL,
+        #     MaterialConstants.MINERAL
+        # ]
+        #
+        # for material in materials_to_receive:
+        #     material_quantity = getattr(trade_offer.receives, material.lower(), 0)
+        #     giver['resources'].add_material(material, material_quantity)
 
         # Si receiver o giver no tiene materiales se le ignora
         if (receiver['resources'].resources.has_this_more_materials(trade_offer.receives) and
@@ -233,15 +249,18 @@ class GameManager:
         :param node: (Tree()) Número que representa un nodo en el tablero.
         :return: {bool, string}. Devuelve si se ha podido o no construir el poblado, y en caso negativo, la razón.
         """
+        # TODO: quitar getters? Python no los necesita
         player_hand = self.bot_manager.players[player_id]['resources']
         if player_hand.resources.has_this_more_materials('town'):
-            build_town_obj = self.board.build_town(self.turn_manager.get_whose_turn_is_it(), node)
+            build_town_obj = self.board.build_town(self.turn_manager.whose_turn_is_it, node)
 
             if build_town_obj['response']:
-                player_hand.remove_material(MaterialConstants.CEREAL, 1)
-                player_hand.remove_material(MaterialConstants.CLAY, 1)
-                player_hand.remove_material(MaterialConstants.WOOD, 1)
-                player_hand.remove_material(MaterialConstants.WOOL, 1)
+                player_hand.remove_material([
+                    MaterialConstants.CEREAL,
+                    MaterialConstants.CLAY,
+                    MaterialConstants.WOOD,
+                    MaterialConstants.WOOL
+                ], 1)
                 self.bot_manager.players[player_id]['player'].hand = player_hand
 
             return build_town_obj
@@ -256,8 +275,8 @@ class GameManager:
         :return: {bool, string}. Devuelve si se ha podido o no construir la ciudad, y en caso negativo, la razón.
         """
         player_hand = self.bot_manager.players[player_id]['resources']
-        if player_hand.resources.has_this_more_materials(Materials(2, 3, 0, 0, 0)):
-            build_city_obj = self.board.build_city(self.turn_manager.get_whose_turn_is_it(), node)
+        if player_hand.resources.has_this_more_materials('city'):
+            build_city_obj = self.board.build_city(self.turn_manager.whose_turn_is_it, node)
 
             if build_city_obj['response']:
                 player_hand.remove_material(MaterialConstants.CEREAL, 2)
@@ -278,12 +297,14 @@ class GameManager:
         :return: {bool, string}. Devuelve si se ha podido o no construir la carretera, y en caso negativo, la razón.
         """
         player_hand = self.bot_manager.players[player_id]['resources']
-        if player_hand.resources.has_this_more_materials(Materials(0, 0, 1, 1, 0)) or free:
-            build_road_obj = self.board.build_road(self.turn_manager.get_whose_turn_is_it(), node, road)
+        if player_hand.resources.has_this_more_materials('road') or free:
+            build_road_obj = self.board.build_road(self.turn_manager.whose_turn_is_it, node, road)
 
             if build_road_obj['response'] and not free:
-                player_hand.remove_material(MaterialConstants.CLAY, 1)
-                player_hand.remove_material(MaterialConstants.WOOD, 1)
+                player_hand.remove_material([
+                    MaterialConstants.CLAY,
+                    MaterialConstants.WOOD,
+                ], 1)
 
             return build_road_obj
         else:
@@ -335,15 +356,14 @@ class GameManager:
             if adjacent_player != -1:
                 for node in self.board.terrain[move_thief_obj['terrain_id']]['contacting_nodes']:
                     if self.board.nodes[node]['player'] == adjacent_player:
-                        move_thief_obj['stolen_material_id'] = self.__steal_from_player__(adjacent_player)
+                        move_thief_obj['stolen_material_id'] = self._steal_from_player(adjacent_player)
                         move_thief_obj['robbed_player'] = adjacent_player
                         break
-                    else:
-                        move_thief_obj['error_msg'] = \
-                            'No se ha podido robar al jugador debido a que no está en un nodo adyacente'
+                move_thief_obj['error_msg'] = \
+                    'No se ha podido robar al jugador debido a que no está en un nodo adyacente'
         return move_thief_obj
 
-    def __steal_from_player__(self, player):
+    def _steal_from_player(self, player):
         """
         Función que permite robar de manera aleatoria un material de la mano de un jugador.
         :param player: Número que representa a un jugador
@@ -353,6 +373,7 @@ class GameManager:
         actual_player_obj = self.bot_manager.players[self.bot_manager.get_actual_player()]
         material_array = []
 
+        # TODO: 100% que existe una mejor manera de montar un array con solo los valores que no sean 0
         if player_obj['resources'].get_cereal() > 0:
             material_array.append(MaterialConstants.CEREAL)
         if player_obj['resources'].get_wool() > 0:
@@ -414,7 +435,7 @@ class GameManager:
                         response = self.board.build_road(self.turn_manager.get_whose_turn_is_it(), node_id, road_to)
                         if not response['response']:
                             # print(response['error_msg'])
-                            pass
+                            return
                         else:
                             # print('J' + str(self.turn_manager.get_whose_turn_is_it()))
                             # print('actual_node_id: ' + str(node_id) + ' | actual_road_to: ' + str(road_to))
@@ -422,7 +443,7 @@ class GameManager:
                     else:
                         # print("el jugador "+ str(self.turn_manager.get_whose_turn_is_it()) +
                         #       " ha intentado poner una carretera en un nodo que no le pertenece: " + str(road_to))
-                        pass
+                        return
                 else:
                     illegal = True
                     random_node_id = 0
@@ -519,7 +540,7 @@ class GameManager:
 
                 self.bot_manager.players[player_id]['player'].development_cards_hand.hand = \
                     self.bot_manager.players[player_id]['development_cards'].hand
-                pass
+                return
 
         else:
             self.bot_manager.players[player_id]['player'].development_cards_hand.hand = \
@@ -555,7 +576,7 @@ class GameManager:
 
             for terrain in self.board.terrain:
                 if terrain['has_thief']:
-                    pass
+                    return
                     # print('DESDE: ' + str(terrain['id']))
             on_moving_thief = self.bot_manager.players[player_id]['player'].on_moving_thief()
             move_thief_obj = self.move_thief(on_moving_thief['terrain'], on_moving_thief['player'])
@@ -599,8 +620,8 @@ class GameManager:
                     material_chosen = random.randint(0, 4)
 
                 # for i in range(4):
-                    # print('PRE Hand_P' + str(i))
-                    # print(self.bot_manager.players[i]['resources'].resources.__to_object__())
+                # print('PRE Hand_P' + str(i))
+                # print(self.bot_manager.players[i]['resources'].resources.__to_object__())
                 # print('    -    -    -    -    -    -    -    -    -    -    -    -')
                 # Se elimina el material de la mano de todos los jugadores
                 for player in self.bot_manager.players:
@@ -612,6 +633,10 @@ class GameManager:
                 # Se le dan todos los materiales eliminados al que usó la carta
                 self.bot_manager.players[player_id]['resources'].add_material(material_chosen, material_sum)
                 self.bot_manager.players[player_id]['player'].hand = self.bot_manager.players[player_id]['resources']
+
+                # for i in range(4):
+                # print('POST Hand_P' + str(i))
+                # print(self.bot_manager.players[i]['resources'].resources.__to_object__())
 
                 # Se añade al objeto el material, la suma, y las nuevas manos tras la resta de materiales
                 card_obj['played_card'] = 'monopoly'

@@ -76,8 +76,8 @@ class GameManager:
                             # print('J' + str(self.board.nodes[node]['player']) + ' | material: ' + str(
                             #     terrain['terrain_type']) + ' | amount: 2')
                             player['player'].hand.add_material(terrain['terrain_type'], 2)
-                            # Es posible que la nomenclatura aquí sea un poco confusa, "resources" es la mano de materiales
-                            #  del BotManager
+                            # Es posible que la nomenclatura aquí sea un poco confusa, "resources" es
+                            # la mano de materiales del BotManager
                             player['resources'].add_material(terrain['terrain_type'], 2)
                         else:
                             # print('J' + str(self.board.nodes[node]['player']) + ' | material: ' + str(
@@ -204,35 +204,20 @@ class GameManager:
         if trade_offer is None or giver is None or receiver is None:
             return False
 
-        # TODO: revisar este fragmento de código. Esto resta líneas al total
-        # materials_to_receive = [
-        #     MaterialConstants.WOOL,
-        #     MaterialConstants.WOOD,
-        #     MaterialConstants.CLAY,
-        #     MaterialConstants.CEREAL,
-        #     MaterialConstants.MINERAL
-        # ]
-        #
-        # for material in materials_to_receive:
-        #     material_quantity = getattr(trade_offer.receives, material.lower(), 0)
-        #     giver['resources'].add_material(material, material_quantity)
-
         # Si receiver o giver no tiene materiales se le ignora
         if (receiver['resources'].resources.has_this_more_materials(trade_offer.receives) and
                 giver['resources'].resources.has_this_more_materials(trade_offer.gives)):
 
-            materials = [MaterialConstants.CEREAL, MaterialConstants.MINERAL, MaterialConstants.CLAY,
-                         MaterialConstants.WOOD, MaterialConstants.WOOL]
-            to_gives = [trade_offer.gives.cereal, trade_offer.gives.mineral, trade_offer.gives.clay,
-                        trade_offer.gives.wood, trade_offer.gives.wool]
-            to_receives = [trade_offer.receives.cereal, trade_offer.receives.mineral, trade_offer.receives.clay,
-                           trade_offer.receives.wood, trade_offer.receives.wool]
+            materials = ['cereal', 'mineral', 'clay', 'wood', 'wool']
 
             for i in range(len(materials)):
-                giver['resources'].remove_material(materials[i], to_gives[i])  # Se resta lo que da del giver
-                giver['resources'].add_material(materials[i], to_receives[i])  # Se añade lo que recibe
-                receiver['resources'].remove_material(materials[i], to_receives[i])  # Se resta lo que receiver entrega
-                receiver['resources'].add_material(materials[i], to_gives[i])  # Se añade lo que receiver recibe
+                material_quantity = getattr(trade_offer.giver, materials[i])
+                giver['resources'].remove_material(i, material_quantity)  # Se resta lo que giver entrega
+                receiver['resources'].add_material(i, material_quantity)  # Se añade lo que receiver recibe del giver
+
+                material_quantity = getattr(trade_offer.receives, materials[i])
+                receiver['resources'].remove_material(i, material_quantity)  # Se resta lo que receiver entrega
+                giver['resources'].add_material(i, material_quantity)  # Se añade lo que giver recibe del receiver
 
             giver['player'].hand = giver['resources']
             receiver['player'].hand = receiver['resources']

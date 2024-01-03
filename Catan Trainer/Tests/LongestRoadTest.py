@@ -98,7 +98,7 @@ class LongestRoadTest:
         #             for road_2 in self.board.nodes[road['node_id']]:
         #                 if road_2['node_id'] not in visited_nodes:
         #                     visited_nodes.append(road['node_id'])
-        # pass
+        # return
 
 
 if __name__ == '__main__':

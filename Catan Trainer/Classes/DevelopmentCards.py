@@ -46,9 +46,7 @@ class DevelopmentDeck:
         return
 
     def draw_card(self):
-        if self.current_index == len(self.deck):  # No quedan cartas que robar
-            pass
-        else:
+        if self.current_index != len(self.deck):  # No quedan cartas que robar
             card = self.deck[self.current_index]
             self.current_index += 1
             return card
@@ -76,7 +74,7 @@ class DevelopmentCard:
         self.id = id
         self.type = type
         self.effect = effect
-        pass
+        return
 
     def __str__(self):
         return "{'id': " + str(self.id) + ", 'type': " + str(self.type) + ", 'effect': " + str(self.effect) + "}"
@@ -103,7 +101,7 @@ class DevelopmentCardsHand:
 
     def __init__(self):
         self.hand = []
-        pass
+        return
 
     def add_card(self, card):
         if isinstance(card, DevelopmentCard):
@@ -134,7 +132,6 @@ class DevelopmentCardsHand:
             card_obj = self.hand[index]
             self.delete_card(self.hand[index].id)
             return card_obj
-        pass
 
     def play_card_by_id(self, id):
         """
@@ -146,7 +143,9 @@ class DevelopmentCardsHand:
                 card_obj = card
                 self.delete_card(id)
                 return card_obj
-        pass
+
+        return
+
 
     def delete_card(self, id):
         """
@@ -158,7 +157,7 @@ class DevelopmentCardsHand:
             if card.get_id() != id:
                 rest_of_hand.append(card)
         self.hand = rest_of_hand
-        pass
+        return
 
 
 if __name__ == '__main__':

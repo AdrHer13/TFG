@@ -69,7 +69,7 @@ class Materials:
             elif materials == 'road':
                 materials = Materials(0, 0, 1, 1, 0)
             elif materials == 'card':
-                materials = Materials(1, 0, 0, 1, 1)
+                materials = Materials(1, 1, 0, 0, 1)
             else:
                 return False
 

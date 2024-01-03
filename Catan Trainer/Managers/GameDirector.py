@@ -38,8 +38,6 @@ class GameDirector:
         :return: object
         """
         start_turn_object = {'development_card_played': []}
-        # print('----------')
-        # print('start turn: ' + str(self.game_manager.turn_manager.get_turn()))
 
         # TODO: cambiar por self.game_manager.set_phase()
         self.game_manager.turn_manager.set_phase(0)
@@ -64,18 +62,9 @@ class GameDirector:
         # TODO: cambiar por self.game_manager.get_whose_turn_is_it()
         start_turn_object['actual_player'] = str(self.game_manager.turn_manager.get_whose_turn_is_it())
 
-        # print('Jugador: ' + str(self.game_manager.turn_manager.get_whose_turn_is_it()))
-        # print('Resources ActualPlayer: ' + str(self.game_manager.bot_manager.players[player]['player'].hand.resources))
-
         # TODO: mover lógica al GameManager dentro del método "check_if_thief_is_called()".
         #  Debe devolver un objeto que hace lo que "start_turn_object" hace aquí para poder agregarlo a start_turn_object aquí
         if self.game_manager.last_dice_roll == 7:
-            #####
-            # for i in range(4):
-            #     print('Resources J' + str(i) + ': ' + str(
-            #         self.game_manager.bot_manager.players[i]['resources'].resources) + ' | Total: ' + str(
-            #         self.game_manager.bot_manager.players[i]['resources'].get_total()))
-            #####
             for obj in self.game_manager.bot_manager.players:
                 if obj['resources'].get_total() > 7:
                     total = obj['player'].on_having_more_than_7_materials_when_thief_is_called().get_total()
@@ -84,14 +73,6 @@ class GameDirector:
                     while total > max_hand:
                         obj['resources'].remove_material(random.randint(0, 4), 1)
                         total = obj['resources'].get_total()
-            #####
-            # print('       -     -     -     -     -     -        ')
-            # for i in range(4):
-            #     print('Resources J' + str(i) + ': ' + str(
-            #         self.game_manager.bot_manager.players[i]['resources'].resources) + ' | Total: ' + str(
-            #         self.game_manager.bot_manager.players[i]['resources'].get_total()))
-            # print("\n")
-            #####
 
             on_moving_thief = self.game_manager.bot_manager.players[player]['player'].on_moving_thief()
             move_thief_obj = self.game_manager.move_thief(on_moving_thief['terrain'], on_moving_thief['player'])
@@ -123,8 +104,6 @@ class GameDirector:
         """
         commerce_phase_object = {}
 
-        # print('Start commerce phase: ' + str(self.game_manager.turn_manager.get_turn()))
-
         # TODO: mover a self.game_manager.set_phase()
         self.game_manager.turn_manager.set_phase(1)
         # TODO: mover a self.game_manager.call_to_bot_on_commerce_phase()
@@ -140,12 +119,10 @@ class GameDirector:
 
             # TODO: commerce_response siempre será True dado que está llegando ya como TradeOffer
             if commerce_response:
-                # print('Oferta: ' + str(commerce_response))
 
                 if self.game_manager.bot_manager.players[player]['resources'].resources.has_this_more_materials(
                         commerce_response.gives):
                     commerce_phase_object['inviable'] = False
-                    # print('Puede hacer la oferta')
                     answer_object = self.game_manager.send_trade_to_everyone(commerce_response)
                     commerce_phase_object['answers'] = answer_object
                 else:
@@ -155,9 +132,6 @@ class GameDirector:
 
             return commerce_phase_object
         elif isinstance(commerce_response, dict):
-            # print('%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-            # print('Jugador comercia por puerto')
-            # print(self.game_manager.bot_manager.players[player]['player'].hand)
 
             commerce_phase_object['trade_offer'] = commerce_response
             commerce_phase_object['harbor_trade'] = True
@@ -179,11 +153,8 @@ class GameDirector:
             if isinstance(response, Hand):
                 commerce_phase_object['answer'] = response.resources.__to_object__()
                 self.game_manager.bot_manager.players[player]['player'].hand = response
-                # print(self.game_manager.bot_manager.players[player]['player'].hand)
             else:
                 commerce_phase_object['answer'] = response
-            #     print('pero no tiene materiales suficientes')
-            # print('%%%%%%%%%%%%%%%%%%%%%%%%%%%')
             return commerce_phase_object
         elif isinstance(commerce_response, DevelopmentCard) and not self.already_played_development_card:
             played_card_obj = self.game_manager.play_development_card(player, commerce_response)
@@ -207,9 +178,7 @@ class GameDirector:
         :param player: (int) número que representa al jugador.
         :return: void
         """
-        # print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
-        # print('vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv')
-        # print('start build phase: ' + str(self.game_manager.turn_manager.get_turn()))
+
         build_phase_object = {}
 
         # TODO: mover a self.game_manager.set_phase()
@@ -244,20 +213,14 @@ class GameDirector:
                         build_phase_object['card_type'] = built['card_type']
                         build_phase_object['card_effect'] = built['card_effect']
 
-                    # print('J' + str(player) + ' ha construido algo: ')
-                    # print(build_response)
                     # Si se ha construido permitir que vuelvan a construir
-                    # print(build_phase_object)
                 else:
                     build_phase_object['finished'] = False
-                    # print('J' + str(player) + ' ha fallado en algo: ')
-                    # print(build_response)
-                    # print(built['error_msg'])
+
                     # TODO: Avisar que no se ha podido construir
             else:
                 build_phase_object['finished'] = False
                 build_phase_object['error_msg'] = 'Falta de materiales'
-                # print('No se ha podido construir por falta de materiales')
                 # TODO: Avisar que no se ha podido construir
 
         elif isinstance(build_response, DevelopmentCard) and not self.already_played_development_card:
@@ -284,8 +247,6 @@ class GameDirector:
         :param player_id: número que representa al jugador
         :return: void
         """
-        # print('start end turn: ' + str(self.game_manager.turn_manager.get_turn()))
-        # print('----- Puntos de victoria de los jugadores: ------')
 
         end_turn_object = {'development_card_played': []}
 
@@ -317,10 +278,7 @@ class GameDirector:
         for node in self.game_manager.board.nodes:
             longest_road_obj = self.game_manager.longest_road_calculator(node, 1, {'longest_road': 0, 'player': -1}, -1,
                                                                          [node['id']])
-            # print('. . . . . . . . .')
-            # print('Node start: ' + str(node['id']))
-            # print('Longer:')
-            # print(longest_road_obj)
+
             if longest_road_obj['longest_road'] > real_longest_road['longest_road']:
                 real_longest_road = longest_road_obj
         # Se le da el título a quien tenga la carretera más larga
@@ -329,19 +287,11 @@ class GameDirector:
             self.game_manager.bot_manager.players[real_longest_road['player']]['longest_road'] = 1
             # TODO: cambiar "self.game_manager.bot_manager.players" por "self.game_manager.get_players()"
             self.game_manager.bot_manager.players[real_longest_road['player']]['victory_points'] += 2
-        # print('-- -- -- -- -- -- -- -- --')
-        # print('Longest: ')
-        # print(real_longest_road)
-        # -- -- -- -- Fin carretera más larga -- -- -- --
 
         vp = {}
         for i in range(4):
             # TODO: cambiar "self.game_manager.bot_manager.players" por "self.game_manager.get_players()"
             vp['J' + str(i)] = str(self.game_manager.bot_manager.players[i]['victory_points'])
-            # print('J' + str(i) + ': ' + str(self.game_manager.bot_manager.players[i]['victory_points']) + ' (' + str(
-            #     self.game_manager.bot_manager.players[i]['largest_army']) + ')' + ' (' + str(
-            #     self.game_manager.bot_manager.players[i]['longest_road']) + ')')
-        # print('----- FIN Puntos de victoria de los jugadores ------')
 
         end_turn_object['victory_points'] = vp
         return end_turn_object
@@ -352,8 +302,6 @@ class GameDirector:
         Esta función permite comenzar una ronda nueva.
         """
         round_object = {}
-        # print('---------------------')
-        # print('round start')
         self.already_played_development_card = False
 
         for i in range(4):
@@ -398,17 +346,12 @@ class GameDirector:
 
             round_object['turn_P' + str(i)] = obj
 
-            # print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
-            # print('vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv')
-
         return round_object
 
     def round_end(self):
         """
         Esta función permite acabar una ronda empezada.
         """
-        # print('round end')
-        # print('---------------------')
 
         winner = False
         # TODO: cambiar "self.game_manager.bot_manager.players" por "self.game_manager.get_players()"
@@ -430,7 +373,6 @@ class GameDirector:
         Esta función permite comenzar una partida nueva.
         :param game_number: (int) número de partidas que se van a jugar.
         """
-        # print('game start')
         # Se cargan los bots y se inicializa el tablero
         # self.game_manager.bot_manager.load_bots()
         self.reset_game_values()

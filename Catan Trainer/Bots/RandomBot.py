@@ -13,7 +13,7 @@ class RandomBot(BotInterface):
     def __init__(self, bot_id):
         super().__init__(bot_id)
 
-    def on_trade_offer(self, **kwargs):
+    def on_trade_offer(self, incoming_trade_offer=TradeOffer()):
         answer = random.randint(0, 2)
         if answer:
             if answer == 2:

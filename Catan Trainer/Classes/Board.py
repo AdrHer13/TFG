@@ -14,7 +14,8 @@ class Board:
              "roads": [{"player_id": id, "node_id": int}...],
              "has_city": bool,
              "player": int,
-             "contacting_terrain": [int...]}] Representa los nodos del tablero. Poseen información de los puertos y nodos adyacentes
+             "contacting_terrain": [int...]}] Representa los nodos del tablero. Poseen información de los puertos y
+                                              nodos adyacentes
 
     terrain: [{"id": int,
                "has_thief": bool,
@@ -68,32 +69,10 @@ class Board:
         else:
             self.terrain = terrain
 
-        ### Código para comprobar que el tablero se inicializa con los adyacentes correctos
-        # print('Nodos:')
-        # n = 0
-        # while n < 54:
-        #     print(self.nodes[n]['id'])
-        #     print(self.nodes[n]['adjacent'])
-        #     print(self.nodes[n]['harbor'])
-        #     print('---------------------\n')
-        #
-        #     n += 1
-
-        # ## Código para comprobar que el tablero se inicializa con el terreno correcto
-        # print('Terreno:')
-        # m = 0
-        # while m < 19:
-        # print(self.terrain[m]['id'])
-        # print(self.terrain[m]['probability'])
-        # print(self.terrain[m]['contacting_nodes'])
-        # print(self.terrain[m]['terrain_type'])
-        # print('#######################\n')
-
-        # m += 1
         return
 
     def visualize_board(self):
-        ## Código para comprobar que el tablero se inicializa con los adyacentes correctos
+        # Código para comprobar que el tablero se inicializa con los adyacentes correctos
         print('Nodos:')
 
         for node in self.nodes:
@@ -104,7 +83,7 @@ class Board:
             print('Roads: ' + str(node['roads']))
             print('---------------------\n')
 
-        ## Código para comprobar que el tablero se inicializa con el terreno correcto
+        # Código para comprobar que el tablero se inicializa con el terreno correcto
         print('Terreno:')
         m = 0
         while m < 19:
@@ -120,8 +99,8 @@ class Board:
 
     def __get_contacting_terrain__(self, node_id):
         """
-        Indica todas las piezas de terreno a los que el nodo es adyacente, para cosas como por ejemplo repartir materiales
-        :param node_id: La ID de la pieza del terreno actual
+        Indica todas las piezas de terreno a los que el nodo es adyacente, para por ejemplo repartir materiales
+        :param node_id: El ID de la pieza del terreno actual
         :return: [terrain_id, terrain_id, terrain_id, terrain_id, terrain_id, terrain_id]
         """
 
@@ -170,8 +149,8 @@ class Board:
 
     def __get_contacting_nodes__(self, terrain_id):
         """
-        Indica todos los nodos a los que la casilla terreno es adyacente, para cosas como por ejemplo repartir materiales
-        :param terrain_id: La ID de la pieza del terreno actual
+        Indica todos los nodos a los que la casilla "terreno" es adyacente, para como por ejemplo repartir materiales
+        :param terrain_id: El ID de la pieza del terreno actual
         :return: [node_id, node_id, node_id, node_id, node_id, node_id]
         """
 
@@ -293,7 +272,7 @@ class Board:
     def __get_adjacent_nodes__(self, node_id):
         """
         Función que obtiene los nodos adyacentes de manera automática
-        :param node_id: Id del nodo del que se quieren las IDs de los nodos adyacentes
+        :param node_id: Id del nodo del que se quieren los ID de los nodos adyacentes
         :return: [int, ...]
         """
         adjacent_nodes = []
@@ -519,24 +498,19 @@ class Board:
 
     def valid_town_nodes(self, player_id):
         """
-        Devuelve un array de las ids de los nodos válidos donde el jugador puede poner un pueblo. Deberían de no haber IDs repetidas
+        Devuelve un array del ID de los nodos válidos donde el jugador puede poner un pueblo.
+        Deberían de no haber ID repetidos
         :param player_id: int
         :return: [id...]
         """
         valid_nodes = []
         for node in self.nodes:
-            # print('foreach node: ')
-            # print(node)
             for road in node['roads']:
                 if (road['player_id'] == player_id
                         and self.adjacent_nodes_dont_have_towns(node['id'])
                         and node['player'] == -1
                         and node['id'] not in valid_nodes):
                     valid_nodes.append(node['id'])
-        # print('````````````````````````````')
-        # print('valid_town_nodes: ')
-        # print(valid_nodes)
-        # print('````````````````````````````')
         return valid_nodes
 
     def valid_city_nodes(self, player_id):
@@ -549,10 +523,6 @@ class Board:
         for node in self.nodes:
             if node['player'] == player_id and not node['has_city']:
                 valid_nodes.append(node['id'])
-        # print('````````````````````````````')
-        # print('valid_city_nodes: ')
-        # print(valid_nodes)
-        # print('````````````````````````````')
         return valid_nodes
 
     def valid_road_nodes(self, player_id):
@@ -568,9 +538,10 @@ class Board:
             for adjacent_node_id in node['adjacent']:
                 # Se crea una variable para ver si se puede construir
                 allowed_to_build = False
-                # Se comprueba que el nodo ADYACENTE sea del jugador o no tenga jugador antes siquiera de mirar si se puede construir
-                #  Dado que si se quiere llegar al pueblo de otro jugador, cuando se esté en ese nodo, al mirar el adyacente verá que puede
-                #  construir y dejará hacer la carretera. Sin embargo, esto evitará que se pueda atravesar pueblos de otros jugadores
+                # Se comprueba que el nodo ADYACENTE sea del jugador o no tenga jugador antes siquiera de mirar si
+                # se puede construir. Si se quiere llegar al pueblo de otro jugador, cuando se esté en ese nodo,
+                # al mirar el adyacente verá que puede construir y dejará hacer la carretera.
+                # Sin embargo, esto evitará que se pueda atravesar pueblos de otros jugadores.
 
                 # if (node['player'] == player_id or node['player'] == -1) \
                 #         and (self.nodes[adjacent_node_id] == player_id or self.nodes[adjacent_node_id] == -1):
@@ -586,23 +557,20 @@ class Board:
                             # En caso de que no sea legal, no se permite construir
                             else:
                                 allowed_to_build = False
-                        # En caso de haber una carretera de vuelta, independientemente de qué jugador, se corta inmediatamente y se prohíbe construir
+                        # En caso de haber una carretera de vuelta, independientemente de qué jugador,
+                        # se corta inmediatamente y se prohíbe construir
                         else:
                             allowed_to_build = False
                             break
                 if allowed_to_build:
                     valid_nodes.append({'starting_node': adjacent_node_id, 'finishing_node': node['id']})
 
-        # print('````````````````````````````')
-        # print('valid_road_nodes: ')
-        # print(valid_nodes)
-        # print('````````````````````````````')
         return valid_nodes
 
     def valid_starting_nodes(self):
         """
-        Devuelve un array con las IDs de todos los nodos viables para el posicionamiento inicial.
-        No necesita número de jugador, porque es cualquier nodo que no tenga un jugador en él y no sea costero
+        Devuelve un array con el ID de todos los nodos viables para el posicionamiento inicial.
+        No necesita número del jugador porque es cualquier nodo que no tenga un jugador en él y no sea costero
         :return: [int]
         """
 

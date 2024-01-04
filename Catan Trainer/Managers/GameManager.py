@@ -101,27 +101,20 @@ class GameManager:
         :param trade_offer: Oferta de comercio con el jugador, debe incluir qué se entrega y qué se recibe
         :return: array [...dict {}]
         """
-        # receivers = self.bot_manager.get_other_players_except_int(self.turn_manager.whoseTurnIsIt)
         answer_object = []
 
-        receivers = []
-        for index in range(4):
-            if index != self.turn_manager.whose_turn_is_it:
-                receivers.append(self.bot_manager.players[index])
+        receivers = self.bot_manager.players.copy()
+        giver = receivers.pop(self.turn_manager.whose_turn_is_it)
 
         # Se aleatorizan el orden en el que se va a recibir la oferta para evitar que J1 tenga ventaja
-        current_index, random_index = len(receivers), 0
-        while current_index != 0:
-            random_index = math.floor(random.random() * current_index)
-            current_index -= 1
-            (receivers[current_index], receivers[random_index]) = (receivers[random_index], receivers[current_index])
+        random.shuffle(receivers)
 
-        giver = self.bot_manager.players[self.turn_manager.whose_turn_is_it]
         for receiver in receivers:
             on_tradeoffer_response = []
 
             count = 1
-            while True:
+            offer = True
+            while offer:
                 # Se hace un bucle de contraofertas hasta que se llegue a una decisión de True o False
                 if count % 2 == 0:
                     # Giver toma el papel de receiver porque es una contraoferta
@@ -129,11 +122,14 @@ class GameManager:
                 else:
                     response_obj = self._on_tradeoffer_response(receiver, giver, count, trade_offer)
 
-                on_tradeoffer_response.append(response_obj)
-                if isinstance(response_obj['response'], dict):
+                if isinstance(response_obj["response"], TradeOffer):
+                    trade_offer = response_obj['response']
+                    response_obj['response'] = True
+                    on_tradeoffer_response.append(response_obj)
                     count += 1
                 else:
-                    break
+                    on_tradeoffer_response.append(response_obj)
+                    offer = False
 
             if on_tradeoffer_response[(len(on_tradeoffer_response) - 1)]['response']:
                 if count % 2 == 0:
@@ -144,12 +140,10 @@ class GameManager:
                 if done:
                     on_tradeoffer_response[(len(on_tradeoffer_response) - 1)]['completed'] = True
                     answer_object.append(on_tradeoffer_response)
-                    return answer_object
-                else:
-                    on_tradeoffer_response[(len(on_tradeoffer_response) - 1)]['completed'] = False
-            else:
-                return
 
+                    return answer_object
+
+            on_tradeoffer_response[(len(on_tradeoffer_response) - 1)]['completed'] = False
             answer_object.append(on_tradeoffer_response)
         return answer_object
 
@@ -171,15 +165,10 @@ class GameManager:
             'receiver': receiver['id'],
         }
 
-        response = receiver['player'].on_trade_offer()
-        if isinstance(response, TradeOffer):
-            if count > self.MAX_COMMERCE_DEPTH:
-                json_obj['response'] = False
+        response = receiver['player'].on_trade_offer(trade_offer)
 
-            else:
-                # Se pasa de vuelta al bucle para que rote giver y receiver y se vuelva a preguntar por respuesta
-                json_obj['response'] = response.__to_object__()
-
+        if count > self.MAX_COMMERCE_DEPTH:
+            json_obj['response'] = False
         else:
             json_obj['response'] = response
 
@@ -341,34 +330,26 @@ class GameManager:
     def _steal_from_player(self, player):
         """
         Función que permite robar de manera aleatoria un material de la mano de un jugador.
-        :param player: Número que representa a un jugador
-        :return: void
+        :param player: Número que representa al jugador a robar
+        :return: int
         """
         player_obj = self.bot_manager.players[player]
         actual_player_obj = self.bot_manager.players[self.bot_manager.get_actual_player()]
-        material_array = []
 
-        # TODO: 100% que existe una mejor manera de montar un array con solo los valores que no sean 0
-        if player_obj['resources'].get_cereal() > 0:
-            material_array.append(MaterialConstants.CEREAL)
-        if player_obj['resources'].get_wool() > 0:
-            material_array.append(MaterialConstants.WOOL)
-        if player_obj['resources'].get_wood() > 0:
-            material_array.append(MaterialConstants.WOOD)
-        if player_obj['resources'].get_clay() > 0:
-            material_array.append(MaterialConstants.CLAY)
-        if player_obj['resources'].get_mineral() > 0:
-            material_array.append(MaterialConstants.MINERAL)
+        material_id = -1
+        total = player_obj["resources"].get_total()
+        new_total = player_obj["resources"].get_total()
 
-        if len(material_array):
-            material_id = material_array[random.randint(0, (len(material_array) - 1))]
+        while new_total == total and total != 0:
+            material_id = random.randint(0, 4)
             player_obj['resources'].remove_material(material_id, 1)
-            actual_player_obj['resources'].add_material(material_id, 1)
+            new_total = player_obj['resources'].get_total()
 
-            player_obj['player'].hand = player_obj['resources']
-            actual_player_obj['player'].hand = actual_player_obj['resources']
-            return material_id
-        return None
+        actual_player_obj['resources'].add_material(material_id, 1)
+
+        player_obj['player'].hand = player_obj['resources']
+        actual_player_obj['player'].hand = actual_player_obj['resources']
+        return material_id
 
     def on_game_start_build_towns_and_roads(self, player):
         """
@@ -376,71 +357,41 @@ class GameManager:
         :param player: contador externo que indica a qué jugador le toca
         :return: node_id, road_to
         """
+        # Le da a los bots 2 intentos de poner bien los pueblos y carreteras. Si no, el GameManager lo hará por ellos.
+        valid_nodes = self.board.valid_starting_nodes()
+        materials = []
 
-        # TODO: no asumir que los bots van a devolver siempre algo. Comprobar, y si no devuelven nada entonces elegir por ellos
-        # Le da a los jugadores 2 intentos de poner bien los pueblos y carreteras. Si no, el GameDirector lo hará por ellos
         for count in range(3):
-            if count < 2:
-                node_id, road_to = self.bot_manager.players[player]['player'].on_game_start(self.board)
+            node_id, road_to = self.bot_manager.players[player]['player'].on_game_start(self.board)
+
+            if node_id in valid_nodes or count == 2:
+
+                if count == 2:
+                    node_id = valid_nodes[random.randint(0, (len(valid_nodes) - 1))]
+
+                    possible_roads = self.board.nodes[node_id]['adjacent']
+                    road_to = possible_roads[random.randint(0, len(possible_roads) - 1)]
 
                 terrain_ids = self.board.nodes[node_id]['contacting_terrain']
-                materials = []
                 for ter_id in terrain_ids:
                     materials.append(self.board.terrain[ter_id]['terrain_type'])
 
-                if (self.board.nodes[node_id]['player'] == -1 and self.board.adjacent_nodes_dont_have_towns(node_id)
-                        and not self.board.is_it_a_coastal_node(node_id)):
+                self.board.nodes[node_id]['player'] = self.turn_manager.get_whose_turn_is_it()
 
-                    self.board.nodes[node_id]['player'] = self.turn_manager.get_whose_turn_is_it()
+                # Se le dan materiales al BotManager y este a los bots para que sepan cuantos tienen en realidad
+                self.bot_manager.players[player]['resources'].add_material(materials, 1)
+                self.bot_manager.players[player]['player'].hand = self.bot_manager.players[player]['resources']
 
-                    # Se le dan materiales al BotManager y a los bots para que sepan cuantos tienen en realidad
-                    self.bot_manager.players[player]['resources'].add_material(materials, 1)
-                    self.bot_manager.players[player]['player'].hand.add_material(materials, 1)
+                self.bot_manager.players[player]['victory_points'] += 1
 
-                    self.bot_manager.players[player]['victory_points'] += 1
-
-                    # Parte carreteras
-                    response = self.board.build_road(self.turn_manager.get_whose_turn_is_it(), node_id, road_to)
-                    if not response['response']:
-                        return
-                    else:
-                        return node_id, road_to
-
+                # Parte carreteras
+                if self.board.build_road(self.turn_manager.get_whose_turn_is_it(), node_id, road_to)['response']:
+                    return node_id, road_to
                 else:
-                    illegal = True
-                    random_node_id = 0
-                    while illegal:
-                        # random_node_id = random.randint(0, 53)
-                        valid_nodes = self.board.valid_starting_nodes()
-                        i = random.randint(0, (valid_nodes.__len__() - 1))
-                        random_node_id = valid_nodes[i]
-                        if (self.board.nodes[random_node_id]['player'] == -1 and
-                                self.board.adjacent_nodes_dont_have_towns(random_node_id) and
-                                not self.board.is_it_a_coastal_node(random_node_id)):
-                            illegal = False
-                        else:
-                            illegal = True
-
-                    self.board.nodes[random_node_id]['player'] = self.turn_manager.get_whose_turn_is_it()
-
-                    # Se le dan materiales al BotManager y a los bots para que sepan cuantos tienen en realidad
-                    self.bot_manager.players[player]['resources'].add_material(materials, 1)
-                    self.bot_manager.players[player]['player'].hand.add_material(materials, 1)
-
-                    self.bot_manager.players[player]['victory_points'] += 1
-
-                    illegal = True
-                    while illegal:
-                        possible_roads = self.board.nodes[random_node_id]['adjacent']
-                        random_road_to = possible_roads[random.randint(0, len(possible_roads) - 1)]
-
-                        response = self.board.build_road(self.turn_manager.get_whose_turn_is_it(), random_node_id,
-                                                         random_road_to)
-                        if response['response']:
-
-                            return random_node_id, random_road_to
-                        else:
-                            illegal = True
+                    possible_roads = self.board.nodes[node_id]['adjacent']
+                    road_to = possible_roads[random.randint(0, len(possible_roads) - 1)]
+                    self.board.build_road(self.turn_manager.get_whose_turn_is_it(), node_id, road_to)
+                    return node_id, road_to
 
     def longest_road_calculator(self, node, depth, longest_road_obj, player_id, visited_nodes):
         """

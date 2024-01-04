@@ -101,27 +101,20 @@ class GameManager:
         :param trade_offer: Oferta de comercio con el jugador, debe incluir qué se entrega y qué se recibe
         :return: array [...dict {}]
         """
-        # receivers = self.bot_manager.get_other_players_except_int(self.turn_manager.whoseTurnIsIt)
         answer_object = []
 
-        receivers = []
-        for index in range(4):
-            if index != self.turn_manager.whose_turn_is_it:
-                receivers.append(self.bot_manager.players[index])
+        receivers = self.bot_manager.players.copy()
+        giver = receivers.pop(self.turn_manager.whose_turn_is_it)
 
         # Se aleatorizan el orden en el que se va a recibir la oferta para evitar que J1 tenga ventaja
-        current_index, random_index = len(receivers), 0
-        while current_index != 0:
-            random_index = math.floor(random.random() * current_index)
-            current_index -= 1
-            (receivers[current_index], receivers[random_index]) = (receivers[random_index], receivers[current_index])
+        random.shuffle(receivers)
 
-        giver = self.bot_manager.players[self.turn_manager.whose_turn_is_it]
         for receiver in receivers:
             on_tradeoffer_response = []
 
             count = 1
-            while True:
+            offer = True
+            while offer:
                 # Se hace un bucle de contraofertas hasta que se llegue a una decisión de True o False
                 if count % 2 == 0:
                     # Giver toma el papel de receiver porque es una contraoferta
@@ -129,11 +122,14 @@ class GameManager:
                 else:
                     response_obj = self._on_tradeoffer_response(receiver, giver, count, trade_offer)
 
-                on_tradeoffer_response.append(response_obj)
-                if isinstance(response_obj['response'], dict):
+                if isinstance(response_obj["response"], TradeOffer):
+                    trade_offer = response_obj['response']
+                    response_obj['response'] = True
+                    on_tradeoffer_response.append(response_obj)
                     count += 1
                 else:
-                    break
+                    on_tradeoffer_response.append(response_obj)
+                    offer = False
 
             if on_tradeoffer_response[(len(on_tradeoffer_response) - 1)]['response']:
                 if count % 2 == 0:
@@ -144,12 +140,10 @@ class GameManager:
                 if done:
                     on_tradeoffer_response[(len(on_tradeoffer_response) - 1)]['completed'] = True
                     answer_object.append(on_tradeoffer_response)
-                    return answer_object
-                else:
-                    on_tradeoffer_response[(len(on_tradeoffer_response) - 1)]['completed'] = False
-            else:
-                return
 
+                    return answer_object
+
+            on_tradeoffer_response[(len(on_tradeoffer_response) - 1)]['completed'] = False
             answer_object.append(on_tradeoffer_response)
         return answer_object
 
@@ -171,15 +165,10 @@ class GameManager:
             'receiver': receiver['id'],
         }
 
-        response = receiver['player'].on_trade_offer()
-        if isinstance(response, TradeOffer):
-            if count > self.MAX_COMMERCE_DEPTH:
-                json_obj['response'] = False
+        response = receiver['player'].on_trade_offer(trade_offer)
 
-            else:
-                # Se pasa de vuelta al bucle para que rote giver y receiver y se vuelva a preguntar por respuesta
-                json_obj['response'] = response.__to_object__()
-
+        if count > self.MAX_COMMERCE_DEPTH:
+            json_obj['response'] = False
         else:
             json_obj['response'] = response
 

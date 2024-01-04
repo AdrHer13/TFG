@@ -341,34 +341,26 @@ class GameManager:
     def _steal_from_player(self, player):
         """
         Función que permite robar de manera aleatoria un material de la mano de un jugador.
-        :param player: Número que representa a un jugador
-        :return: void
+        :param player: Número que representa al jugador a robar
+        :return: int
         """
         player_obj = self.bot_manager.players[player]
         actual_player_obj = self.bot_manager.players[self.bot_manager.get_actual_player()]
-        material_array = []
 
-        # TODO: 100% que existe una mejor manera de montar un array con solo los valores que no sean 0
-        if player_obj['resources'].get_cereal() > 0:
-            material_array.append(MaterialConstants.CEREAL)
-        if player_obj['resources'].get_wool() > 0:
-            material_array.append(MaterialConstants.WOOL)
-        if player_obj['resources'].get_wood() > 0:
-            material_array.append(MaterialConstants.WOOD)
-        if player_obj['resources'].get_clay() > 0:
-            material_array.append(MaterialConstants.CLAY)
-        if player_obj['resources'].get_mineral() > 0:
-            material_array.append(MaterialConstants.MINERAL)
+        material_id = -1
+        total = player_obj["resources"].get_total()
+        new_total = player_obj["resources"].get_total()
 
-        if len(material_array):
-            material_id = material_array[random.randint(0, (len(material_array) - 1))]
+        while new_total == total and total != 0:
+            material_id = random.randint(0, 4)
             player_obj['resources'].remove_material(material_id, 1)
-            actual_player_obj['resources'].add_material(material_id, 1)
+            new_total = player_obj['resources'].get_total()
 
-            player_obj['player'].hand = player_obj['resources']
-            actual_player_obj['player'].hand = actual_player_obj['resources']
-            return material_id
-        return None
+        actual_player_obj['resources'].add_material(material_id, 1)
+
+        player_obj['player'].hand = player_obj['resources']
+        actual_player_obj['player'].hand = actual_player_obj['resources']
+        return material_id
 
     def on_game_start_build_towns_and_roads(self, player):
         """

@@ -109,9 +109,6 @@ class GameDirector:
         # TODO: mover a self.game_manager.call_to_bot_on_commerce_phase()
         commerce_response = self.game_manager.bot_manager.players[player]['player'].on_commerce_phase()
 
-        # TODO: aquí hay un tema raro con el json. Debería de ser diferente. Uno de los puntos de un JSON es que un valor
-        #   no puede ser mixto. "harbor_trade" no debería de ser True, False o None. Debería de ser "true", "false" o "none"
-        #   y así recibir siempre un string
         # TODO: mover lógica a self.game_manager.on_commerce_response() -> devuelve un objeto similar a "commerce_phase_object"
         if isinstance(commerce_response, TradeOffer) and depth <= self.MAX_COMMERCE_TRADES:
             commerce_phase_object['trade_offer'] = commerce_response.__to_object__()
@@ -159,7 +156,7 @@ class GameDirector:
         elif isinstance(commerce_response, DevelopmentCard) and not self.already_played_development_card:
             played_card_obj = self.game_manager.play_development_card(player, commerce_response)
             commerce_phase_object['trade_offer'] = 'played_card'
-            commerce_phase_object['harbor_trade'] = None
+            commerce_phase_object['harbor_trade'] = False
             commerce_phase_object['development_card_played'] = played_card_obj
             if not (played_card_obj['played_card'] == 'victory_point' or
                     played_card_obj['played_card'] == 'failed_victory_point'):

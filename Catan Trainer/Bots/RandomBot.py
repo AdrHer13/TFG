@@ -17,12 +17,15 @@ class RandomBot(BotInterface):
         answer = random.randint(0, 2)
         if answer:
             if answer == 2:
-                gives = Materials(random.randint(0, self.hand.get_cereal()), random.randint(0, self.hand.get_mineral()),
-                                  random.randint(0, self.hand.get_clay()), random.randint(0, self.hand.get_wood()),
+                gives = Materials(random.randint(0, self.hand.get_cereal()),
+                                  random.randint(0, self.hand.get_mineral()),
+                                  random.randint(0, self.hand.get_clay()),
+                                  random.randint(0, self.hand.get_wood()),
                                   random.randint(0, self.hand.get_wool()))
                 receives = Materials(random.randint(0, self.hand.get_cereal()),
                                      random.randint(0, self.hand.get_mineral()),
-                                     random.randint(0, self.hand.get_clay()), random.randint(0, self.hand.get_wood()),
+                                     random.randint(0, self.hand.get_clay()),
+                                     random.randint(0, self.hand.get_wood()),
                                      random.randint(0, self.hand.get_wool()))
                 return TradeOffer(gives, receives)
             else:
@@ -58,7 +61,6 @@ class RandomBot(BotInterface):
 
         answer = random.randint(0, 1)
         if answer:
-            # print(' - Jugador intenta comerciar por puerto - ')
             if self.hand.get_cereal() >= 4:
                 return {'gives': MaterialConstants.CEREAL, 'receives': MaterialConstants.MINERAL}
             if self.hand.get_mineral() >= 4:
@@ -69,14 +71,18 @@ class RandomBot(BotInterface):
                 return {'gives': MaterialConstants.WOOD, 'receives': MaterialConstants.CEREAL}
             if self.hand.get_wool() >= 4:
                 return {'gives': MaterialConstants.WOOL, 'receives': MaterialConstants.CEREAL}
-            # print('Jugador no quiere comerciar')
+
             return None
         else:
-            gives = Materials(random.randint(0, self.hand.get_cereal()), random.randint(0, self.hand.get_mineral()),
-                              random.randint(0, self.hand.get_clay()), random.randint(0, self.hand.get_wood()),
+            gives = Materials(random.randint(0, self.hand.get_cereal()),
+                              random.randint(0, self.hand.get_mineral()),
+                              random.randint(0, self.hand.get_clay()),
+                              random.randint(0, self.hand.get_wood()),
                               random.randint(0, self.hand.get_wool()))
-            receives = Materials(random.randint(0, self.hand.get_cereal()), random.randint(0, self.hand.get_mineral()),
-                                 random.randint(0, self.hand.get_clay()), random.randint(0, self.hand.get_wood()),
+            receives = Materials(random.randint(0, self.hand.get_cereal()),
+                                 random.randint(0, self.hand.get_mineral()),
+                                 random.randint(0, self.hand.get_clay()),
+                                 random.randint(0, self.hand.get_wood()),
                                  random.randint(0, self.hand.get_wool()))
             trade_offer = TradeOffer(gives, receives)
             return trade_offer

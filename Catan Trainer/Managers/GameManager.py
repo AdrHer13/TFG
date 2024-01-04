@@ -368,71 +368,41 @@ class GameManager:
         :param player: contador externo que indica a qué jugador le toca
         :return: node_id, road_to
         """
+        # Le da a los bots 2 intentos de poner bien los pueblos y carreteras. Si no, el GameManager lo hará por ellos.
+        valid_nodes = self.board.valid_starting_nodes()
+        materials = []
 
-        # TODO: no asumir que los bots van a devolver siempre algo. Comprobar, y si no devuelven nada entonces elegir por ellos
-        # Le da a los jugadores 2 intentos de poner bien los pueblos y carreteras. Si no, el GameDirector lo hará por ellos
         for count in range(3):
-            if count < 2:
-                node_id, road_to = self.bot_manager.players[player]['player'].on_game_start(self.board)
+            node_id, road_to = self.bot_manager.players[player]['player'].on_game_start(self.board)
+
+            if node_id in valid_nodes or count == 2:
+
+                if count == 2:
+                    node_id = valid_nodes[random.randint(0, (len(valid_nodes) - 1))]
+
+                    possible_roads = self.board.nodes[node_id]['adjacent']
+                    road_to = possible_roads[random.randint(0, len(possible_roads) - 1)]
 
                 terrain_ids = self.board.nodes[node_id]['contacting_terrain']
-                materials = []
                 for ter_id in terrain_ids:
                     materials.append(self.board.terrain[ter_id]['terrain_type'])
 
-                if (self.board.nodes[node_id]['player'] == -1 and self.board.adjacent_nodes_dont_have_towns(node_id)
-                        and not self.board.is_it_a_coastal_node(node_id)):
+                self.board.nodes[node_id]['player'] = self.turn_manager.get_whose_turn_is_it()
 
-                    self.board.nodes[node_id]['player'] = self.turn_manager.get_whose_turn_is_it()
+                # Se le dan materiales al BotManager y este a los bots para que sepan cuantos tienen en realidad
+                self.bot_manager.players[player]['resources'].add_material(materials, 1)
+                self.bot_manager.players[player]['player'].hand = self.bot_manager.players[player]['resources']
 
-                    # Se le dan materiales al BotManager y a los bots para que sepan cuantos tienen en realidad
-                    self.bot_manager.players[player]['resources'].add_material(materials, 1)
-                    self.bot_manager.players[player]['player'].hand.add_material(materials, 1)
+                self.bot_manager.players[player]['victory_points'] += 1
 
-                    self.bot_manager.players[player]['victory_points'] += 1
-
-                    # Parte carreteras
-                    response = self.board.build_road(self.turn_manager.get_whose_turn_is_it(), node_id, road_to)
-                    if not response['response']:
-                        return
-                    else:
-                        return node_id, road_to
-
+                # Parte carreteras
+                if self.board.build_road(self.turn_manager.get_whose_turn_is_it(), node_id, road_to)['response']:
+                    return node_id, road_to
                 else:
-                    illegal = True
-                    random_node_id = 0
-                    while illegal:
-                        # random_node_id = random.randint(0, 53)
-                        valid_nodes = self.board.valid_starting_nodes()
-                        i = random.randint(0, (valid_nodes.__len__() - 1))
-                        random_node_id = valid_nodes[i]
-                        if (self.board.nodes[random_node_id]['player'] == -1 and
-                                self.board.adjacent_nodes_dont_have_towns(random_node_id) and
-                                not self.board.is_it_a_coastal_node(random_node_id)):
-                            illegal = False
-                        else:
-                            illegal = True
-
-                    self.board.nodes[random_node_id]['player'] = self.turn_manager.get_whose_turn_is_it()
-
-                    # Se le dan materiales al BotManager y a los bots para que sepan cuantos tienen en realidad
-                    self.bot_manager.players[player]['resources'].add_material(materials, 1)
-                    self.bot_manager.players[player]['player'].hand.add_material(materials, 1)
-
-                    self.bot_manager.players[player]['victory_points'] += 1
-
-                    illegal = True
-                    while illegal:
-                        possible_roads = self.board.nodes[random_node_id]['adjacent']
-                        random_road_to = possible_roads[random.randint(0, len(possible_roads) - 1)]
-
-                        response = self.board.build_road(self.turn_manager.get_whose_turn_is_it(), random_node_id,
-                                                         random_road_to)
-                        if response['response']:
-
-                            return random_node_id, random_road_to
-                        else:
-                            illegal = True
+                    possible_roads = self.board.nodes[node_id]['adjacent']
+                    road_to = possible_roads[random.randint(0, len(possible_roads) - 1)]
+                    self.board.build_road(self.turn_manager.get_whose_turn_is_it(), node_id, road_to)
+                    return node_id, road_to
 
     def longest_road_calculator(self, node, depth, longest_road_obj, player_id, visited_nodes):
         """

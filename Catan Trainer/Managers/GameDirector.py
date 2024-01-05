@@ -84,63 +84,13 @@ class GameDirector:
         :param player: (int) número que representa al jugador.
         :return: void
         """
-
         build_phase_object = {}
 
         self.game_manager.set_phase(2)
 
         build_response = self.game_manager.call_to_bot_on_build_phase(player)
 
-        # TODO: mover lógica a self.game_manager.on_build_response() -> devuelve un objeto similar a "build_phase_object"
-        if isinstance(build_response, dict):
-            build_phase_object = build_response
-            built = False
-            if build_response['building'] == BuildConstants.TOWN:
-                built = self.game_manager.build_town(player, build_response['node_id'])
-                if built['response']:
-                    self.game_manager.get_players()[player]['victory_points'] += 1
-            elif build_response['building'] == BuildConstants.CITY:
-                built = self.game_manager.build_city(player, build_response['node_id'])
-                if built['response']:
-                    self.game_manager.get_players()[player]['victory_points'] += 1
-            elif build_response['building'] == BuildConstants.ROAD:
-                built = self.game_manager.build_road(player, build_response['node_id'], build_response['road_to'])
-            elif build_response['building'] == BuildConstants.CARD:
-                built = self.game_manager.build_development_card(player)
-
-            if isinstance(built, dict):
-                if built['response']:
-                    build_phase_object['finished'] = True
-
-                    if build_response['building'] == BuildConstants.CARD:
-                        build_phase_object['card_id'] = built['card_effect']
-                        build_phase_object['card_type'] = built['card_type']
-                        build_phase_object['card_effect'] = built['card_effect']
-
-                    # Si se ha construido permitir que vuelvan a construir
-                else:
-                    build_phase_object['finished'] = False
-
-                    # TODO: Avisar que no se ha podido construir
-            else:
-                build_phase_object['finished'] = False
-                build_phase_object['error_msg'] = 'Falta de materiales'
-                # TODO: Avisar que no se ha podido construir
-
-        elif isinstance(build_response, DevelopmentCard) and not self.game_manager.get_card_used():
-            played_card_obj = self.game_manager.play_development_card(player, build_response)
-            build_phase_object['building'] = 'played_card'
-            build_phase_object['finished'] = 'played_card'
-            build_phase_object['development_card_played'] = played_card_obj
-
-            if not (played_card_obj['played_card'] == 'victory_point' or
-                    played_card_obj['played_card'] == 'failed_victory_point'):
-                self.game_manager.set_card_used(True)
-
-            return build_phase_object
-        else:
-            build_phase_object['building'] = 'None'
-        # TODO: fin de mover lógica a self.game_manager.on_build_response() -> devuelve un objeto similar a "build_phase_object"
+        build_phase_object = self.game_manager.build_phase_object(build_phase_object, build_response, player)
 
         return build_phase_object
 

@@ -787,7 +787,6 @@ class GameManager:
         :param player_id: int
         :return: dict
         """
-
         if isinstance(commerce_response, TradeOffer) and depth <= self.MAX_COMMERCE_TRADES:
             commerce_phase_object['trade_offer'] = commerce_response.__to_object__()
             commerce_phase_object['harbor_trade'] = False
@@ -825,6 +824,8 @@ class GameManager:
                 self.bot_manager.players[player_id]['resources'] = response
                 self.bot_manager.players[player_id]['player'].hand = self.bot_manager.players[player_id]['resources']
                 commerce_phase_object['answer'] = response.resources.__to_object__()
+
+                return commerce_phase_object
             else:
                 commerce_phase_object['answer'] = response
 
@@ -843,3 +844,62 @@ class GameManager:
         else:
             commerce_phase_object['trade_offer'] = 'None'
             return commerce_phase_object
+
+    def build_phase_object(self, build_phase_object, build_response, player_id):
+        """
+         :param build_phase_object: dict
+         :param build_response: dict, DevelopmentCard, None
+         :param player_id: int
+         :return: dict
+         """
+        if isinstance(build_response, dict):
+            build_phase_object = build_response
+
+            if build_response['building'] == BuildConstants.TOWN:
+                built = self.build_town(player_id, build_response['node_id'])
+
+            elif build_response['building'] == BuildConstants.CITY:
+                built = self.build_city(player_id, build_response['node_id'])
+
+            elif build_response['building'] == BuildConstants.CARD:
+                built = self.build_development_card(player_id)
+
+            elif build_response['building'] == BuildConstants.ROAD:
+                built = self.build_road(player_id, build_response['node_id'], build_response['road_to'])
+
+            else:
+                build_phase_object['finished'] = False
+                build_phase_object['error_msg'] = 'Se intenta constrir algo fuera de las reglas'
+                return build_phase_object
+
+            if built['response']:
+                if build_response['building'] in [BuildConstants.TOWN, BuildConstants.CITY]:
+                    self.get_players()[player_id]['victory_points'] += 1
+
+                if build_response['building'] == BuildConstants.CARD:
+                    build_phase_object['card_id'] = built['card_effect']
+                    build_phase_object['card_type'] = built['card_type']
+                    build_phase_object['card_effect'] = built['card_effect']
+
+                build_phase_object['finished'] = True
+
+                return build_phase_object
+            else:
+                build_phase_object['finished'] = False
+                build_phase_object['error_msg'] = 'Falta de materiales'
+                return build_phase_object
+
+        elif isinstance(build_response, DevelopmentCard) and not self.already_played_development_card:
+            played_card_obj = self.play_development_card(player_id, build_response)
+            build_phase_object['building'] = 'played_card'
+            build_phase_object['finished'] = True
+            build_phase_object['development_card_played'] = played_card_obj
+
+            if not (played_card_obj['played_card'] == 'victory_point' or
+                    played_card_obj['played_card'] == 'failed_victory_point'):
+                self.already_played_development_card = True
+
+            return build_phase_object
+        else:
+            build_phase_object['building'] = 'None'
+            return build_phase_object

@@ -40,7 +40,7 @@ class AdrianHerasBot(BotInterface):
                 # Si una es un caballero
                 if self.development_cards_hand.hand[i].type == DevelopmentCardConstants.KNIGHT:
                     # La juega
-                    return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[i].id)
+                    return self.development_cards_hand.select_card_by_id(self.development_cards_hand.hand[i].id)
         return None
 
     def on_having_more_than_7_materials_when_thief_is_called(self):
@@ -96,7 +96,7 @@ class AdrianHerasBot(BotInterface):
                 # Si una es un punto de victoria
                 if self.development_cards_hand.hand[i].type == DevelopmentCardConstants.VICTORY_POINT:
                     # La juega
-                    return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[i].id)
+                    return self.development_cards_hand.select_card_by_id(self.development_cards_hand.hand[i].id)
         return None
 
     def on_commerce_phase(self):
@@ -111,13 +111,13 @@ class AdrianHerasBot(BotInterface):
                     # Si una es un punto de monopolio
                     if self.development_cards_hand.hand[i].effect == DevelopmentCardConstants.MONOPOLY_EFFECT:
                         # La juega
-                        return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[i].id)
+                        return self.development_cards_hand.select_card_by_id(self.development_cards_hand.hand[i].id)
 
-        gives = Materials(0, 0, 0, 0, 0)
-        receives = Materials(0, 0, 0, 0, 0)
+        gives = Materials()
+        receives = Materials()
 
         # No pide nada porque puede hacer una ciudad
-        if self.town_number >= 1 and self.hand.resources.has_this_more_materials(Materials(2, 3, 0, 0, 0)):
+        if self.town_number >= 1 and self.hand.resources.has_this_more_materials(Materials('city')):
             self.material_given_more_than_three = None
             return None
         # Pedir lo que falte para una ciudad, ofrece del resto de materiales iguales a los que pide
@@ -135,12 +135,7 @@ class AdrianHerasBot(BotInterface):
                 for i in range(0, total_given_materials):
                     # Se mezcla el orden de materiales
                     order = [MaterialConstants.CLAY, MaterialConstants.WOOD, MaterialConstants.WOOL]
-                    for j in range(0, 2):
-                        num = random.randint(0, 2)
-                        num2 = random.randint(0, 2)
-                        support = order[num]
-                        order[num] = order[num2]
-                        order[num2] = support
+                    random.shuffle(order)
                     # una vez mezclado se recorre el orden de los materiales y se coge el primero que tenga un valor
                     for mat in order:
                         if self.hand.resources.get_from_id(mat) > 0:
@@ -188,12 +183,7 @@ class AdrianHerasBot(BotInterface):
                     # Se mezcla el orden de materiales
                     order = [MaterialConstants.CEREAL, MaterialConstants.MINERAL, MaterialConstants.CLAY,
                              MaterialConstants.WOOD, MaterialConstants.WOOL]
-                    for j in range(0, 5):
-                        num = random.randint(0, 4)
-                        num2 = random.randint(0, 4)
-                        support = order[num]
-                        order[num] = order[num2]
-                        order[num2] = support
+                    random.shuffle(order)
                     # una vez mezclado se recorre el orden de los materiales y se coge el primero que tenga un valor
                     for mat in order:
                         if self.hand.resources.get_from_id(mat) > 1 or mat == MaterialConstants.MINERAL:
@@ -226,7 +216,7 @@ class AdrianHerasBot(BotInterface):
                         (self.development_cards_hand.hand[i].effect == DevelopmentCardConstants.ROAD_BUILDING_EFFECT and
                          len(road_possibilities) > 1)):
                     # La juega
-                    return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[i].id)
+                    return self.development_cards_hand.select_card_by_id(self.development_cards_hand.hand[i].id)
 
         if self.hand.resources.has_this_more_materials(BuildConstants.CITY) and self.town_number > 0:
             possibilities = self.board.valid_city_nodes(self.id)

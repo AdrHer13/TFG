@@ -63,10 +63,10 @@ class TestDevelopmentCards:
         hand_of_cards.add_card(development_deck.draw_card())
 
         # Comprobamos que se pueden jugar cartas. El game_manager es el encargado de borrarlas de la mano
-        played_card = hand_of_cards.play_card_by_id(2)
+        played_card = hand_of_cards.select_card_by_id(2)
         assert played_card.get_id() == 2 and played_card.get_effect() == Dcc.KNIGHT_EFFECT and played_card.get_type() == Dcc.KNIGHT
 
-        played_card = hand_of_cards.play_card_by_array_index(0)
+        played_card = hand_of_cards.select_card_by_array_index(0)
         assert played_card.get_id() == 0 and played_card.get_effect() == Dcc.KNIGHT_EFFECT and played_card.get_type() == Dcc.KNIGHT
 
         # Comprobamos que la función delete_card() borra la carta correctamente por ID

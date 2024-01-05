@@ -60,7 +60,6 @@ class GameDirector:
     def end_turn(self, player=-1):
         """
         Esta función permite finalizar el turno
-        TODO: falta por comprobar si la partida se ha acabado aquí y no en el final de la ronda, para que solo haya un ganador
         :param player: número que representa al jugador
         :return: void
         """
@@ -140,7 +139,7 @@ class GameDirector:
         return build_phase_object
 
     # Round #
-    def round_start(self):
+    def round_start(self, winner):
         """
         Esta función permite comenzar una ronda nueva.
         """
@@ -184,14 +183,16 @@ class GameDirector:
 
             round_object['turn_P' + str(i)] = obj
 
-        return round_object
+            winner = self.round_end(winner)
+            if winner:
+                return round_object, winner
 
-    def round_end(self):
+        return round_object, winner
+
+    def round_end(self, winner):
         """
         Esta función permite acabar una ronda empezada.
         """
-
-        winner = False
         for player in self.game_manager.get_players():
             if player['victory_points'] >= 10:
                 winner = True
@@ -248,8 +249,7 @@ class GameDirector:
         game_object = {}
         winner = False
         while not winner:
-            game_object['round_' + str(self.game_manager.get_round())] = self.round_start()
-            winner = self.round_end()
+            game_object['round_' + str(self.game_manager.get_round())], winner = self.round_start(winner)
 
         print('Game (' + str(game_number) + ') results')
         for i in range(4):

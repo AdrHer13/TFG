@@ -15,25 +15,25 @@ class TurnManager:
     #############################
     def get_turn(self):
         """
-        :return: int turn
+        :return: turn: int
         """
         return self.turn
 
     def get_whose_turn_is_it(self):
         """
-        :return: int whose_turn_is_it
+        :return: whose_turn_is_it: int
         """
         return self.whose_turn_is_it
 
     def get_phase(self):
         """
-        :return: int phase
+        :return: phase: int
         """
         return self.phase
 
     def get_round(self):
         """
-        :return: int round
+        :return: round: int
         """
         return self.round
 
@@ -42,28 +42,32 @@ class TurnManager:
     #############################
     def set_turn(self, turn=0):
         """
-        :return: int turn
+        :param turn: int
+        :return:
         """
         self.turn = turn
         return
 
     def set_whose_turn_is_it(self, player=0):
         """
-        :return: int whose_turn_is_it
+        :param player: int
+        :return:
         """
         self.whose_turn_is_it = player
         return
 
     def set_phase(self, phase=0):
         """
-        :return: int phase
+        :param phase: int
+        :return:
         """
         self.phase = phase
         return
 
     def set_round(self, round=0):
         """
-        :return: int round
+        :param round: int
+        :return:
         """
         self.round = round
         return

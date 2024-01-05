@@ -28,7 +28,7 @@ class BotInterface:
     def on_turn_start(self):
         """
         Trigger para cuando empieza el turno. Termina cuando hace un return. Se hace antes que tirar dados. Sirve para jugar cartas de desarrollo
-        :return: void, None
+        :return: DevelopmentCard, None
         """
         return None
 
@@ -58,7 +58,7 @@ class BotInterface:
     def on_turn_end(self):
         """
         Trigger para cuando acaba el turno. Termina cuando hace un return. Sirve para jugar cartas de desarrollo
-        :return: void, None
+        :return: DevelopmentCard, None
         """
         return None
 

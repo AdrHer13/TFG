@@ -32,9 +32,16 @@ class BotManager:
         return
 
     def get_actual_player(self):
+        """
+        :return: actual_player: int
+        """
         return self.actual_player
 
     def set_actual_player(self, player_id=0):
+        """
+        :param player_id: int
+        :return:
+        """
         self.actual_player = player_id
         return
 

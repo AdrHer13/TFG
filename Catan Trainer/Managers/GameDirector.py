@@ -1,4 +1,3 @@
-from Classes.Constants import BuildConstants
 from Classes.DevelopmentCards import DevelopmentCard
 from Managers.GameManager import GameManager
 from TraceLoader.TraceLoader import TraceLoader
@@ -12,8 +11,6 @@ class GameDirector:
     def __init__(self):
         self.game_manager = GameManager()
         self.trace_loader = TraceLoader()
-        # self.turn_manager = TurnManager()
-        # self.bot_manager = BotManager()
         return
 
     def reset_game_values(self):
@@ -60,90 +57,6 @@ class GameDirector:
 
         return start_turn_object
 
-    def start_commerce_phase(self, player=-1, depth=1):
-        """
-        Esta función permite pasar a la fase de comercio a un jugador.
-        :param depth: (int) número de veces que ha comerciado ya el jugador.
-        :param player: (int) número que representa al jugador.
-        :return: object
-        """
-        commerce_phase_object = {}
-
-        self.game_manager.set_phase(1)
-
-        commerce_response = self.game_manager.call_to_bot_on_commerce_phase(player)
-
-        commerce_phase_object = self.game_manager.on_commerce_response(commerce_phase_object, commerce_response, depth,
-                                                                       player)
-
-        return commerce_phase_object
-
-    def start_build_phase(self, player=-1):
-        """
-        Esta función permite pasar a la fase de construcción a un jugador.
-        :param player: (int) número que representa al jugador.
-        :return: void
-        """
-
-        build_phase_object = {}
-
-        self.game_manager.set_phase(2)
-
-        build_response = self.game_manager.call_to_bot_on_build_phase(player)
-
-        # TODO: mover lógica a self.game_manager.on_build_response() -> devuelve un objeto similar a "build_phase_object"
-        if isinstance(build_response, dict):
-            build_phase_object = build_response
-            built = False
-            if build_response['building'] == BuildConstants.TOWN:
-                built = self.game_manager.build_town(player, build_response['node_id'])
-                if built['response']:
-                    self.game_manager.get_players()[player]['victory_points'] += 1
-            elif build_response['building'] == BuildConstants.CITY:
-                built = self.game_manager.build_city(player, build_response['node_id'])
-                if built['response']:
-                    self.game_manager.get_players()[player]['victory_points'] += 1
-            elif build_response['building'] == BuildConstants.ROAD:
-                built = self.game_manager.build_road(player, build_response['node_id'], build_response['road_to'])
-            elif build_response['building'] == BuildConstants.CARD:
-                built = self.game_manager.build_development_card(player)
-
-            if isinstance(built, dict):
-                if built['response']:
-                    build_phase_object['finished'] = True
-
-                    if build_response['building'] == BuildConstants.CARD:
-                        build_phase_object['card_id'] = built['card_effect']
-                        build_phase_object['card_type'] = built['card_type']
-                        build_phase_object['card_effect'] = built['card_effect']
-
-                    # Si se ha construido permitir que vuelvan a construir
-                else:
-                    build_phase_object['finished'] = False
-
-                    # TODO: Avisar que no se ha podido construir
-            else:
-                build_phase_object['finished'] = False
-                build_phase_object['error_msg'] = 'Falta de materiales'
-                # TODO: Avisar que no se ha podido construir
-
-        elif isinstance(build_response, DevelopmentCard) and not self.game_manager.get_card_used():
-            played_card_obj = self.game_manager.play_development_card(player, build_response)
-            build_phase_object['building'] = 'played_card'
-            build_phase_object['finished'] = 'played_card'
-            build_phase_object['development_card_played'] = played_card_obj
-
-            if not (played_card_obj['played_card'] == 'victory_point' or
-                    played_card_obj['played_card'] == 'failed_victory_point'):
-                self.game_manager.set_card_used(True)
-
-            return build_phase_object
-        else:
-            build_phase_object['building'] = 'None'
-        # TODO: fin de mover lógica a self.game_manager.on_build_response() -> devuelve un objeto similar a "build_phase_object"
-
-        return build_phase_object
-
     def end_turn(self, player=-1):
         """
         Esta función permite finalizar el turno
@@ -151,7 +64,6 @@ class GameDirector:
         :param player: número que representa al jugador
         :return: void
         """
-
         end_turn_object = {'development_card_played': []}
 
         self.game_manager.set_phase(3)
@@ -193,6 +105,40 @@ class GameDirector:
         end_turn_object['victory_points'] = vp
         return end_turn_object
 
+    def start_commerce_phase(self, player=-1, depth=1):
+        """
+        Esta función permite pasar a la fase de comercio a un jugador.
+        :param depth: (int) número de veces que ha comerciado ya el jugador.
+        :param player: (int) número que representa al jugador.
+        :return: object
+        """
+        commerce_phase_object = {}
+
+        self.game_manager.set_phase(1)
+
+        commerce_response = self.game_manager.call_to_bot_on_commerce_phase(player)
+
+        commerce_phase_object = self.game_manager.on_commerce_response(commerce_phase_object, commerce_response, depth,
+                                                                       player)
+
+        return commerce_phase_object
+
+    def start_build_phase(self, player=-1):
+        """
+        Esta función permite pasar a la fase de construcción a un jugador.
+        :param player: (int) número que representa al jugador.
+        :return: void
+        """
+        build_phase_object = {}
+
+        self.game_manager.set_phase(2)
+
+        build_response = self.game_manager.call_to_bot_on_build_phase(player)
+
+        build_phase_object = self.game_manager.build_phase_object(build_phase_object, build_response, player)
+
+        return build_phase_object
+
     # Round #
     def round_start(self):
         """
@@ -212,11 +158,12 @@ class GameDirector:
             # Se permite comerciar un máximo de 2 veces con jugadores, pero cualquier cantidad con el puerto.
             # Si se intenta comercia con un jugador una tercera vez, devuelve None y corta el bucle
             commerce_phase_array, depth = [], 1
-            while True:
+            trading = True
+            while trading:
                 commerce_phase_object = self.start_commerce_phase(self.game_manager.get_whose_turn_is_it(), depth)
                 commerce_phase_array.append(commerce_phase_object)
                 if commerce_phase_object['trade_offer'] == 'None':
-                    break
+                    trading = False
                 elif not (commerce_phase_object['harbor_trade'] or commerce_phase_object['harbor_trade'] is None):
                     depth += 1
             obj['commerce_phase'] = commerce_phase_array
@@ -224,11 +171,12 @@ class GameDirector:
             # Se puede construir cualquier cantidad de veces en un turno mientras tengan materiales. Así que
             # para evitar un bucle infinito, se corta si se construye 'None' o si fallan al intentar construir
             build_phase_array = []
-            while True:
+            building = True
+            while building:
                 build_phase_object = self.start_build_phase(self.game_manager.get_whose_turn_is_it())
                 build_phase_array.append(build_phase_object)
                 if build_phase_object['building'] == 'None' or not build_phase_object['finished']:
-                    break
+                    building = False
             obj['build_phase'] = build_phase_array
 
             end_turn_object = self.end_turn(self.game_manager.get_whose_turn_is_it())
@@ -246,9 +194,6 @@ class GameDirector:
         winner = False
         for player in self.game_manager.get_players():
             if player['victory_points'] >= 10:
-                # if (player['victory_points'] >= 10 or
-                # (player['victory_points'] >= 8 and (player['largest_army'] == 1 or player['longest_road'] == 1)) or
-                # (player['victory_points'] >= 6 and player['largest_army'] == 1 and player['longest_road'] == 1)):
                 winner = True
 
         self.game_manager.set_round(self.game_manager.get_round() + 1)
@@ -308,9 +253,9 @@ class GameDirector:
 
         print('Game (' + str(game_number) + ') results')
         for i in range(4):
-            print('J' + str(i) + ': ' + str(self.game_manager.get_players()[i]['victory_points']) + ' (' + str(
-                self.game_manager.get_players()[i]['largest_army']) + ')' + ' (' + str(
-                self.game_manager.get_players()[i]['longest_road']) + ')')
+            print('J' + str(i) + ': ' + str(self.game_manager.get_players()[i]['victory_points']) + ' (' +
+                  str(self.game_manager.get_players()[i]['largest_army']) + ')' + ' (' +
+                  str(self.game_manager.get_players()[i]['longest_road']) + ')')
 
         self.trace_loader.current_trace["game"] = game_object
         self.trace_loader.export_to_file(game_number)

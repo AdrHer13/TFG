@@ -1,4 +1,3 @@
-from Classes.Constants import BuildConstants
 from Classes.DevelopmentCards import DevelopmentCard
 from Managers.GameManager import GameManager
 from TraceLoader.TraceLoader import TraceLoader
@@ -12,8 +11,6 @@ class GameDirector:
     def __init__(self):
         self.game_manager = GameManager()
         self.trace_loader = TraceLoader()
-        # self.turn_manager = TurnManager()
-        # self.bot_manager = BotManager()
         return
 
     def reset_game_values(self):
@@ -162,11 +159,12 @@ class GameDirector:
             # Se permite comerciar un máximo de 2 veces con jugadores, pero cualquier cantidad con el puerto.
             # Si se intenta comercia con un jugador una tercera vez, devuelve None y corta el bucle
             commerce_phase_array, depth = [], 1
-            while True:
+            trading = True
+            while trading:
                 commerce_phase_object = self.start_commerce_phase(self.game_manager.get_whose_turn_is_it(), depth)
                 commerce_phase_array.append(commerce_phase_object)
                 if commerce_phase_object['trade_offer'] == 'None':
-                    break
+                    trading = False
                 elif not (commerce_phase_object['harbor_trade'] or commerce_phase_object['harbor_trade'] is None):
                     depth += 1
             obj['commerce_phase'] = commerce_phase_array
@@ -174,11 +172,12 @@ class GameDirector:
             # Se puede construir cualquier cantidad de veces en un turno mientras tengan materiales. Así que
             # para evitar un bucle infinito, se corta si se construye 'None' o si fallan al intentar construir
             build_phase_array = []
-            while True:
+            building = True
+            while building:
                 build_phase_object = self.start_build_phase(self.game_manager.get_whose_turn_is_it())
                 build_phase_array.append(build_phase_object)
                 if build_phase_object['building'] == 'None' or not build_phase_object['finished']:
-                    break
+                    building = False
             obj['build_phase'] = build_phase_array
 
             end_turn_object = self.end_turn(self.game_manager.get_whose_turn_is_it())
@@ -196,9 +195,6 @@ class GameDirector:
         winner = False
         for player in self.game_manager.get_players():
             if player['victory_points'] >= 10:
-                # if (player['victory_points'] >= 10 or
-                # (player['victory_points'] >= 8 and (player['largest_army'] == 1 or player['longest_road'] == 1)) or
-                # (player['victory_points'] >= 6 and player['largest_army'] == 1 and player['longest_road'] == 1)):
                 winner = True
 
         self.game_manager.set_round(self.game_manager.get_round() + 1)
@@ -258,9 +254,9 @@ class GameDirector:
 
         print('Game (' + str(game_number) + ') results')
         for i in range(4):
-            print('J' + str(i) + ': ' + str(self.game_manager.get_players()[i]['victory_points']) + ' (' + str(
-                self.game_manager.get_players()[i]['largest_army']) + ')' + ' (' + str(
-                self.game_manager.get_players()[i]['longest_road']) + ')')
+            print('J' + str(i) + ': ' + str(self.game_manager.get_players()[i]['victory_points']) + ' (' +
+                  str(self.game_manager.get_players()[i]['largest_army']) + ')' + ' (' +
+                  str(self.game_manager.get_players()[i]['longest_road']) + ')')
 
         self.trace_loader.current_trace["game"] = game_object
         self.trace_loader.export_to_file(game_number)

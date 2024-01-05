@@ -121,28 +121,26 @@ class DevelopmentCardsHand:
 
         return hand_array
 
-    def play_card_by_array_index(self, index):
+    def select_card_by_array_index(self, index):
         """
         Al usar esta función indicas que quieres jugar esta carta pasando el índice de la carta en el array,
-        lo que se la pasa al gameManager y la borra de la mano.
+        lo que se la pasa al gameManager, la juega y la borra de la mano.
         :param index:
         :return:
         """
         if len(self.hand):
             card_obj = self.hand[index]
-            self.delete_card(self.hand[index].id)
             return card_obj
         return
 
-    def play_card_by_id(self, id):
+    def select_card_by_id(self, id):
         """
-        Juega la carta con el ID que se le pase, la pasa al gameManager y la borra de la mano.
+        Seleccionas la carta con el ID que se le pase, la pasa al gameManager, la juega y la borra de la mano.
         :param id: (int) Número indicativo de la carta.
         """
         for card in self.hand:
             if card.get_id() == id:
                 card_obj = card
-                self.delete_card(id)
                 return card_obj
         return
 

@@ -40,7 +40,7 @@ class AdrianHerasBot(BotInterface):
                 # Si una es un caballero
                 if self.development_cards_hand.hand[i].type == DevelopmentCardConstants.KNIGHT:
                     # La juega
-                    return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[i].id)
+                    return self.development_cards_hand.select_card_by_id(self.development_cards_hand.hand[i].id)
         return None
 
     def on_having_more_than_7_materials_when_thief_is_called(self):
@@ -96,7 +96,7 @@ class AdrianHerasBot(BotInterface):
                 # Si una es un punto de victoria
                 if self.development_cards_hand.hand[i].type == DevelopmentCardConstants.VICTORY_POINT:
                     # La juega
-                    return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[i].id)
+                    return self.development_cards_hand.select_card_by_id(self.development_cards_hand.hand[i].id)
         return None
 
     def on_commerce_phase(self):
@@ -111,7 +111,7 @@ class AdrianHerasBot(BotInterface):
                     # Si una es un punto de monopolio
                     if self.development_cards_hand.hand[i].effect == DevelopmentCardConstants.MONOPOLY_EFFECT:
                         # La juega
-                        return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[i].id)
+                        return self.development_cards_hand.select_card_by_id(self.development_cards_hand.hand[i].id)
 
         gives = Materials(0, 0, 0, 0, 0)
         receives = Materials(0, 0, 0, 0, 0)
@@ -226,7 +226,7 @@ class AdrianHerasBot(BotInterface):
                         (self.development_cards_hand.hand[i].effect == DevelopmentCardConstants.ROAD_BUILDING_EFFECT and
                          len(road_possibilities) > 1)):
                     # La juega
-                    return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[i].id)
+                    return self.development_cards_hand.select_card_by_id(self.development_cards_hand.hand[i].id)
 
         if self.hand.resources.has_this_more_materials(BuildConstants.CITY) and self.town_number > 0:
             possibilities = self.board.valid_city_nodes(self.id)

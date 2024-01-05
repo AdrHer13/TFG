@@ -181,7 +181,7 @@ class GameDirector:
             elif build_response['building'] == BuildConstants.CITY:
                 built = self.game_manager.build_city(player, build_response['node_id'])
                 if built['response']:
-                    self.game_manager.bget_players()[player]['victory_points'] += 1
+                    self.game_manager.get_players()[player]['victory_points'] += 1
             elif build_response['building'] == BuildConstants.ROAD:
                 built = self.game_manager.build_road(player, build_response['node_id'], build_response['road_to'])
             elif build_response['building'] == BuildConstants.CARD:

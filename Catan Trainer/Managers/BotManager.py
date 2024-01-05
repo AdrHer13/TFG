@@ -16,8 +16,6 @@ class BotManager:
 
     players = []
 
-    # TODO: Pedir al ejecutar el programa el nombre de las clases que se quieren gastar para los bots
-    # TODO: Añadir mano a self.players para que los bots puedan solicitarla pero no modificarla
     def __init__(self, for_test=False):
         if not for_test:
             self.first_bot_class = self.import_bot_class_from_input('primer')

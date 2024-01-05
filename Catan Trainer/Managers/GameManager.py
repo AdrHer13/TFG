@@ -207,7 +207,7 @@ class GameManager:
         else:
             return False
 
-    ########### Board functions ###################
+    # -- -- -- --  Board functions  -- -- -- --
     def build_town(self, player_id, node):
         """
         Permite construir un pueblo en el nodo seleccionado.
@@ -615,3 +615,125 @@ class GameManager:
         for i in range(4):
             print('P' + str(i + 1))
             print(self.bot_manager.players[i]['player'].development_cards_hand.check_hand())
+
+    def get_turn(self):
+        """
+        :return: int
+        """
+        return self.turn_manager.get_turn()
+
+    def set_turn(self, turn=0):
+        """
+        :param turn: int
+        :return:
+        """
+        self.turn_manager.set_turn(turn)
+        return
+
+    def get_whose_turn_is_it(self):
+        """
+        :return: int
+        """
+        return self.turn_manager.get_whose_turn_is_it()
+
+    def set_whose_turn_is_it(self, turn=0):
+        """
+        :param turn: int
+        :return:
+        """
+        self.turn_manager.set_whose_turn_is_it(turn)
+        return
+
+    def set_phase(self, phase=0):
+        """
+        :param phase: int
+        :return:
+        """
+        self.turn_manager.set_phase(phase)
+        return
+
+    def get_round(self):
+        """
+        :return: int
+        """
+        return self.turn_manager.get_round()
+
+    def set_round(self, round=0):
+        """
+        :param round: int
+        :return:
+        """
+        self.turn_manager.set_turn(round)
+        return
+
+    def get_players(self):
+        """
+        :return: list
+        """
+        return self.bot_manager.players
+
+    def set_actual_player(self, player_id=0):
+        """
+        :param player_id: int
+        :return:
+        """
+        self.turn_manager.actual_player = player_id
+        return
+
+    def on_turn_start(self, player):
+        """
+        :param player: int
+        :return: DevelopmentCard, None
+        """
+        return self.bot_manager.players[player]['player'].on_turn_start()
+
+    def get_last_dice_roll(self):
+        """
+        :return: int
+        """
+        return self.last_dice_roll
+
+    def player_resources_total(self, player_id):
+        """
+        :return: int
+        """
+        return self.bot_manager.players[player_id]['resources'].get_total()
+
+    def player_resources_to_object(self, player_id):
+        """
+        :return: dict
+        """
+        return self.bot_manager.players[player_id]['resources'].resources.__to_object__()
+
+    def call_to_bot_on_commerce_phase(self, player_id):
+        """
+        :param player_id: int
+        :return: TradeOffer, dict{'gives': int, 'receives': int}, None
+        """
+        return self.bot_manager.players[player_id]['player'].on_commerce_phase()
+
+    def call_to_bot_on_build_phase(self, player_id):
+        """
+        :param player_id: int
+        :return: dict{'building': str, 'node_id': int, 'road_to': int/None}, None
+        """
+        return self.bot_manager.players[player_id]['player'].on_build_phase(self.board)
+
+    def call_to_bot_on_turn_end(self, player_id):
+        """
+        :param player_id: int
+        :return: DevelopmentCard, None
+        """
+        return self.bot_manager.players[player_id]['player'].on_turn_end()
+
+    def get_board_nodes(self):
+        """
+        :return: nodes
+        """
+        return self.board.nodes
+
+    def get_board_terrain(self):
+        """
+        :return: terrain
+        """
+        return self.board.terrain

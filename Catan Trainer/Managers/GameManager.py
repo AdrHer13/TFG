@@ -737,3 +737,28 @@ class GameManager:
         :return: terrain
         """
         return self.board.terrain
+
+    def check_if_thief_is_called(self, start_turn_object, player_id=0):
+        """
+        :param player_id: int
+        :param start_turn_object: dict
+        :return: start_turn_object, dict
+        """
+        if self.get_last_dice_roll() == 7:
+            for obj in self.get_players():
+                if obj['resources'].get_total() > 7:
+                    total = obj['player'].on_having_more_than_7_materials_when_thief_is_called().get_total()
+                    max_hand = (total / 2).__floor__()
+
+                    while total > max_hand:
+                        obj['resources'].remove_material(random.randint(0, 4), 1)
+                        total = obj['resources'].get_total()
+
+            on_moving_thief = self.get_players()[player_id]['player'].on_moving_thief()
+            move_thief_obj = self.move_thief(on_moving_thief['terrain'], on_moving_thief['player'])
+
+            start_turn_object['past_thief_terrain'] = move_thief_obj['last_thief_terrain']
+            start_turn_object['thief_terrain'] = move_thief_obj['terrain_id']
+            start_turn_object['robbed_player'] = move_thief_obj['robbed_player']
+            start_turn_object['stolen_material_id'] = move_thief_obj['stolen_material_id']
+        return start_turn_object

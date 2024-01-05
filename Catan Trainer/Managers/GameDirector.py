@@ -1,5 +1,3 @@
-import random
-
 from Classes.Constants import BuildConstants, HarborConstants
 from Classes.DevelopmentCards import DevelopmentCard
 from Classes.Hand import Hand
@@ -57,26 +55,8 @@ class GameDirector:
         start_turn_object['dice'] = self.game_manager.get_last_dice_roll()
         start_turn_object['actual_player'] = str(self.game_manager.get_whose_turn_is_it())
 
-        # TODO: mover lógica al GameManager dentro del método "check_if_thief_is_called()".
-        #  Debe devolver un objeto que hace lo que "start_turn_object" hace aquí para poder agregarlo a start_turn_object aquí
-        if self.game_manager.get_last_dice_roll() == 7:
-            for obj in self.game_manager.get_players():
-                if obj['resources'].get_total() > 7:
-                    total = obj['player'].on_having_more_than_7_materials_when_thief_is_called().get_total()
-                    max_hand = (total / 2).__floor__()
-
-                    while total > max_hand:
-                        obj['resources'].remove_material(random.randint(0, 4), 1)
-                        total = obj['resources'].get_total()
-
-            on_moving_thief = self.game_manager.get_players()[player]['player'].on_moving_thief()
-            move_thief_obj = self.game_manager.move_thief(on_moving_thief['terrain'], on_moving_thief['player'])
-
-            start_turn_object['past_thief_terrain'] = move_thief_obj['last_thief_terrain']
-            start_turn_object['thief_terrain'] = move_thief_obj['terrain_id']
-            start_turn_object['robbed_player'] = move_thief_obj['robbed_player']
-            start_turn_object['stolen_material_id'] = move_thief_obj['stolen_material_id']
-        # TODO: fin de mover lógica a "check_if_thief_is_called"
+        # Si ha salido un 7 en la tirada de dado se llama al ladrón
+        start_turn_object = self.game_manager.check_if_thief_is_called(start_turn_object, player)
 
         for i in range(4):
             start_turn_object['hand_P' + str(i)] = self.game_manager.player_resources_to_object(i)

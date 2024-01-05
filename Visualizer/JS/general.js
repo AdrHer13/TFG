@@ -1,7 +1,9 @@
-var game_obj = {};
-var round_obj = {};
-var turn_obj = {};
-var phase_obj = {};
+let game_obj = {};
+let round_obj = {};
+let turn_obj = {};
+let phase_obj = {};
+
+let gameDirection = 'forward'; // or "backward"
 
 
 function init_events() {
@@ -22,9 +24,9 @@ function init_events() {
     })
 
     input.on('change', function (e) {
-        var file = document.getElementById("get_file").files[0];
+        let file = document.getElementById("get_file").files[0];
         if (file) {
-            var reader = new FileReader();
+            let reader = new FileReader();
             reader.readAsText(file, "UTF-8");
             reader.onload = function (evt) {
                 game_obj = JSON.parse(evt.target.result);
@@ -149,7 +151,7 @@ function fromHarborNumberToMaterials(harborNumber) {
         case -1:
             return '';
         default:
-            alert('Caso ilegal de terreno');
+            //            alert('Caso ilegal de terreno');
             break;
     }
 }
@@ -169,7 +171,7 @@ function getTerrainTypeClass(terrainType) {
         case -1:
             return 'terrain_desert';
         default:
-            alert('Caso ilegal de terreno');
+            //            alert('Caso ilegal de terreno');
             break;
     }
 }
@@ -210,11 +212,13 @@ function init_events_with_game_obj() {
 
         round_obj = game_obj['game']['round_' + (contador_rondas.val() - 1)];
         contador_turnos.val(1).change();
-    })
+    });
     contador_turnos.off().on('change', function (e) {
         if (contador_turnos.val() === '') {
             return;
         }
+
+        let actual_player_json = parseInt(contador_turnos.val()) - 1; // 0 - 3
 
         if (parseInt(contador_turnos.val()) > 4) {
             contador_rondas.val(parseInt(contador_rondas.val()) + 1).change()
@@ -231,84 +235,89 @@ function init_events_with_game_obj() {
             return;
         }
 
+        deleteCaretStyling();
 
-        jQuery('.increment').removeClass(['fa-caret-up', 'fa-caret-down', 'fa-minus'])
-        jQuery('.increment').parent().removeClass(['increased', 'decreased', 'neutral'])
+        $('#P0').css('border', '5px solid lightcoral');
+        $('#P1').css('border', '5px solid lightblue');
+        $('#P2').css('border', '5px solid lightgreen');
+        $('#P3').css('border', '5px solid lightyellow');
 
-        $('#P0').css('border', '5px solid lightcoral')
-        $('#P1').css('border', '5px solid lightblue')
-        $('#P2').css('border', '5px solid lightgreen')
-        $('#P3').css('border', '5px solid lightyellow')
-        switch (parseInt(contador_turnos.val()) - 1) {
-            case 0:
-                $('#P0').css('border', '5px solid red')
-                break;
-            case 1:
-                $('#P1').css('border', '5px solid blue')
-                break;
-            case 2:
-                $('#P2').css('border', '5px solid green')
-                break;
-            case 3:
-                $('#P3').css('border', '5px solid yellow')
-                break;
-        }
+        let border_colors = ['red', 'blue', 'green', 'yellow'];
+        $('#P' + actual_player_json).css('border', '5px solid ' + border_colors[actual_player_json]);
 
-        turn_obj = round_obj['turn_P' + (contador_turnos.val() - 1)];
-        contador_fases.val(1).change();
-    })
+        turn_obj = round_obj['turn_P' + actual_player_json];
+        //contador_fases.val(1).change();
+    });
     contador_fases.off().on('change', function (e) {
         if (contador_fases.val() === '') {
             return;
         }
-        
-        let commerce_log_text = jQuery('#commerce_log_text');
+        let actual_player_json = parseInt(contador_turnos.val()) - 1; // 0 - 3
 
         if (parseInt(contador_fases.val()) > 4) {
             contador_turnos.val(parseInt(contador_turnos.val()) + 1).change();
             contador_fases.val(1).change();
             return;
         }
+
         if (parseInt(contador_fases.val()) < 1) {
             contador_turnos.val(parseInt(contador_turnos.val()) - 1).change();
             contador_fases.val(4).change();
             return;
         }
 
+        let commerce_log_text = jQuery('#commerce_log_text');
+        let other_useful_info_text = jQuery('#other_useful_info_text');
+        let cereal_quantity_text = parseInt($('#hand_P' + actual_player_json + ' .cereal_quantity').text());
+        let mineral_quantity_text = parseInt($('#hand_P' + actual_player_json + ' .mineral_quantity').text());
+        let clay_quantity_text = parseInt($('#hand_P' + actual_player_json + ' .clay_quantity').text());
+        let wood_quantity_text = parseInt($('#hand_P' + actual_player_json + ' .wood_quantity').text());
+        let wool_quantity_text = parseInt($('#hand_P' + actual_player_json + ' .wool_quantity').text());
+        let diceroll_div = jQuery('#diceroll');
+        let html = '';
+
+        other_useful_info_text.empty();
         switch (parseInt(contador_fases.val()) - 1) {
             case 0:
                 phase_obj = turn_obj['start_turn'];
+
                 commerce_log_text.empty();
-
-                if (phase_obj['development_card_played'].length) {
-                    //                            console.log('SE JUEGA CARTA DE DESAROLLO AL INICIO DEL TURNO' + '| Ronda: ' + contador_rondas.val() + ' Turno: ' + contador_turnos.val())
-                    //                            console.log(phase_obj)
-                    on_development_card_played(phase_obj['development_card_played'][0])
-                }
-
-                let diceroll_div = jQuery('#diceroll');
-                diceroll_div.text('Diceroll: ' + phase_obj['dice']);
                 for (let i = 0; i < 4; i++) {
                     changeHandObject(i, phase_obj['hand_P' + i]);
                 }
 
-                if (phase_obj['dice'] == 7) {
-                    //                            jQuery('#terrain_' + phase_obj['past_thief_terrain']).text('')
-                    if (game_obj['setup']['board']['board_terrain'][phase_obj['past_thief_terrain']]['probability'] != 0) {
-                        jQuery('#terrain_' + phase_obj['past_thief_terrain'] + ' .terrain_number').html('<span>' + game_obj['setup']['board']['board_terrain'][phase_obj['past_thief_terrain']]['probability'] + '</span>');
-                    } else {
-                        jQuery('#terrain_' + phase_obj['past_thief_terrain'] + ' .terrain_number').html('')
+                if (gameDirection === 'forward') {
+                    diceroll_div.text('Diceroll: ' + phase_obj['dice']);
+
+                    if (phase_obj['dice'] == 7) {
+                        // jQuery('#terrain_' + phase_obj['past_thief_terrain']).text('')
+                        if (game_obj['setup']['board']['board_terrain'][phase_obj['past_thief_terrain']]['probability'] != 0) {
+                            jQuery('#terrain_' + phase_obj['past_thief_terrain'] + ' .terrain_number').html('<span>' + game_obj['setup']['board']['board_terrain'][phase_obj['past_thief_terrain']]['probability'] + '</span>');
+                        } else {
+                            jQuery('#terrain_' + phase_obj['past_thief_terrain'] + ' .terrain_number').html('')
+                        }
+
+                        jQuery('#terrain_' + phase_obj['thief_terrain'] + ' .terrain_number').html('<i class="fa-solid fa-user-ninja fa-2x" data-toggle="tooltip" data-placement="top" title="Ladrón"></i>');
                     }
 
-                    jQuery('#terrain_' + phase_obj['thief_terrain'] + ' .terrain_number').html('<i class="fa-solid fa-user-ninja fa-2x" data-toggle="tooltip" data-placement="top" title="Ladrón"></i>');
-                }
+                    if (phase_obj['development_card_played'] && phase_obj['development_card_played'].length) {
+                        // console.log('SE JUEGA CARTA DE DESAROLLO AL INICIO DEL TURNO' + '| Ronda: ' + contador_rondas.val() + ' Turno: ' + contador_turnos.val())
+                        on_development_card_played(phase_obj['development_card_played'][0])
+                    }
+                } else if (gameDirection === 'backward') {
+                    phase_obj = turn_obj['commerce_phase'];
+                    deleteCaretStyling();
 
+                    for (let i = 0; i < phase_obj.length; i++) {
+                        if (phase_obj[i]['trade_offer'] == 'played_card') {
+                            off_development_card_played(phase_obj[i]['development_card_played'])
+                        }
+                    }
+                }
                 break;
             case 1:
                 phase_obj = turn_obj['commerce_phase'];
-                console.log(phase_obj);
-
-                let html = '';
+                commerce_log_text.empty();
 
                 for (let i = 0; i < phase_obj.length; i++) {
 
@@ -333,104 +342,45 @@ function init_events_with_game_obj() {
                         // break, porque no se puede completar el comercio
                         break;
                     }
-
                     if (phase_obj[i]['harbor_trade']) {
+                        let material_chosen_array = ['cereal', 'mineral', 'clay', 'wood', 'wool'];
+                        let material_given = material_chosen_array[phase_obj[i]['trade_offer']['gives']];
+                        let material_received = material_chosen_array[phase_obj[i]['trade_offer']['receives']];
 
-                        let actualPlayer = (contador_turnos.val() - 1)
                         html += '<div class="offer"><p>';
                         html += '<span class="commerce_P' + contador_turnos.val() + '">P' + contador_turnos.val() + '</span>: Harbor trade';
                         html += '<br><span class="gives">Gives: ';
-                        switch (phase_obj[i]['trade_offer']['gives']) {
-                            case 0:
-                                html += 'Cereal'
-                                jQuery('#hand_P' + actualPlayer + ' .cereal').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
-                                jQuery('#hand_P' + actualPlayer + ' .cereal .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
+                        html += material_given.charAt(0).toUpperCase() + material_given.slice(1);
+                        jQuery('#hand_P' + actual_player_json + ' .' + material_given).removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
+                        jQuery('#hand_P' + actual_player_json + ' .' + material_given + ' .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
 
-                                break;
-                            case 1:
-                                html += 'Mineral'
-                                jQuery('#hand_P' + actualPlayer + ' .mineral').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
-                                jQuery('#hand_P' + actualPlayer + ' .mineral .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
-
-                                break;
-                            case 2:
-                                html += 'Clay'
-                                jQuery('#hand_P' + actualPlayer + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
-                                jQuery('#hand_P' + actualPlayer + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
-
-                                break;
-                            case 3:
-                                html += 'Wood'
-                                jQuery('#hand_P' + actualPlayer + ' .wood').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
-                                jQuery('#hand_P' + actualPlayer + ' .wood .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
-
-                                break;
-                            case 4:
-                                html += 'Wool'
-                                jQuery('#hand_P' + actualPlayer + ' .wool').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
-                                jQuery('#hand_P' + actualPlayer + ' .wool .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
-
-                                break;
-                            default:
-                                break;
-                        }
                         html += '</span>';
                         html += '<br><span class="receives">Receives: ';
-                        switch (phase_obj[i]['trade_offer']['receives']) {
-                            case 0:
-                                html += 'Cereal'
-                                jQuery('#hand_P' + actualPlayer + ' .cereal').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
-                                jQuery('#hand_P' + actualPlayer + ' .cereal .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
 
-                                break;
-                            case 1:
-                                html += 'Mineral'
-                                jQuery('#hand_P' + actualPlayer + ' .mineral').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
-                                jQuery('#hand_P' + actualPlayer + ' .mineral .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                        html += material_received.charAt(0).toUpperCase() + material_received.slice(1);
+                        jQuery('#hand_P' + actual_player_json + ' .' + material_received).removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                        jQuery('#hand_P' + actual_player_json + ' .' + material_received + ' .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
 
-                                break;
-                            case 2:
-                                html += 'Clay'
-                                jQuery('#hand_P' + actualPlayer + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
-                                jQuery('#hand_P' + actualPlayer + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
-
-                                break;
-                            case 3:
-                                html += 'Wood'
-                                jQuery('#hand_P' + actualPlayer + ' .wood').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
-                                jQuery('#hand_P' + actualPlayer + ' .wood .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
-
-                                break;
-                            case 4:
-                                html += 'Wool'
-                                jQuery('#hand_P' + actualPlayer + ' .wool').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
-                                jQuery('#hand_P' + actualPlayer + ' .wool .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
-
-                                break;
-                            default:
-                                break;
-                        }
                         html += '</span>';
                         html += '</p></div>';
                         html += '<hr/>';
 
-                        // se actualiza la mano del jugador
-                        changeHandObject(actualPlayer, phase_obj[i]['answer'])
+                        // se actualiza la mano del jugador si avanza, se ignora si va hacia atrás
+                        if (gameDirection === 'forward') {
+                            changeHandObject(actual_player_json, phase_obj[i]['answer'])
+                        }
 
-                    } else if (phase_obj[i]['harbor_trade'] == 'None') {
+                    } else if (phase_obj[i]['trade_offer'] == 'played_card') {
                         // Se ha jugado una carta de desarrollo
-                        if (phase_obj[i]['trade_offer'] == 'played_card') {
 
-                            html += '<div><p>';
-                            html += '<span class="commerce_P' + contador_turnos.val() + '">P' + contador_turnos.val() + '</span>: Played a development card';
-                            html += '</p></div>';
-                            on_development_card_played(phase_obj[i]['development_card_played'])
+                        html += '<div><p>';
+                        html += '<span class="commerce_P' + contador_turnos.val() + '">P' + contador_turnos.val() + '</span>: Played a development card';
+                        html += '</p></div>';
 
-                        } else {
-                            console.log('No debería de existir este log')
+                        if (gameDirection === 'forward') {
+                            on_development_card_played(phase_obj[i]['development_card_played']);
                         }
                     } else {
-
                         html += '<div class="offer"><p>';
                         html += '<span class="commerce_P' + contador_turnos.val() + '">P' + contador_turnos.val() + '</span>: Offer';
                         html += '<br><span class="gives">';
@@ -477,21 +427,22 @@ function init_events_with_game_obj() {
                                             let receives_wood = parseInt(phase_obj[i]['answers'][j][n]['trade_offer']['receives']['wood']);
                                             let receives_wool = parseInt(phase_obj[i]['answers'][j][n]['trade_offer']['receives']['wool']);
 
-
-                                            changeHandObject(giver_nmbr, {
-                                                'cereal': (parseInt($('#hand_P' + giver_nmbr + ' .cereal_quantity').text()) - gives_cereal + receives_cereal),
-                                                'mineral': (parseInt($('#hand_P' + giver_nmbr + ' .mineral_quantity').text()) - gives_mineral + receives_mineral),
-                                                'clay': (parseInt($('#hand_P' + giver_nmbr + ' .bricks_quantity').text()) - gives_clay + receives_clay),
-                                                'wood': (parseInt($('#hand_P' + giver_nmbr + ' .wood_quantity').text()) - gives_wood + receives_wood),
-                                                'wool': (parseInt($('#hand_P' + giver_nmbr + ' .wool_quantity').text()) - gives_wool + receives_wool),
-                                            });
-                                            changeHandObject(receiver_nmbr, {
-                                                'cereal': (parseInt($('#hand_P' + receiver_nmbr + ' .cereal_quantity').text()) + gives_cereal - receives_cereal),
-                                                'mineral': (parseInt($('#hand_P' + receiver_nmbr + ' .mineral_quantity').text()) + gives_mineral - receives_mineral),
-                                                'clay': (parseInt($('#hand_P' + receiver_nmbr + ' .bricks_quantity').text()) + gives_clay - receives_clay),
-                                                'wood': (parseInt($('#hand_P' + receiver_nmbr + ' .wood_quantity').text()) + gives_wood - receives_wood),
-                                                'wool': (parseInt($('#hand_P' + receiver_nmbr + ' .wool_quantity').text()) + gives_wool - receives_wool),
-                                            });
+                                            if (gameDirection === 'forward') {
+                                                changeHandObject(giver_nmbr, {
+                                                    'cereal': (parseInt($('#hand_P' + giver_nmbr + ' .cereal_quantity').text()) - gives_cereal + receives_cereal),
+                                                    'mineral': (parseInt($('#hand_P' + giver_nmbr + ' .mineral_quantity').text()) - gives_mineral + receives_mineral),
+                                                    'clay': (parseInt($('#hand_P' + giver_nmbr + ' .clay_quantity').text()) - gives_clay + receives_clay),
+                                                    'wood': (parseInt($('#hand_P' + giver_nmbr + ' .wood_quantity').text()) - gives_wood + receives_wood),
+                                                    'wool': (parseInt($('#hand_P' + giver_nmbr + ' .wool_quantity').text()) - gives_wool + receives_wool),
+                                                });
+                                                changeHandObject(receiver_nmbr, {
+                                                    'cereal': (parseInt($('#hand_P' + receiver_nmbr + ' .cereal_quantity').text()) + gives_cereal - receives_cereal),
+                                                    'mineral': (parseInt($('#hand_P' + receiver_nmbr + ' .mineral_quantity').text()) + gives_mineral - receives_mineral),
+                                                    'clay': (parseInt($('#hand_P' + receiver_nmbr + ' .clay_quantity').text()) + gives_clay - receives_clay),
+                                                    'wood': (parseInt($('#hand_P' + receiver_nmbr + ' .wood_quantity').text()) + gives_wood - receives_wood),
+                                                    'wool': (parseInt($('#hand_P' + receiver_nmbr + ' .wool_quantity').text()) + gives_wool - receives_wool),
+                                                });
+                                            }
 
                                             // añadir caret
                                             if (gives_cereal - receives_cereal < 0) {
@@ -529,20 +480,20 @@ function init_events_with_game_obj() {
                                             }
 
                                             if (gives_clay - receives_clay < 0) {
-                                                $('#hand_P' + giver_nmbr + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
-                                                $('#hand_P' + giver_nmbr + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
-                                                $('#hand_P' + receiver_nmbr + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
-                                                $('#hand_P' + receiver_nmbr + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
+                                                $('#hand_P' + giver_nmbr + ' .clay .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                                                $('#hand_P' + giver_nmbr + ' .clay').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                                $('#hand_P' + receiver_nmbr + ' .clay .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
+                                                $('#hand_P' + receiver_nmbr + ' .clay').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
                                             } else if (gives_clay - receives_clay > 0) {
-                                                $('#hand_P' + giver_nmbr + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down')
-                                                $('#hand_P' + giver_nmbr + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased')
-                                                $('#hand_P' + receiver_nmbr + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
-                                                $('#hand_P' + receiver_nmbr + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                                $('#hand_P' + giver_nmbr + ' .clay .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down')
+                                                $('#hand_P' + giver_nmbr + ' .clay').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased')
+                                                $('#hand_P' + receiver_nmbr + ' .clay .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                                                $('#hand_P' + receiver_nmbr + ' .clay').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
                                             } else {
-                                                $('#hand_P' + giver_nmbr + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
-                                                $('#hand_P' + giver_nmbr + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
-                                                $('#hand_P' + receiver_nmbr + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
-                                                $('#hand_P' + receiver_nmbr + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
+                                                $('#hand_P' + giver_nmbr + ' .clay .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
+                                                $('#hand_P' + giver_nmbr + ' .clay').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
+                                                $('#hand_P' + receiver_nmbr + ' .clay .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
+                                                $('#hand_P' + receiver_nmbr + ' .clay').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
                                             }
 
                                             if (gives_wood - receives_wood < 0) {
@@ -633,20 +584,22 @@ function init_events_with_game_obj() {
                                             let receives_wool = parseInt(phase_obj[i]['answers'][j][n]['trade_offer']['receives']['wool']);
 
 
-                                            changeHandObject(giver_nmbr, {
-                                                'cereal': (parseInt($('#hand_P' + giver_nmbr + ' .cereal_quantity').text()) - gives_cereal + receives_cereal),
-                                                'mineral': (parseInt($('#hand_P' + giver_nmbr + ' .mineral_quantity').text()) - gives_mineral + receives_mineral),
-                                                'clay': (parseInt($('#hand_P' + giver_nmbr + ' .bricks_quantity').text()) - gives_clay + receives_clay),
-                                                'wood': (parseInt($('#hand_P' + giver_nmbr + ' .wood_quantity').text()) - gives_wood + receives_wood),
-                                                'wool': (parseInt($('#hand_P' + giver_nmbr + ' .wool_quantity').text()) - gives_wool + receives_wool),
-                                            });
-                                            changeHandObject(receiver_nmbr, {
-                                                'cereal': (parseInt($('#hand_P' + receiver_nmbr + ' .cereal_quantity').text()) + gives_cereal - receives_cereal),
-                                                'mineral': (parseInt($('#hand_P' + receiver_nmbr + ' .mineral_quantity').text()) + gives_mineral - receives_mineral),
-                                                'clay': (parseInt($('#hand_P' + receiver_nmbr + ' .bricks_quantity').text()) + gives_clay - receives_clay),
-                                                'wood': (parseInt($('#hand_P' + receiver_nmbr + ' .wood_quantity').text()) + gives_wood - receives_wood),
-                                                'wool': (parseInt($('#hand_P' + receiver_nmbr + ' .wool_quantity').text()) + gives_wool - receives_wool),
-                                            });
+                                            if (gameDirection === 'forward') {
+                                                changeHandObject(giver_nmbr, {
+                                                    'cereal': (parseInt($('#hand_P' + giver_nmbr + ' .cereal_quantity').text()) - gives_cereal + receives_cereal),
+                                                    'mineral': (parseInt($('#hand_P' + giver_nmbr + ' .mineral_quantity').text()) - gives_mineral + receives_mineral),
+                                                    'clay': (parseInt($('#hand_P' + giver_nmbr + ' .clay_quantity').text()) - gives_clay + receives_clay),
+                                                    'wood': (parseInt($('#hand_P' + giver_nmbr + ' .wood_quantity').text()) - gives_wood + receives_wood),
+                                                    'wool': (parseInt($('#hand_P' + giver_nmbr + ' .wool_quantity').text()) - gives_wool + receives_wool),
+                                                });
+                                                changeHandObject(receiver_nmbr, {
+                                                    'cereal': (parseInt($('#hand_P' + receiver_nmbr + ' .cereal_quantity').text()) + gives_cereal - receives_cereal),
+                                                    'mineral': (parseInt($('#hand_P' + receiver_nmbr + ' .mineral_quantity').text()) + gives_mineral - receives_mineral),
+                                                    'clay': (parseInt($('#hand_P' + receiver_nmbr + ' .clay_quantity').text()) + gives_clay - receives_clay),
+                                                    'wood': (parseInt($('#hand_P' + receiver_nmbr + ' .wood_quantity').text()) + gives_wood - receives_wood),
+                                                    'wool': (parseInt($('#hand_P' + receiver_nmbr + ' .wool_quantity').text()) + gives_wool - receives_wool),
+                                                });
+                                            }
 
                                             // añadir caret
                                             if (gives_cereal - receives_cereal < 0) {
@@ -684,20 +637,20 @@ function init_events_with_game_obj() {
                                             }
 
                                             if (gives_clay - receives_clay < 0) {
-                                                $('#hand_P' + giver_nmbr + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
-                                                $('#hand_P' + giver_nmbr + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
-                                                $('#hand_P' + receiver_nmbr + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
-                                                $('#hand_P' + receiver_nmbr + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
+                                                $('#hand_P' + giver_nmbr + ' .clay .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                                                $('#hand_P' + giver_nmbr + ' .clay').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                                $('#hand_P' + receiver_nmbr + ' .clay .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
+                                                $('#hand_P' + receiver_nmbr + ' .clay').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
                                             } else if (gives_clay - receives_clay > 0) {
-                                                $('#hand_P' + giver_nmbr + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down')
-                                                $('#hand_P' + giver_nmbr + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased')
-                                                $('#hand_P' + receiver_nmbr + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
-                                                $('#hand_P' + receiver_nmbr + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                                                $('#hand_P' + giver_nmbr + ' .clay .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down')
+                                                $('#hand_P' + giver_nmbr + ' .clay').removeClass(['increased', 'neutral', 'decreased']).addClass('decreased')
+                                                $('#hand_P' + receiver_nmbr + ' .clay .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+                                                $('#hand_P' + receiver_nmbr + ' .clay').removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
                                             } else {
-                                                $('#hand_P' + giver_nmbr + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
-                                                $('#hand_P' + giver_nmbr + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
-                                                $('#hand_P' + receiver_nmbr + ' .bricks .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
-                                                $('#hand_P' + receiver_nmbr + ' .bricks').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
+                                                $('#hand_P' + giver_nmbr + ' .clay .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
+                                                $('#hand_P' + giver_nmbr + ' .clay').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
+                                                $('#hand_P' + receiver_nmbr + ' .clay .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus')
+                                                $('#hand_P' + receiver_nmbr + ' .clay').removeClass(['increased', 'neutral', 'decreased']).addClass('neutral')
                                             }
 
                                             if (gives_wood - receives_wood < 0) {
@@ -767,66 +720,213 @@ function init_events_with_game_obj() {
                         html += '</div>'
                         html += '<hr/>'
 
+                    } // end if else
+                } // end for
+                commerce_log_text.append(html)
+
+                if (gameDirection === 'backward') {
+                    phase_obj = turn_obj['build_phase'];
+                    for (let i = 0; i < phase_obj.length; i++) {
+                        if (phase_obj[i]['building'] !== null) {
+                            switch (phase_obj[i]['building']) {
+                                case 'town':
+                                    if (phase_obj[i]['finished']) {
+                                        let node = jQuery('#node_' + phase_obj[i]['node_id']);
+                                        paint_it_player_color(null, node);
+                                        node.html('');
+
+                                        changeHandObject(actual_player_json, {
+                                            'cereal': cereal_quantity_text + 1,
+                                            'mineral': mineral_quantity_text + 0,
+                                            'clay': clay_quantity_text + 1,
+                                            'wood': wood_quantity_text + 1,
+                                            'wool': wool_quantity_text + 1,
+                                        });
+                                        //                                        let str = 'node: ' + phase_obj[i]['node_id'] + ' | ' + 'type: ' + 'T' + '\r\n';
+                                        //                                            textarea.text(textarea.text() + str);
+                                    }
+                                    break;
+                                case 'city':
+                                    if (phase_obj[i]['finished']) {
+                                        let node = jQuery('#node_' + phase_obj[i]['node_id']);
+                                        node.html('<i class="fa-solid fa-house"></i>');
+
+                                        changeHandObject(actual_player_json, {
+                                            'cereal': cereal_quantity_text + 2,
+                                            'mineral': mineral_quantity_text + 3,
+                                            'clay': clay_quantity_text + 0,
+                                            'wood': wood_quantity_text + 0,
+                                            'wool': wool_quantity_text + 0,
+                                        });
+
+                                        //                                        let str = 'node: ' + phase_obj[i]['node_id'] + ' | ' + 'type: ' + 'C' + '\r\n';
+                                        //                                            textarea.text(textarea.text() + str);
+                                    }
+                                    break;
+                                case 'road':
+                                    if (phase_obj[i]['finished']) {
+                                        let road = '';
+                                        if (phase_obj[i]['node_id'] < phase_obj[i]['road_to']) {
+                                            road = jQuery('#road_' + phase_obj[i]['node_id'] + '_' + phase_obj[i]['road_to']);
+                                        } else {
+                                            road = jQuery('#road_' + phase_obj[i]['road_to'] + '_' + phase_obj[i]['node_id']);
+                                        }
+                                        paint_it_player_color(null, road);
+
+                                        changeHandObject(actual_player_json, {
+                                            'cereal': cereal_quantity_text + 0,
+                                            'mineral': mineral_quantity_text + 0,
+                                            'clay': clay_quantity_text + 1,
+                                            'wood': wood_quantity_text + 1,
+                                            'wool': wool_quantity_text + 0,
+                                        });
+                                        //                                        let str = 'node: ' + phase_obj[i]['node_id'] + ' | ' + 'road_to: ' + phase_obj[i]['road_to'] + ' | ' + 'type: ' + 'R' + '\r\n'
+                                        //                                            textarea.text(textarea.text() + str)
+                                    }
+                                    break;
+                                case 'card':
+                                    if (phase_obj[i]['finished']) {
+                                        let card_div = jQuery(jQuery('#hand_P' + (actual_player_json) + ' .bottom_hand_row').children()[phase_obj[i]['card_effect']])
+                                        let card_div_quantity = card_div.find('.' + card_div.data('id') + '_quantity')
+                                        let card_div_increment = card_div.find('.increment')
+
+                                        card_div_increment.removeClass(['fa-caret-up', 'fa-caret-down', 'fa-minus']);
+                                        card_div.removeClass(['increased', 'decreased', 'neutral']);
+
+                                        card_div_quantity.text(parseInt(card_div_quantity.text()) - 1)
+
+                                        changeHandObject(actual_player_json, {
+                                            'cereal': cereal_quantity_text + 1,
+                                            'mineral': mineral_quantity_text + 1,
+                                            'clay': clay_quantity_text + 0,
+                                            'wood': wood_quantity_text + 0,
+                                            'wool': wool_quantity_text + 1,
+                                        });
+                                    }
+                                    break;
+                                case 'played_card':
+                                    for (let i = 0; i < phase_obj.length; i++) {
+                                        if (phase_obj[i]['development_card_played']) {
+                                            off_development_card_played(phase_obj[i]['development_card_played'])
+                                        }
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
                     }
                 }
-
-                commerce_log_text.append(html)
                 break;
             case 2:
                 phase_obj = turn_obj['build_phase'];
-                //                        let textarea = $('#buildings_P' + contador_turnos.val())
+
                 for (let i = 0; i < phase_obj.length; i++) {
-                    let building = phase_obj[i]
-                    if (building['building'] !== null) {
-                        switch (building['building']) {
+                    if (phase_obj[i]['building'] !== null) {
+                        html += '<div>';
+                        switch (phase_obj[i]['building']) {
                             case 'town':
-                                if (building['finished']) {
-                                    let node = jQuery('#node_' + building['node_id']);
-                                    paint_it_player_color((parseInt(contador_turnos.val()) - 1), node);
+                                if (phase_obj[i]['finished']) {
+                                    let node = jQuery('#node_' + phase_obj[i]['node_id']);
+                                    paint_it_player_color(actual_player_json, node);
                                     node.html('<i class="fa-solid fa-house"></i>');
 
-                                    let str = 'node: ' + building['node_id'] + ' | ' + 'type: ' + 'T' + '\r\n';
-                                    //                                            textarea.text(textarea.text() + str);
+                                    if (gameDirection === 'forward') {
+                                        changeHandObject(actual_player_json, {
+                                            'cereal': cereal_quantity_text - 1,
+                                            'mineral': mineral_quantity_text - 0,
+                                            'clay': clay_quantity_text - 1,
+                                            'wood': wood_quantity_text - 1,
+                                            'wool': wool_quantity_text - 1,
+                                        });
+                                    }
+
+                                    html += 'Building: Town | ' + 'Node: ' + phase_obj[i]['node_id'];
                                 }
                                 break;
                             case 'city':
-                                if (building['finished']) {
-                                    let node = jQuery('#node_' + building['node_id']);
+                                if (phase_obj[i]['finished']) {
+                                    let node = jQuery('#node_' + phase_obj[i]['node_id']);
                                     node.html('<i class="fa-solid fa-chess-rook"></i>');
-                                    //                                            node.text(node.text() + ' C ');
 
-                                    let str = 'node: ' + building['node_id'] + ' | ' + 'type: ' + 'C' + '\r\n';
-                                    //                                            textarea.text(textarea.text() + str);
+                                    if (gameDirection === 'forward') {
+                                        changeHandObject(actual_player_json, {
+                                            'cereal': cereal_quantity_text - 2,
+                                            'mineral': mineral_quantity_text - 3,
+                                            'clay': clay_quantity_text - 0,
+                                            'wood': wood_quantity_text - 0,
+                                            'wool': wool_quantity_text - 0,
+                                        });
+                                    }
+
+                                    html += 'Building: City | ' + 'Node: ' + phase_obj[i]['node_id'];
                                 }
                                 break;
                             case 'road':
-                                if (building['finished']) {
+                                if (phase_obj[i]['finished']) {
                                     let road = '';
-                                    if (building['node_id'] < building['road_to']) {
-                                        road = jQuery('#road_' + building['node_id'] + '_' + building['road_to']);
+                                    if (phase_obj[i]['node_id'] < phase_obj[i]['road_to']) {
+                                        road = jQuery('#road_' + phase_obj[i]['node_id'] + '_' + phase_obj[i]['road_to']);
                                     } else {
-                                        road = jQuery('#road_' + building['road_to'] + '_' + building['node_id']);
+                                        road = jQuery('#road_' + phase_obj[i]['road_to'] + '_' + phase_obj[i]['node_id']);
                                     }
-                                    paint_it_player_color((parseInt(contador_turnos.val()) - 1), road);
-                                    let str = 'node: ' + building['node_id'] + ' | ' + 'road_to: ' + building['road_to'] + ' | ' + 'type: ' + 'R' + '\r\n'
-                                    //                                            textarea.text(textarea.text() + str)
+                                    paint_it_player_color(actual_player_json, road);
+
+                                    if (gameDirection === 'forward') {
+                                        changeHandObject(actual_player_json, {
+                                            'cereal': cereal_quantity_text - 0,
+                                            'mineral': mineral_quantity_text - 0,
+                                            'clay': clay_quantity_text - 1,
+                                            'wood': wood_quantity_text - 1,
+                                            'wool': wool_quantity_text - 0,
+                                        });
+                                    }
+                                    html += 'Building: Road | ' + 'Node: ' + phase_obj[i]['node_id'] + ' | ' + 'Road_to: ' + phase_obj[i]['road_to'];
                                 }
                                 break;
                             case 'card':
-                                if (building['finished']) {
-                                    let card_div = jQuery(jQuery('#hand_P' + (parseInt(contador_turnos.val()) - 1) + ' .bottom_hand_row').children()[building['card_effect']])
+                                let card_effects = ['Knight', 'Victory Point', 'Road Building', 'Year of plenty', 'Monopoly'];
+                                if (phase_obj[i]['finished']) {
+                                    let card_div = jQuery(jQuery('#hand_P' + actual_player_json + ' .bottom_hand_row').children()[phase_obj[i]['card_effect']])
                                     let card_div_quantity = card_div.find('.' + card_div.data('id') + '_quantity')
                                     let card_div_increment = card_div.find('.increment')
 
-                                    // Se añade la clase caret-up y el color azul para marcar el aumento de cartas
+                                    // Se añade la clase caret-up y el color rojo para marcar el aumento de cartas
                                     card_div_increment.addClass('fa-caret-up');
                                     card_div.addClass('increased');
-                                    card_div_quantity.text(parseInt(card_div_quantity.text()) + 1)
+
+                                    if (gameDirection === 'forward') {
+                                        changeHandObject(actual_player_json, {
+                                            'cereal': cereal_quantity_text - 1,
+                                            'mineral': mineral_quantity_text - 1,
+                                            'clay': clay_quantity_text - 0,
+                                            'wood': wood_quantity_text - 0,
+                                            'wool': wool_quantity_text - 1,
+                                        });
+                                        card_div_quantity.text(parseInt(card_div_quantity.text()) + 1)
+                                    }
+                                    html += 'Building: Card | ' + 'Card Type: ' + card_effects[phase_obj[i]['card_effect']];
+                                }
+                                break;
+                            case 'played_card':
+                                if (phase_obj[i]['development_card_played'] && gameDirection === 'forward') {
+                                    on_development_card_played(phase_obj[i]['development_card_played'])
                                 }
                                 break;
                             default:
                                 break;
                         }
+                        html += '</div>';
+                    }
+                }
+                other_useful_info_text.append(html);
+                if (gameDirection === 'backward') {
+                    phase_obj = turn_obj['end_turn'];
+
+                    if (phase_obj['development_card_played'] && phase_obj['development_card_played'].length) {
+                        // console.log('SE JUEGA CARTA DE DESAROLLO AL INICIO DEL TURNO' + '| Ronda: ' + contador_rondas.val() + ' Turno: ' + contador_turnos.val())
+                        // console.log(phase_obj)
+                        off_development_card_played(phase_obj['development_card_played'][0])
                     }
                 }
                 break;
@@ -834,9 +934,9 @@ function init_events_with_game_obj() {
                 phase_obj = turn_obj['end_turn'];
                 let winner = '';
 
-                if (phase_obj['development_card_played'].length) {
-                    //                            console.log('SE JUEGA CARTA DE DESAROLLO AL FINAL DEL TURNO' + '| Ronda: ' + contador_rondas.val() + ' Turno: ' + contador_turnos.val())
-                    //                            console.log(phase_obj)
+                if (phase_obj['development_card_played'] && phase_obj['development_card_played'].length && gameDirection === 'forward') {
+                    // console.log('SE JUEGA CARTA DE DESAROLLO AL FINAL DEL TURNO' + '| Ronda: ' + contador_rondas.val() + ' Turno: ' + contador_turnos.val())
+                    // console.log(phase_obj)
                     on_development_card_played(phase_obj['development_card_played'][0])
                 }
 
@@ -850,48 +950,74 @@ function init_events_with_game_obj() {
                 if (winner !== '' && contador_turnos.val() >= 4) {
                     alert(winner);
                 }
+
+                if (gameDirection === 'backward') {
+                    let round = game_obj['game']['round_' + (contador_rondas.val() - 1)];
+                    let next_player = actual_player_json + 1; // 1 - 4
+
+                    if (next_player > 3) {
+                        next_player = 0;
+                        round = game_obj['game']['round_' + contador_rondas.val()]; // Se pasa de ronda y se le devuelve el turno al jugador 0
+                    }
+
+                    let next_turn_obj = round['turn_P' + next_player];
+                    let next_phase_obj = next_turn_obj['start_turn'];
+                    let diceroll = turn_obj['start_turn']['dice'];
+                    diceroll_div.text('Diceroll: ' + diceroll);
+
+                    if (next_phase_obj['development_card_played'] && next_phase_obj['development_card_played'].length) {
+                        off_development_card_played(next_phase_obj['development_card_played'][0])
+                    }
+                }
                 break;
 
-        }
-    })
+            default:
+                break;
+        } // switch
+    });
 
 
     //-------------------------------------------------
+    // TODO: hacer solo hasta turno 0, fase 0
     ronda_previa_btn.off().on('click', function (e) {
-        let value = parseInt(contador_rondas.val())
-        contador_rondas.val(value - 1).change()
-    })
+        for (let i = 0; i < 4; i++) {
+            turno_previo_btn.click();
+        }
+    });
     ronda_siguiente_btn.off().on('click', function (e) {
-        let value = parseInt(contador_rondas.val())
-        contador_rondas.val(value + 1).change()
-    })
+        for (let i = 0; i < 4; i++) {
+            turno_siguiente_btn.click();
+        }
+    });
 
     //-------------------------------------------------
+    // TODO: hacer solo hasta fase 0
     turno_previo_btn.off().on('click', function (e) {
-        let value = parseInt(contador_turnos.val())
-        contador_turnos.val(value - 1).change()
-    })
+        for (let i = 0; i < 4; i++) {
+            fase_previa_btn.click();
+        }
+    });
     turno_siguiente_btn.off().on('click', function (e) {
-        let value = parseInt(contador_turnos.val())
-        contador_turnos.val(value + 1).change()
-    })
+        for (let i = 0; i < 4; i++) {
+            fase_siguiente_btn.click();
+        }
+    });
 
     //-------------------------------------------------
     fase_previa_btn.off().on('click', function (e) {
-        let value = parseInt(contador_fases.val())
-        contador_fases.val(value - 1).change()
-    })
+        gameDirection = 'backward';
+        let value = parseInt(contador_fases.val());
+        contador_fases.val(value - 1).change();
+    });
     fase_siguiente_btn.off().on('click', function (e) {
-        let value = parseInt(contador_fases.val())
-        contador_fases.val(value + 1).change()
-
-        //                if (parseInt(contador_fases.val()) == 0){}
-        //TODO
-    })
+        gameDirection = 'forward';
+        let value = parseInt(contador_fases.val());
+        contador_fases.val(value + 1).change();
+    });
 
     millis_for_play.off().on('change', function (e) {
         jQuery('#millis_seleccionados').val(millis_for_play.val());
-    })
+    });
 
     play_btn.off().on('click', function (e) {
         let _this = $(this);
@@ -926,7 +1052,7 @@ function init_events_with_game_obj() {
 function changeHandObject(player, hand_obj) {
     //TODO: Debería de alguna manera mostrar que materiales se han actualizado. Si son iguales no deberían de recalcarse
     $('#hand_P' + player + ' .cereal_quantity').text(hand_obj['cereal']).change();
-    $('#hand_P' + player + ' .bricks_quantity').text(hand_obj['clay']).change();
+    $('#hand_P' + player + ' .clay_quantity').text(hand_obj['clay']).change();
     $('#hand_P' + player + ' .wood_quantity').text(hand_obj['wood']).change();
     $('#hand_P' + player + ' .wool_quantity').text(hand_obj['wool']).change();
     $('#hand_P' + player + ' .mineral_quantity').text(hand_obj['mineral']).change();
@@ -950,13 +1076,13 @@ function paint_it_player_color(player, object_to_paint) {
             object_to_paint.css('background', 'lightyellow') //.css('border', '1px solid black');
             break;
         default:
-            console.log('Jugador: ' + player)
-            alert('Caso ilegal')
+            object_to_paint.css('background', 'none')
             break;
     }
 }
 
 function on_development_card_played(card) {
+    // TODO: mostrar dentro de "otra información útil" que se ha jugado una carta de desarrollo
     jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + card['played_card']).removeClass(['increased', 'neutral', 'decreased']).addClass('decreased')
     jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + card['played_card'] + ' .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down')
     let quantity = jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + card['played_card'] + '_quantity')
@@ -964,6 +1090,7 @@ function on_development_card_played(card) {
 
     switch (card['played_card']) {
         case 'knight':
+            //console.log(quantity.text(parseInt(quantity.text()) - 1));
             break;
         case 'victory_point':
             break;
@@ -974,20 +1101,19 @@ function on_development_card_played(card) {
             material_chosen = ''
             switch (card['material_chosen']) {
                 case 0:
-                    material_chosen = 'cereal'
+                    material_chosen = 'cereal';
                     break;
                 case 1:
-                    material_chosen = 'mineral'
-                    console.log('mineral')
+                    material_chosen = 'mineral';
                     break;
                 case 2:
-                    material_chosen = 'clay'
+                    material_chosen = 'clay';
                     break;
                 case 3:
-                    material_chosen = 'wood'
+                    material_chosen = 'wood';
                     break;
                 case 4:
-                    material_chosen = 'wool'
+                    material_chosen = 'wool';
                     break;
                 default:
                     break;
@@ -997,14 +1123,15 @@ function on_development_card_played(card) {
                 changeHandObject(i, card['hand_P' + i]);
 
                 if (material_chosen != '') {
-                    jQuery('#hand_P' + i + ' .' + material_chosen).addClass('decreased')
+                    jQuery('#hand_P' + i + ' .' + material_chosen).addClass('decreased');
                     jQuery('#hand_P' + i + ' .' + material_chosen + ' .increment').addClass('fa-caret-down');
                 }
             }
 
-            if (material_chosen != '')
-                jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + material_chosen).removeClass('decreased').addClass('increased')
-            jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + material_chosen + ' .increment').removeClass('fa-caret-down').addClass('fa-caret-up');
+            if (material_chosen != '') {
+                jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + material_chosen).removeClass('decreased').addClass('increased');
+                jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + material_chosen + ' .increment').removeClass('fa-caret-down').addClass('fa-caret-up');
+            }
             break;
 
         case 'year_of_plenty':
@@ -1018,9 +1145,56 @@ function on_development_card_played(card) {
     }
 }
 
+function off_development_card_played(card) {
+    // TODO: deshacer carta de desarrollo jugada
+    jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + card['played_card']).removeClass(['increased', 'neutral', 'decreased']).addClass('increased')
+    jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + card['played_card'] + ' .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up')
+    let quantity = jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + card['played_card'] + '_quantity')
+    quantity.text(parseInt(quantity.text()) + 1).change()
 
+    switch (card['played_card']) {
+        case 'knight':
+            // console.log(quantity.text(parseInt(quantity.text()) + 1));
+            break;
+        case 'victory_point':
+            break;
+        case 'failed_victory_point':
+            break;
 
+        case 'monopoly':
+            let material_chosen_array = ['cereal', 'mineral', 'clay', 'wood', 'wool'];
+            material_chosen = material_chosen_array[card['material_chosen']];
 
+            for (let i = 0; i < 4; i++) {
+                changeHandObject(i, card['hand_P' + i]);
+
+                if (material_chosen != '') {
+                    jQuery('#hand_P' + i + ' .' + material_chosen).addClass('increased');
+                    jQuery('#hand_P' + i + ' .' + material_chosen + ' .increment').addClass('fa-caret-up');
+                }
+            }
+
+            if (material_chosen != '') {
+                jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + material_chosen).removeClass('increased').addClass('decreased');
+                jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + material_chosen + ' .increment').removeClass('fa-caret-up').addClass('fa-caret-down');
+            }
+            break;
+
+        case 'year_of_plenty':
+            break;
+        case 'road_building':
+            break;
+
+        case 'none':
+        default:
+            break;
+    }
+}
+
+function deleteCaretStyling() {
+    jQuery('.increment').removeClass(['fa-caret-up', 'fa-caret-down', 'fa-minus']);
+    jQuery('.increment').parent().removeClass(['increased', 'decreased', 'neutral']);
+}
 
 function setup() {
     //            nodeSetup();

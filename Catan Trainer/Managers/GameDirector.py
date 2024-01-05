@@ -57,40 +57,6 @@ class GameDirector:
 
         return start_turn_object
 
-    def start_commerce_phase(self, player=-1, depth=1):
-        """
-        Esta función permite pasar a la fase de comercio a un jugador.
-        :param depth: (int) número de veces que ha comerciado ya el jugador.
-        :param player: (int) número que representa al jugador.
-        :return: object
-        """
-        commerce_phase_object = {}
-
-        self.game_manager.set_phase(1)
-
-        commerce_response = self.game_manager.call_to_bot_on_commerce_phase(player)
-
-        commerce_phase_object = self.game_manager.on_commerce_response(commerce_phase_object, commerce_response, depth,
-                                                                       player)
-
-        return commerce_phase_object
-
-    def start_build_phase(self, player=-1):
-        """
-        Esta función permite pasar a la fase de construcción a un jugador.
-        :param player: (int) número que representa al jugador.
-        :return: void
-        """
-        build_phase_object = {}
-
-        self.game_manager.set_phase(2)
-
-        build_response = self.game_manager.call_to_bot_on_build_phase(player)
-
-        build_phase_object = self.game_manager.build_phase_object(build_phase_object, build_response, player)
-
-        return build_phase_object
-
     def end_turn(self, player=-1):
         """
         Esta función permite finalizar el turno
@@ -98,7 +64,6 @@ class GameDirector:
         :param player: número que representa al jugador
         :return: void
         """
-
         end_turn_object = {'development_card_played': []}
 
         self.game_manager.set_phase(3)
@@ -139,6 +104,40 @@ class GameDirector:
 
         end_turn_object['victory_points'] = vp
         return end_turn_object
+
+    def start_commerce_phase(self, player=-1, depth=1):
+        """
+        Esta función permite pasar a la fase de comercio a un jugador.
+        :param depth: (int) número de veces que ha comerciado ya el jugador.
+        :param player: (int) número que representa al jugador.
+        :return: object
+        """
+        commerce_phase_object = {}
+
+        self.game_manager.set_phase(1)
+
+        commerce_response = self.game_manager.call_to_bot_on_commerce_phase(player)
+
+        commerce_phase_object = self.game_manager.on_commerce_response(commerce_phase_object, commerce_response, depth,
+                                                                       player)
+
+        return commerce_phase_object
+
+    def start_build_phase(self, player=-1):
+        """
+        Esta función permite pasar a la fase de construcción a un jugador.
+        :param player: (int) número que representa al jugador.
+        :return: void
+        """
+        build_phase_object = {}
+
+        self.game_manager.set_phase(2)
+
+        build_response = self.game_manager.call_to_bot_on_build_phase(player)
+
+        build_phase_object = self.game_manager.build_phase_object(build_phase_object, build_response, player)
+
+        return build_phase_object
 
     # Round #
     def round_start(self):

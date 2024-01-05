@@ -1,7 +1,5 @@
-from Classes.Constants import BuildConstants, HarborConstants
+from Classes.Constants import BuildConstants
 from Classes.DevelopmentCards import DevelopmentCard
-from Classes.Hand import Hand
-from Classes.TradeOffer import TradeOffer
 from Managers.GameManager import GameManager
 from TraceLoader.TraceLoader import TraceLoader
 
@@ -16,8 +14,6 @@ class GameDirector:
         self.trace_loader = TraceLoader()
         # self.turn_manager = TurnManager()
         # self.bot_manager = BotManager()
-        self.MAX_COMMERCE_TRADES = 2
-        self.already_played_development_card = False
         return
 
     def reset_game_values(self):
@@ -42,11 +38,11 @@ class GameDirector:
 
         turn_start_response = self.game_manager.on_turn_start(player)
 
-        if isinstance(turn_start_response, DevelopmentCard) and not self.already_played_development_card:
+        if isinstance(turn_start_response, DevelopmentCard) and not self.game_manager.get_card_used():
             played_card_obj = self.game_manager.play_development_card(player, turn_start_response)
             if not (played_card_obj['played_card'] == 'victory_point' or
                     played_card_obj['played_card'] == 'failed_victory_point'):
-                self.already_played_development_card = True
+                self.game_manager.set_card_used(True)
             start_turn_object['development_card_played'].append(played_card_obj)
 
         self.game_manager.throw_dice()
@@ -77,65 +73,10 @@ class GameDirector:
 
         commerce_response = self.game_manager.call_to_bot_on_commerce_phase(player)
 
-        # TODO: mover lógica a self.game_manager.on_commerce_response() -> devuelve un objeto similar a "commerce_phase_object"
-        if isinstance(commerce_response, TradeOffer) and depth <= self.MAX_COMMERCE_TRADES:
-            commerce_phase_object['trade_offer'] = commerce_response.__to_object__()
-            commerce_phase_object['harbor_trade'] = False
+        commerce_phase_object = self.game_manager.on_commerce_response(commerce_phase_object, commerce_response, depth,
+                                                                       player)
 
-            # TODO: commerce_response siempre será True dado que está llegando ya como TradeOffer
-            if commerce_response:
-
-                if self.game_manager.get_players()[player]['resources'].resources.has_this_more_materials(
-                        commerce_response.gives):
-                    commerce_phase_object['inviable'] = False
-                    answer_object = self.game_manager.send_trade_to_everyone(commerce_response)
-                    commerce_phase_object['answers'] = answer_object
-                else:
-                    commerce_phase_object['inviable'] = True
-                    # TODO: se queja de que no puede hacerla, le da una segunda oportunidad, en otro fallo
-                    #       le salta la fase de comercio
-
-            return commerce_phase_object
-        elif isinstance(commerce_response, dict):
-
-            commerce_phase_object['trade_offer'] = commerce_response
-            commerce_phase_object['harbor_trade'] = True
-
-            harbor_type = self.game_manager.board.check_for_player_harbors(player, commerce_response['gives'])
-            if harbor_type == HarborConstants.NONE:
-                response = self.game_manager.commerce_manager.trade_without_harbor(
-                    self.game_manager.get_players()[player]['resources'], commerce_response['gives'],
-                    commerce_response['receives'])
-            elif harbor_type == HarborConstants.ALL:
-                response = self.game_manager.commerce_manager.trade_through_harbor(
-                    self.game_manager.get_players()[player]['resources'], commerce_response['gives'],
-                    commerce_response['receives'])
-            else:
-                response = self.game_manager.commerce_manager.trade_through_special_harbor(
-                    self.game_manager.get_players()[player]['resources'], commerce_response['gives'],
-                    commerce_response['receives'])
-
-            if isinstance(response, Hand):
-                commerce_phase_object['answer'] = response.resources.__to_object__()
-                self.game_manager.get_players()[player]['player'].hand = response
-            else:
-                commerce_phase_object['answer'] = response
-            return commerce_phase_object
-        elif isinstance(commerce_response, DevelopmentCard) and not self.already_played_development_card:
-            played_card_obj = self.game_manager.play_development_card(player, commerce_response)
-            commerce_phase_object['trade_offer'] = 'played_card'
-            commerce_phase_object['harbor_trade'] = False
-            commerce_phase_object['development_card_played'] = played_card_obj
-            if not (played_card_obj['played_card'] == 'victory_point' or
-                    played_card_obj['played_card'] == 'failed_victory_point'):
-                self.already_played_development_card = True
-
-            return commerce_phase_object
-        else:
-            commerce_phase_object['trade_offer'] = 'None'
-            return commerce_phase_object
-        # TODO: fin de mover lógica a self.game_manager.on_commerce_response()
-        # TODO: hacer un return de "commerce_phase_object" tras añadirle los datos de self.game_manager.on_commerce_response()
+        return commerce_phase_object
 
     def start_build_phase(self, player=-1):
         """
@@ -186,7 +127,7 @@ class GameDirector:
                 build_phase_object['error_msg'] = 'Falta de materiales'
                 # TODO: Avisar que no se ha podido construir
 
-        elif isinstance(build_response, DevelopmentCard) and not self.already_played_development_card:
+        elif isinstance(build_response, DevelopmentCard) and not self.game_manager.get_card_used():
             played_card_obj = self.game_manager.play_development_card(player, build_response)
             build_phase_object['building'] = 'played_card'
             build_phase_object['finished'] = 'played_card'
@@ -194,7 +135,7 @@ class GameDirector:
 
             if not (played_card_obj['played_card'] == 'victory_point' or
                     played_card_obj['played_card'] == 'failed_victory_point'):
-                self.already_played_development_card = True
+                self.game_manager.set_card_used(True)
 
             return build_phase_object
         else:
@@ -217,11 +158,11 @@ class GameDirector:
 
         turn_end_response = self.game_manager.call_to_bot_on_turn_end(player)
 
-        if isinstance(turn_end_response, DevelopmentCard) and not self.already_played_development_card:
+        if isinstance(turn_end_response, DevelopmentCard) and not self.game_manager.get_card_used():
             played_card_obj = self.game_manager.play_development_card(player, turn_end_response)
             if not (played_card_obj['played_card'] == 'victory_point' or
                     played_card_obj['played_card'] == 'failed_victory_point'):
-                self.already_played_development_card = True
+                self.game_manager.set_card_used(True)
             end_turn_object['development_card_played'].append(played_card_obj)
 
         # -- -- -- -- Calcular carretera más larga -- -- -- --
@@ -235,8 +176,8 @@ class GameDirector:
         # Calculamos quien tiene la carretera más larga
         real_longest_road = {'longest_road': 5, 'player': -1}
         for node in self.game_manager.get_board_nodes():
-            longest_road_obj = self.game_manager.longest_road_calculator(node, 1, {'longest_road': 0, 'player': -1}, -1,
-                                                                         [node['id']])
+            longest_road_obj = self.game_manager.longest_road_calculator(node, 1, {'longest_road': 0, 'player': -1},
+                                                                         -1, [node['id']])
 
             if longest_road_obj['longest_road'] > real_longest_road['longest_road']:
                 real_longest_road = longest_road_obj
@@ -258,7 +199,7 @@ class GameDirector:
         Esta función permite comenzar una ronda nueva.
         """
         round_object = {}
-        self.already_played_development_card = False
+        self.game_manager.set_card_used(False)
 
         for i in range(4):
             obj = {}
@@ -272,8 +213,7 @@ class GameDirector:
             # Si se intenta comercia con un jugador una tercera vez, devuelve None y corta el bucle
             commerce_phase_array, depth = [], 1
             while True:
-                commerce_phase_object = self.start_commerce_phase(self.game_manager.get_whose_turn_is_it(),
-                                                                  depth)
+                commerce_phase_object = self.start_commerce_phase(self.game_manager.get_whose_turn_is_it(), depth)
                 commerce_phase_array.append(commerce_phase_object)
                 if commerce_phase_object['trade_offer'] == 'None':
                     break

@@ -1,7 +1,6 @@
 class Materials:
     """
     Clase que representa los materiales. Se usa tanto en la mano de los jugadores como en las ofertas
-    TODO: Hay que poner lo que lleva la clase
     """
 
     def __init__(self, cereal=0, mineral=0, clay=0, wood=0, wool=0):

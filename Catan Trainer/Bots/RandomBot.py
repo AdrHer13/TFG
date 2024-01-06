@@ -131,6 +131,7 @@ class RandomBot(BotInterface):
         material = random.randint(0, 4)
         return material
 
+    # noinspection DuplicatedCode
     def on_road_building_card_use(self):
         valid_nodes = self.board.valid_road_nodes(self.id)
         if len(valid_nodes) > 1:

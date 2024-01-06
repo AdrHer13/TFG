@@ -4,7 +4,6 @@ from Classes.Materials import Materials
 class Hand:
     """
     Clase que representa la mano de los jugadores
-    TODO: Hay que poner lo que lleva la clase
     """
 
     def __init__(self):

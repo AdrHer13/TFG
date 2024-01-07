@@ -13,8 +13,8 @@ class CommerceManager:
         """
         Sustituye 4 del material pasado por 1 del deseado.
         :param player_hand: (Hand()) materiales que tiene el jugador.
-        :param gives: (int) ID del material quiere cambiar con el puerto.
-        :param receives: (int) ID del material quiere recibir a cambio.
+        :param gives: (int) ID del material que quiere cambiar con el puerto.
+        :param receives: (int) ID del material que quiere recibir a cambio.
         :return: bool
         """
         if player_hand.get_from_id(gives) >= 4:
@@ -28,8 +28,8 @@ class CommerceManager:
         """
         Sustituye 3 del material pasado por 1 del deseado.
         :param player_hand: (Hand()) materiales que tiene el jugador.
-        :param gives: (int) ID del material quiere cambiar con el puerto.
-        :param receives: (int) ID del material quiere recibir a cambio.
+        :param gives: (int) ID del material que quiere cambiar con el puerto.
+        :param receives: (int) ID del material que quiere recibir a cambio.
         :return: bool
         """
         if player_hand.get_from_id(gives) >= 3:
@@ -43,8 +43,8 @@ class CommerceManager:
         """
         Sustituye 2 del material pasado por 1 del deseado.
         :param player_hand: (Hand()) materiales que tiene el jugador.
-        :param gives: (int) ID del material quiere cambiar con el puerto.
-        :param receives: (int) ID del material quiere recibir a cambio.
+        :param gives: (int) ID del material que quiere cambiar con el puerto.
+        :param receives: (int) ID del material que quiere recibir a cambio.
         :return: bool
         """
         if player_hand.get_from_id(gives) >= 2:

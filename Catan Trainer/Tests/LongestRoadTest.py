@@ -1,7 +1,7 @@
 from Managers.GameManager import *
 
 
-class LongestRoadTest:
+class TestLongestRoadCalculator:
     def longest_road_test(self):
         gm = GameManager(for_test=True)
         longest_road = {'longest_road': 4, 'player': -1}
@@ -34,7 +34,7 @@ class LongestRoadTest:
                 longest_road_obj = gm.longest_road_calculator(node, 1, longest_road, -1, [node['id']])
 
                 if longest_road_obj['longest_road'] >= longest_road['longest_road']:
-                    real_longest_road = longest_road_obj
+                    longest_road = longest_road_obj
 
             if case == 0:  # Caso 1: Aún no hay nadie con 5 o más caminos
                 assert longest_road == {'longest_road': 4, 'player': -1}
@@ -51,5 +51,5 @@ class LongestRoadTest:
 
 
 if __name__ == '__main__':
-    test = LongestRoadTest()
+    test = TestLongestRoadCalculator()
     test.longest_road_test()

@@ -32,7 +32,7 @@ class TestMaterials:
         materials_for_road = Materials(0, 0, 1, 1, 0)
         assert materials_for_road.has_this_more_materials(bc.ROAD)
 
-        materials_for_card = Materials(1, 0, 0, 1, 1)
+        materials_for_card = Materials(1, 1, 0, 0, 1)
         assert materials_for_card.has_this_more_materials(bc.CARD)
 
         # Comprobamos que falla correctamente también
@@ -44,3 +44,9 @@ class TestMaterials:
         # Y debería de tener materiales suficientes
         materials = Materials(1, 0, 4, 2, 7)
         assert materials.has_this_more_materials(bc.TOWN)
+
+
+if __name__ == '__main__':
+    test = TestMaterials()
+    test.test_add_materials()
+    test.test_has_more_materials_than_build_values()

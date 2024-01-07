@@ -978,27 +978,37 @@ function init_events_with_game_obj() {
 
 
     //-------------------------------------------------
-    // TODO: hacer solo hasta turno 0, fase 0
     ronda_previa_btn.off().on('click', function (e) {
-        for (let i = 0; i < 4; i++) {
+        if(contador_turnos.val() == 1) {
+            turno_previo_btn.click();
+        }
+        while (contador_turnos.val() > 1) {
             turno_previo_btn.click();
         }
     });
     ronda_siguiente_btn.off().on('click', function (e) {
-        for (let i = 0; i < 4; i++) {
+        if(contador_turnos.val() == 1) {
+            turno_siguiente_btn.click();
+        }
+        while (contador_turnos.val() > 1) {
             turno_siguiente_btn.click();
         }
     });
 
     //-------------------------------------------------
-    // TODO: hacer solo hasta fase 0
     turno_previo_btn.off().on('click', function (e) {
-        for (let i = 0; i < 4; i++) {
+        if(contador_fases.val() == 1) {
+            fase_previa_btn.click();
+        }
+        while (contador_fases.val() > 1) {
             fase_previa_btn.click();
         }
     });
     turno_siguiente_btn.off().on('click', function (e) {
-        for (let i = 0; i < 4; i++) {
+        if(contador_fases.val() == 1) {
+            fase_siguiente_btn.click();
+        }
+        while (contador_fases.val() > 1) {
             fase_siguiente_btn.click();
         }
     });

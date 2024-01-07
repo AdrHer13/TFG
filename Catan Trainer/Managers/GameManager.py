@@ -1,7 +1,8 @@
 from Classes.Board import Board
-from Classes.Constants import MaterialConstants, DevelopmentCardConstants
+from Classes.Constants import *
 from Classes.DevelopmentCards import *
 from Classes.TradeOffer import TradeOffer
+from Classes.Hand import *
 from Managers.BotManager import BotManager
 from Managers.CommerceManager import CommerceManager
 from Managers.TurnManager import TurnManager
@@ -14,6 +15,8 @@ class GameManager:
     MAX_COMMERCE_DEPTH = 2
 
     def __init__(self, for_test=False):
+        self.MAX_COMMERCE_TRADES = 2
+        self.already_played_development_card = False
         self.last_dice_roll = 0
         self.largest_army = 2
         self.largest_army_player = {}
@@ -72,8 +75,6 @@ class GameManager:
 
                         if self.board.nodes[node]['has_city']:
                             player['player'].hand.add_material(terrain['terrain_type'], 2)
-                            # Es posible que la nomenclatura aquí sea un poco confusa, "resources" es
-                            # la mano de materiales del BotManager
                             player['resources'].add_material(terrain['terrain_type'], 2)
                         else:
                             player['player'].hand.add_material(terrain['terrain_type'], 1)
@@ -216,16 +217,16 @@ class GameManager:
         :return: {bool, string}. Devuelve si se ha podido o no construir el poblado, y en caso negativo, la razón.
         """
         # TODO: quitar getters? Python no los necesita
-        player_hand = self.bot_manager.players[player_id]['resources']
-        if player_hand.resources.has_this_more_materials('town'):
+        if self.bot_manager.players[player_id]['resources'].resources.has_this_more_materials('town'):
             build_town_obj = self.board.build_town(self.turn_manager.whose_turn_is_it, node)
 
             if build_town_obj['response']:
-                player_hand.remove_material([MaterialConstants.CEREAL,
-                                             MaterialConstants.CLAY,
-                                             MaterialConstants.WOOD,
-                                             MaterialConstants.WOOL
-                                             ], 1)
+                self.bot_manager.players[player_id]['resources'].remove_material([MaterialConstants.CEREAL,
+                                                                                  MaterialConstants.CLAY,
+                                                                                  MaterialConstants.WOOD,
+                                                                                  MaterialConstants.WOOL
+                                                                                  ], 1)
+                self.bot_manager.players[player_id]['player'].hand = self.bot_manager.players[player_id]['resources']
 
             return build_town_obj
         else:
@@ -238,14 +239,14 @@ class GameManager:
         :param node: (Tree()) Número que representa un nodo en el tablero.
         :return: {bool, string}. Devuelve si se ha podido o no construir la ciudad, y en caso negativo, la razón.
         """
-        player_hand = self.bot_manager.players[player_id]['resources']
-        if player_hand.resources.has_this_more_materials('city'):
+        if self.bot_manager.players[player_id]['resources'].resources.has_this_more_materials('city'):
             build_city_obj = self.board.build_city(self.turn_manager.whose_turn_is_it, node)
 
             if build_city_obj['response']:
-                player_hand.remove_material(MaterialConstants.CEREAL, 2)
-                player_hand.remove_material(MaterialConstants.MINERAL, 3)
-                self.bot_manager.players[player_id]['player'].hand = player_hand
+                self.bot_manager.players[player_id]['resources'].remove_material(MaterialConstants.CEREAL, 2)
+                self.bot_manager.players[player_id]['resources'].remove_material(MaterialConstants.MINERAL, 3)
+
+                self.bot_manager.players[player_id]['player'].hand = self.bot_manager.players[player_id]['resources']
 
             return build_city_obj
         else:
@@ -260,14 +261,14 @@ class GameManager:
         :param free: (bool) Usado solo para cuando construyes carreteras gratis con una carta de desarrollo.
         :return: {bool, string}. Devuelve si se ha podido o no construir la carretera, y en caso negativo, la razón.
         """
-        player_hand = self.bot_manager.players[player_id]['resources']
-        if player_hand.resources.has_this_more_materials('road') or free:
+        if self.bot_manager.players[player_id]['resources'].resources.has_this_more_materials('road') or free:
             build_road_obj = self.board.build_road(self.turn_manager.whose_turn_is_it, node, road)
 
             if build_road_obj['response'] and not free:
-                player_hand.remove_material([MaterialConstants.CLAY,
-                                             MaterialConstants.WOOD
-                                             ], 1)
+                self.bot_manager.players[player_id]['resources'].remove_material([MaterialConstants.CLAY,
+                                                                                  MaterialConstants.WOOD
+                                                                                  ], 1)
+                self.bot_manager.players[player_id]['player'].hand = self.bot_manager.players[player_id]['resources']
 
             return build_road_obj
         else:
@@ -425,12 +426,11 @@ class GameManager:
         :param card:
         :return: {}
         """
-
         card_obj = {}
 
         if card.__to_object__() in self.bot_manager.players[player_id]['development_cards'].check_hand():
-            if card.type != DevelopmentCardConstants.VICTORY_POINT:
-                self.bot_manager.players[player_id]['development_cards'].delete_card(card.id)  # Borramos la carta
+            if card.get_type() != DevelopmentCardConstants.VICTORY_POINT:
+                self.bot_manager.players[player_id]['development_cards'].delete_card(card.get_id())  # Borramos la carta
 
                 self.bot_manager.players[player_id]['player'].development_cards_hand.hand = \
                     self.bot_manager.players[player_id]['development_cards'].hand
@@ -444,7 +444,7 @@ class GameManager:
 
             return card_obj
 
-        if card.type == DevelopmentCardConstants.KNIGHT:
+        if card.get_type() == DevelopmentCardConstants.KNIGHT:
             # se le suma un nuevo caballero al jugador y se le pide mover al ladrón
             self.bot_manager.players[player_id]['knights'] += 1
 
@@ -476,7 +476,8 @@ class GameManager:
             card_obj['stolen_material_id'] = move_thief_obj['stolen_material_id']
 
             return card_obj
-        elif card.type == DevelopmentCardConstants.VICTORY_POINT:
+
+        elif card.get_type() == DevelopmentCardConstants.VICTORY_POINT:
             # Si tienen suficientes puntos de victoria para ganar. Ganan automáticamente, si no, no pasa nada
 
             if (self.bot_manager.players[player_id]['victory_points'] +
@@ -488,9 +489,10 @@ class GameManager:
                 card_obj['played_card'] = 'failed_victory_point'
 
             return card_obj
-        elif card.type == DevelopmentCardConstants.PROGRESS_CARD:
 
-            if card.effect == DevelopmentCardConstants.MONOPOLY_EFFECT:
+        elif card.get_type() == DevelopmentCardConstants.PROGRESS_CARD:
+
+            if card.get_effect() == DevelopmentCardConstants.MONOPOLY_EFFECT:
                 # Elige material
                 material_chosen = self.bot_manager.players[player_id]['player'].on_monopoly_card_use()
                 material_sum = 0
@@ -518,7 +520,7 @@ class GameManager:
 
                 return card_obj
 
-            elif card.effect == DevelopmentCardConstants.ROAD_BUILDING_EFFECT:
+            elif card.get_effect() == DevelopmentCardConstants.ROAD_BUILDING_EFFECT:
 
                 # Se piden en qué puntos quieren construir carreteras
                 road_nodes = self.bot_manager.players[player_id]['player'].on_road_building_card_use()
@@ -582,7 +584,7 @@ class GameManager:
                     card_obj['roads'] = None
                     return card_obj
 
-            elif card.effect == DevelopmentCardConstants.YEAR_OF_PLENTY_EFFECT:
+            elif card.get_effect() == DevelopmentCardConstants.YEAR_OF_PLENTY_EFFECT:
                 card_obj['played_card'] = 'year_of_plenty'
 
                 # Eligen 2 materiales (puede ser el mismo 2 veces)
@@ -737,3 +739,167 @@ class GameManager:
         :return: terrain
         """
         return self.board.terrain
+
+    def get_card_used(self):
+        """
+        :return: bool
+        """
+        return self.already_played_development_card
+
+    def set_card_used(self, used):
+        """
+        :param used: bool
+        :return:
+        """
+        self.already_played_development_card = used
+        return
+
+    def check_if_thief_is_called(self, start_turn_object, player_id=0):
+        """
+        :param player_id: int
+        :param start_turn_object: dict
+        :return: start_turn_object, dict
+        """
+        if self.get_last_dice_roll() == 7:
+            for obj in self.get_players():
+                if obj['resources'].get_total() > 7:
+                    total = obj['player'].on_having_more_than_7_materials_when_thief_is_called().get_total()
+                    max_hand = (total / 2).__floor__()
+
+                    while total > max_hand:
+                        obj['resources'].remove_material(random.randint(0, 4), 1)
+                        total = obj['resources'].get_total()
+
+            on_moving_thief = self.get_players()[player_id]['player'].on_moving_thief()
+            move_thief_obj = self.move_thief(on_moving_thief['terrain'], on_moving_thief['player'])
+
+            start_turn_object['past_thief_terrain'] = move_thief_obj['last_thief_terrain']
+            start_turn_object['thief_terrain'] = move_thief_obj['terrain_id']
+            start_turn_object['robbed_player'] = move_thief_obj['robbed_player']
+            start_turn_object['stolen_material_id'] = move_thief_obj['stolen_material_id']
+        return start_turn_object
+
+    def on_commerce_response(self, commerce_phase_object, commerce_response, depth, player_id):
+        """
+        :param commerce_phase_object: dict
+        :param commerce_response: TradeOffer(), dict, DevelopmentCard, None
+        :param depth: int
+        :param player_id: int
+        :return: dict
+        """
+        if isinstance(commerce_response, TradeOffer) and depth <= self.MAX_COMMERCE_TRADES:
+            commerce_phase_object['trade_offer'] = commerce_response.__to_object__()
+            commerce_phase_object['harbor_trade'] = False
+
+            if self.get_players()[player_id]['resources'].resources.has_this_more_materials(commerce_response.gives):
+                commerce_phase_object['inviable'] = False
+                answer_object = self.send_trade_to_everyone(commerce_response)
+                commerce_phase_object['answers'] = answer_object
+            else:
+                commerce_phase_object['inviable'] = True
+
+            return commerce_phase_object
+
+        elif isinstance(commerce_response, dict):
+
+            commerce_phase_object['trade_offer'] = commerce_response
+            commerce_phase_object['harbor_trade'] = True
+
+            harbor_type = self.board.check_for_player_harbors(player_id, commerce_response['gives'])
+
+            if harbor_type == HarborConstants.NONE:
+                response = self.commerce_manager.trade_without_harbor(
+                    self.bot_manager.players[player_id]['resources'], commerce_response['gives'],
+                    commerce_response['receives'])
+            elif harbor_type == HarborConstants.ALL:
+                response = self.commerce_manager.trade_through_harbor(
+                    self.bot_manager.players[player_id]['resources'], commerce_response['gives'],
+                    commerce_response['receives'])
+            else:
+                response = self.commerce_manager.trade_through_special_harbor(
+                    self.bot_manager.players[player_id]['resources'], commerce_response['gives'],
+                    commerce_response['receives'])
+
+            if isinstance(response, Hand):
+                self.bot_manager.players[player_id]['resources'] = response
+                self.bot_manager.players[player_id]['player'].hand = self.bot_manager.players[player_id]['resources']
+                commerce_phase_object['answer'] = response.resources.__to_object__()
+
+                return commerce_phase_object
+            else:
+                commerce_phase_object['answer'] = response
+
+            return commerce_phase_object
+
+        elif isinstance(commerce_response, DevelopmentCard) and not self.already_played_development_card:
+            played_card_obj = self.play_development_card(player_id, commerce_response)
+            commerce_phase_object['trade_offer'] = 'played_card'
+            commerce_phase_object['harbor_trade'] = False
+            commerce_phase_object['development_card_played'] = played_card_obj
+            if not (played_card_obj['played_card'] == 'victory_point' or
+                    played_card_obj['played_card'] == 'failed_victory_point'):
+                self.already_played_development_card = True
+
+            return commerce_phase_object
+        else:
+            commerce_phase_object['trade_offer'] = 'None'
+            return commerce_phase_object
+
+    def build_phase_object(self, build_phase_object, build_response, player_id):
+        """
+         :param build_phase_object: dict
+         :param build_response: dict, DevelopmentCard, None
+         :param player_id: int
+         :return: dict
+         """
+        if isinstance(build_response, dict):
+            build_phase_object = build_response
+
+            if build_response['building'] == BuildConstants.TOWN:
+                built = self.build_town(player_id, build_response['node_id'])
+
+            elif build_response['building'] == BuildConstants.CITY:
+                built = self.build_city(player_id, build_response['node_id'])
+
+            elif build_response['building'] == BuildConstants.CARD:
+                built = self.build_development_card(player_id)
+
+            elif build_response['building'] == BuildConstants.ROAD:
+                built = self.build_road(player_id, build_response['node_id'], build_response['road_to'])
+
+            else:
+                build_phase_object['finished'] = False
+                build_phase_object['error_msg'] = 'Se intenta constrir algo fuera de las reglas'
+                return build_phase_object
+
+            if built['response']:
+                if build_response['building'] in [BuildConstants.TOWN, BuildConstants.CITY]:
+                    self.get_players()[player_id]['victory_points'] += 1
+
+                if build_response['building'] == BuildConstants.CARD:
+                    build_phase_object['card_id'] = built['card_effect']
+                    build_phase_object['card_type'] = built['card_type']
+                    build_phase_object['card_effect'] = built['card_effect']
+
+                build_phase_object['finished'] = True
+
+                return build_phase_object
+            else:
+                build_phase_object['finished'] = False
+                build_phase_object['error_msg'] = 'Falta de materiales'
+                return build_phase_object
+
+        elif isinstance(build_response, DevelopmentCard) and not self.already_played_development_card:
+            played_card_obj = self.play_development_card(player_id, build_response)
+            build_phase_object['building'] = 'played_card'
+            build_phase_object['finished'] = True
+            build_phase_object['development_card_played'] = played_card_obj
+
+            if not (played_card_obj['played_card'] == 'victory_point' or
+                    played_card_obj['played_card'] == 'failed_victory_point'):
+                self.already_played_development_card = True
+
+            return build_phase_object
+        else:
+            build_phase_object['building'] = 'None'
+            return build_phase_object

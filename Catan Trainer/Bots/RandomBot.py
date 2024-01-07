@@ -36,7 +36,7 @@ class RandomBot(BotInterface):
     def on_turn_start(self):
         # self.development_cards_hand.add_card(DevelopmentCard(99, 0, 0))
         if len(self.development_cards_hand.check_hand()) and random.randint(0, 1):
-            return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[0].id)
+            return self.development_cards_hand.select_card_by_id(self.development_cards_hand.hand[0].id)
         return None
 
     def on_having_more_than_7_materials_when_thief_is_called(self):
@@ -52,12 +52,12 @@ class RandomBot(BotInterface):
 
     def on_turn_end(self):
         if len(self.development_cards_hand.check_hand()) and random.randint(0, 1):
-            return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[0].id)
+            return self.development_cards_hand.select_card_by_id(self.development_cards_hand.hand[0].id)
         return None
 
     def on_commerce_phase(self):
         if len(self.development_cards_hand.check_hand()) and random.randint(0, 1):
-            return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[0].id)
+            return self.development_cards_hand.select_card_by_id(self.development_cards_hand.hand[0].id)
 
         answer = random.randint(0, 1)
         if answer:
@@ -91,7 +91,7 @@ class RandomBot(BotInterface):
         self.board = board_instance
 
         if len(self.development_cards_hand.check_hand()) and random.randint(0, 1):
-            return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[0].id)
+            return self.development_cards_hand.select_card_by_id(self.development_cards_hand.hand[0].id)
 
         answer = random.randint(0, 2)
         # Pueblo / carretera
@@ -131,6 +131,7 @@ class RandomBot(BotInterface):
         material = random.randint(0, 4)
         return material
 
+    # noinspection DuplicatedCode
     def on_road_building_card_use(self):
         valid_nodes = self.board.valid_road_nodes(self.id)
         if len(valid_nodes) > 1:

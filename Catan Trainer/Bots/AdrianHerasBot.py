@@ -22,7 +22,8 @@ class AdrianHerasBot(BotInterface):
 
     def on_trade_offer(self, incoming_trade_offer=TradeOffer()):
         """
-        Hay que tener en cuenta que gives se refiere a los materiales que da el jugador que hace la oferta, luego en este caso es lo que recibe
+        Hay que tener en cuenta que gives se refiere a los materiales que da el jugador que hace la oferta,
+         luego en este caso es lo que recibe
         :param incoming_trade_offer:
         :return:
         """
@@ -40,11 +41,11 @@ class AdrianHerasBot(BotInterface):
                 # Si una es un caballero
                 if self.development_cards_hand.hand[i].type == DevelopmentCardConstants.KNIGHT:
                     # La juega
-                    return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[i].id)
+                    return self.development_cards_hand.select_card_by_id(self.development_cards_hand.hand[i].id)
         return None
 
     def on_having_more_than_7_materials_when_thief_is_called(self):
-        # comprueba si tiene materiales para construir una ciudad. Si los tiene, descarta el resto que no le sirvan.
+        # Comprueba si tiene materiales para construir una ciudad. Si los tiene, descarta el resto que no le sirvan.
         if self.hand.resources.has_this_more_materials(BuildConstants.CITY):
             while self.hand.get_total() > 7:
                 if self.hand.get_wool() > 0:
@@ -59,12 +60,12 @@ class AdrianHerasBot(BotInterface):
                     self.hand.remove_material(2, 1)
                 if self.hand.get_wood() > 0:
                     self.hand.remove_material(3, 1)
-        # Si no tiene materiales para hacer una ciudad, devuelve su mano a pelo, lo que hace que descarten de manera aleatoria cartas de su mano
+        # Si no tiene materiales para hacer una ciudad descarta de manera aleatoria cartas de su mano
         return self.hand
 
     def on_moving_thief(self):
         # Bloquea un número 6 u 8 donde no tenga un pueblo, pero que tenga uno del rival
-        # Si no se dan las condiciones lo deja donde está, lo que hace que el GameManager lo ponga en un lugar cualquiera
+        # Si no se dan las condiciones lo deja donde está, lo que hace que el GameManager lo ponga en un lugar aleatorio
         terrain_with_thief_id = -1
         for terrain in self.board.terrain:
             if not terrain['has_thief']:
@@ -96,7 +97,7 @@ class AdrianHerasBot(BotInterface):
                 # Si una es un punto de victoria
                 if self.development_cards_hand.hand[i].type == DevelopmentCardConstants.VICTORY_POINT:
                     # La juega
-                    return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[i].id)
+                    return self.development_cards_hand.select_card_by_id(self.development_cards_hand.hand[i].id)
         return None
 
     def on_commerce_phase(self):
@@ -111,13 +112,13 @@ class AdrianHerasBot(BotInterface):
                     # Si una es un punto de monopolio
                     if self.development_cards_hand.hand[i].effect == DevelopmentCardConstants.MONOPOLY_EFFECT:
                         # La juega
-                        return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[i].id)
+                        return self.development_cards_hand.select_card_by_id(self.development_cards_hand.hand[i].id)
 
-        gives = Materials(0, 0, 0, 0, 0)
-        receives = Materials(0, 0, 0, 0, 0)
+        gives = Materials()
+        receives = Materials()
 
         # No pide nada porque puede hacer una ciudad
-        if self.town_number >= 1 and self.hand.resources.has_this_more_materials(Materials(2, 3, 0, 0, 0)):
+        if self.town_number >= 1 and self.hand.resources.has_this_more_materials(Materials('city')):
             self.material_given_more_than_three = None
             return None
         # Pedir lo que falte para una ciudad, ofrece del resto de materiales iguales a los que pide
@@ -135,12 +136,7 @@ class AdrianHerasBot(BotInterface):
                 for i in range(0, total_given_materials):
                     # Se mezcla el orden de materiales
                     order = [MaterialConstants.CLAY, MaterialConstants.WOOD, MaterialConstants.WOOL]
-                    for j in range(0, 2):
-                        num = random.randint(0, 2)
-                        num2 = random.randint(0, 2)
-                        support = order[num]
-                        order[num] = order[num2]
-                        order[num2] = support
+                    random.shuffle(order)
                     # una vez mezclado se recorre el orden de los materiales y se coge el primero que tenga un valor
                     for mat in order:
                         if self.hand.resources.get_from_id(mat) > 0:
@@ -150,7 +146,7 @@ class AdrianHerasBot(BotInterface):
                 gives = Materials(materials_to_give[0], materials_to_give[1], materials_to_give[2],
                                   materials_to_give[3], materials_to_give[4])
 
-            # Si no hay más materiales que los pedidos, simplemente se prueba a entregar todo lo que se tenga en mano
+            # Si no hay más materiales que los pedidos, simplemente se prueba a entregar todos lo que se tenga en mano
             else:
                 gives = Materials(0, 0, clay_hand, wood_hand, wool_hand)
 
@@ -188,12 +184,7 @@ class AdrianHerasBot(BotInterface):
                     # Se mezcla el orden de materiales
                     order = [MaterialConstants.CEREAL, MaterialConstants.MINERAL, MaterialConstants.CLAY,
                              MaterialConstants.WOOD, MaterialConstants.WOOL]
-                    for j in range(0, 5):
-                        num = random.randint(0, 4)
-                        num2 = random.randint(0, 4)
-                        support = order[num]
-                        order[num] = order[num2]
-                        order[num2] = support
+                    random.shuffle(order)
                     # una vez mezclado se recorre el orden de los materiales y se coge el primero que tenga un valor
                     for mat in order:
                         if self.hand.resources.get_from_id(mat) > 1 or mat == MaterialConstants.MINERAL:
@@ -211,7 +202,7 @@ class AdrianHerasBot(BotInterface):
 
     def on_build_phase(self, board_instance):
         # Juega año de la cosecha si le faltan 2 o 1 materiales para completar una construcción
-        # Juega construir carreteras si le da para camino más largo o con ello puede alcanzar un puerto (que no tenga ya)
+        # Juega construir carreteras si le da para camino más largo o con ello puede alcanzar un puerto (que no tenga)
         self.board = board_instance
 
         # Si tiene mano de cartas de desarrollo
@@ -226,7 +217,7 @@ class AdrianHerasBot(BotInterface):
                         (self.development_cards_hand.hand[i].effect == DevelopmentCardConstants.ROAD_BUILDING_EFFECT and
                          len(road_possibilities) > 1)):
                     # La juega
-                    return self.development_cards_hand.play_card_by_id(self.development_cards_hand.hand[i].id)
+                    return self.development_cards_hand.select_card_by_id(self.development_cards_hand.hand[i].id)
 
         if self.hand.resources.has_this_more_materials(BuildConstants.CITY) and self.town_number > 0:
             possibilities = self.board.valid_city_nodes(self.id)
@@ -256,12 +247,12 @@ class AdrianHerasBot(BotInterface):
                         return {'building': BuildConstants.TOWN, 'node_id': node_id}
 
         if self.hand.resources.has_this_more_materials(BuildConstants.ROAD):
-            # Construye sí o sí carretera si acaba en un nodo costero, pero si no lo busca aleatoriamente?
-            # Idealmente debe de poder buscar caminos y encontrar el ideal a un puerto o similar, pero eso implicaría
+            # Construye sí o sí carretera si acaba en un nodo costero, pero, ¿y si no lo busca aleatoriamente?
+            # Idealmente, debe de poder buscar caminos y encontrar el ideal a un puerto o similar, pero eso implicaría
             #  programar un algoritmo de búsqueda de nodos por pesos que actualmente me parece imposible de hacer.
 
-            # Comprobar qué caminos posibles hay para cada nodo. Escoger más alto si nodo es 32 o más. Más bajo si es menor
-            #       / hacer override de eso si uno de los dos es directamente costero
+            # Comprobar qué caminos posibles hay para cada nodo. Escoger el más alto si el ID del nodo es 32 o más.
+            # Más bajo si es menor hacer override de eso si uno de los dos es directamente costero
 
             # TODO: Sería ideal que funcionase pero hay poco tiempo, que coja una aleatoria, pero si es costero y tiene puerto lo coge siempre
             possibilities = self.board.valid_road_nodes(self.id)
@@ -282,9 +273,9 @@ class AdrianHerasBot(BotInterface):
                             'node_id': possibilities[road_node]['starting_node'],
                             'road_to': possibilities[road_node]['finishing_node']}
 
+        # Si tiene materiales para hacer una carta, la construye. Como va la última en la pila,
+        #    ya habrá construido cualquier otra cosa más útil
         if self.hand.resources.has_this_more_materials(BuildConstants.CARD):
-            # Si tiene materiales para hacer una carta, la construye. Como va la última en la pila,
-            #    ya habrá construido cualquier otra cosa más útil
             return {'building': BuildConstants.CARD}
 
         return None
@@ -296,10 +287,11 @@ class AdrianHerasBot(BotInterface):
         possibilities = self.board.valid_starting_nodes()
         # Se generan las variables que tendrán el resultado final
         chosen_node_id = -1
-        chosen_road_to_id = -1
+        # chosen_road_to_id = -1
         for node_id in possibilities:
             for terrain_id in self.board.nodes[node_id]['contacting_terrain']:
-                if self.board.terrain[terrain_id]['probability'] == 6 or self.board.terrain[terrain_id]['probability'] == 8:
+                if (self.board.terrain[terrain_id]['probability'] == 6 or
+                        self.board.terrain[terrain_id]['probability'] == 8):
                     chosen_node_id = node_id
 
         # Si no hay ningún nodo ideal, se elige aleatoriamente entre las opciones
@@ -319,10 +311,12 @@ class AdrianHerasBot(BotInterface):
         # Elige el material que más haya intercambiado (variable global de esta clase)
         return self.material_given_more_than_three
 
+    # noinspection DuplicatedCode
     def on_road_building_card_use(self):
         # Elige dos carreteras aleatorias entre las opciones
         valid_nodes = self.board.valid_road_nodes(self.id)
-        # Se supone que solo se ha usado la carta si hay más de 2 carreteras disponibles a construir, pero se dejan por si acaso
+        # Se supone que solo se ha usado la carta si hay más de 2 carreteras disponibles a construir,
+        # pero se dejan por si acaso
         if len(valid_nodes) > 1:
             while True:
                 road_node = random.randint(0, len(valid_nodes) - 1)

@@ -5,171 +5,174 @@ from Classes.Constants import *
 class TestBoard:
 
     def test_build_town(self):
-        board_build_town = Board()
+        board = Board()
+
         # Comprobamos que el nodo no es de ningún jugador y que no tiene ciudad (estado inicial)
-        node = board_build_town.nodes[0]
+        node = board.nodes[0]
         assert node['player'] == -1 and node['has_city'] is False
 
-        # Para poder construir un pueblo, se necesita una carretera adyacente, así pues se añade directamente para evitar problemas
-        #  Esto añade una carretera del nodo 0 al 1 y viceversa, poseída por el jugador 0
-        finishing_node = board_build_town.nodes[1]
+        # Para poder construir un pueblo, se necesita una carretera adyacente, así pues, se añade directamente.
+        # Esto añade una carretera del nodo 0 al 1 y viceversa, poseída por el jugador 0
+        finishing_node = board.nodes[1]
         node['roads'].append({'player_id': 0, 'node_id': 1})
         finishing_node['roads'].append({'player_id': 0, 'node_id': 0})
 
-        # Construimos un pueblo y comprobamos que existe el pueblo
-        board_build_town.build_town(0, 0)
+        # Construimos un pueblo y comprobamos que existe
+        board.build_town(0, 0)
         assert node['player'] == 0 and node['has_city'] is False
 
-        # Para poder intentar construir un pueblo sobre el pueblo, el jugador 2 necesita una carretera que apunte al nodo 0
-        finishing_node = board_build_town.nodes[8]
+        # Para poder intentar construir un pueblo, el jugador 2 necesita una carretera que apunte al nodo 0
+        finishing_node = board.nodes[8]
         node['roads'].append({'player_id': 2, 'node_id': 8})
         finishing_node['roads'].append({'player_id': 2, 'node_id': 0})
 
-        # Construimos en un nodo donde ya había un pueblo, no debería de funcionar y por tanto el pueblo debería de no existir
-        board_build_town.build_town(2, 0)
+        # Intentamos construir un pueblo donde ya había uno, esto no es posible, no debería de pasar nada
+        board.build_town(2, 0)
         assert node['player'] != 2
 
-        # Construimos en un nodo adyacente al pueblo inicial (ya hay una carretera que apunta al nodo 1), no debería de dejar
-        node = board_build_town.nodes[1]
-        board_build_town.build_town(0, 1)
+        # Construimos un pueblo adyacente al inicial (ya hay una carretera que apunta al nodo 1), no debería de dejar
+        node = board.nodes[1]
+        board.build_town(0, 1)
         assert node['player'] == -1 and node['has_city'] is False
 
         # Sí que debería dejar en el nodo 2, asumiendo que hay una carretera que lo conecta
-        board_build_town.nodes[1]['roads'].append({'player_id': 0, 'node_id': 2})
-        board_build_town.nodes[2]['roads'].append({'player_id': 0, 'node_id': 1})
+        board.nodes[1]['roads'].append({'player_id': 0, 'node_id': 2})
+        board.nodes[2]['roads'].append({'player_id': 0, 'node_id': 1})
 
         # Construimos un pueblo y comprobamos que existe el pueblo
-        node = board_build_town.nodes[2]
-        board_build_town.build_town(0, 2)
+        node = board.nodes[2]
+        board.build_town(0, 2)
         assert node['player'] == 0 and node['has_city'] is False
         return
 
     def test_build_city(self):
-        board_build_city = Board()
+        board = Board()
 
         # Comprobamos que el nodo no es de ningún jugador y que no tiene ciudad (estado inicial)
-        node = board_build_city.nodes[0]
+        node = board.nodes[0]
         assert node['player'] == -1 and node['has_city'] is False
 
-        # Para poder construir un pueblo, se necesita una carretera adyacente, así pues se añade directamente para evitar problemas
-        #  Esto añade una carretera del nodo 0 al 1 y viceversa, poseída por el jugador 0
-        finishing_node = board_build_city.nodes[1]
+        # Para poder construir un pueblo, se necesita una carretera adyacente, así pues, se añade directamente.
+        # Esto añade una carretera del nodo 0 al 1 y viceversa, poseída por el jugador 0
+        finishing_node = board.nodes[1]
         node['roads'].append({'player_id': 0, 'node_id': 1})
         finishing_node['roads'].append({'player_id': 0, 'node_id': 0})
 
         # Construimos la ciudad sobre el nodo 0 y comprobamos que no existe, dado que no había un pueblo antes
-        board_build_city.build_city(0, 0)
+        board.build_city(0, 0)
         assert node['player'] == -1 and node['has_city'] is False
 
         # Construimos un pueblo y comprobamos que existe el pueblo
-        board_build_city.build_town(0, 0)
+        board.build_town(0, 0)
         assert node['player'] == 0 and node['has_city'] is False
 
         # Construimos la ciudad sobre el nodo 0 y comprobamos que existe
-        board_build_city.build_city(0, 0)
+        board.build_city(0, 0)
         assert node['player'] == 0 and node['has_city'] is True
 
-        # Para poder intentar construir un pueblo sobre la ciudad, el jugador 2 necesita una carretera que apunte al nodo 0
-        finishing_node = board_build_city.nodes[8]
+        # Para poder intentar construir un pueblo, el jugador 2 necesita una carretera que apunte al nodo 0
+        finishing_node = board.nodes[8]
         node['roads'].append({'player_id': 2, 'node_id': 8})
         finishing_node['roads'].append({'player_id': 2, 'node_id': 0})
 
-        # Construimos en un nodo donde ya había una ciudad, no debería de funcionar y por tanto el pueblo debería de no existir
-        board_build_city.build_town(2, 0)
+        # Intentamos construir un pueblo donde ya había una ciudad, esto no es posible, no debería de pasar nada
+        board.build_town(2, 0)
         assert node['player'] != 2
 
-        # Construimos en un nodo donde ya había una ciudad, no debería de funcionar y por tanto la ciudad debería de no existir
-        board_build_city.build_city(2, 0)
+        # Intentamos construir una ciudad donde ya había una, esto no es posible, no debería de pasar nada
+        board.build_city(2, 0)
         assert node['player'] != 2
 
-        # Construimos un pueblo en un nodo adyacente al pueblo inicial (ya hay una carretera que apunta al nodo 1), no debería de dejar
-        node = board_build_city.nodes[1]
-        board_build_city.build_town(0, 1)
+        # Construimos un pueblo adyacente al inicial (ya hay una carretera que apunta al nodo 1), no debería de dejar
+        node = board.nodes[1]
+        board.build_town(0, 1)
         assert node['player'] == -1 and node['has_city'] is False
 
-        # Construimos una ciudad en un nodo adyacente al pueblo inicial (ya hay una carretera que apunta al nodo 1), no debería de dejar
-        node = board_build_city.nodes[1]
-        board_build_city.build_city(0, 1)
+        # Construimos una ciudad adyacente a la inicial (ya hay una carretera que apunta al nodo 1), no debería de dejar
+        node = board.nodes[1]
+        board.build_city(0, 1)
         assert node['player'] == -1 and node['has_city'] is False
 
         # Sí que debería dejar en el nodo 2, asumiendo que hay una carretera que lo conecta
-        board_build_city.nodes[1]['roads'].append({'player_id': 0, 'node_id': 2})
-        board_build_city.nodes[2]['roads'].append({'player_id': 0, 'node_id': 1})
+        board.nodes[1]['roads'].append({'player_id': 0, 'node_id': 2})
+        board.nodes[2]['roads'].append({'player_id': 0, 'node_id': 1})
 
         # Construimos un pueblo y luego una ciudad y comprobamos que existe la ciudad
-        node = board_build_city.nodes[2]
-        board_build_city.build_town(0, 2)
-        board_build_city.build_city(0, 2)
+        node = board.nodes[2]
+        board.build_town(0, 2)
+        board.build_city(0, 2)
         assert node['player'] == 0 and node['has_city'] is True
         return
 
     def test_build_road(self):
-        board_build_road = Board()
+        board = Board()
 
         # Comprobamos que no hay ninguna carretera en el nodo y que no es de ningún jugador
-        node = board_build_road.nodes[0]
+        node = board.nodes[0]
         assert len(node['roads']) == 0 and node['player'] == -1 and node['has_city'] is False
 
-        # Para poder construir una carretera se necesita un pueblo primero, así que lo ponemos directamente sin usar la función
+        # Para poder construir una carretera se necesita un pueblo, así que lo ponemos directamente sin usar la función
         node['player'] = 0
 
         # Construimos una carretera dirección al nodo 1 desde el nodo 0 y comprobamos que existe en ambos nodos
-        finishing_node = board_build_road.nodes[1]
+        finishing_node = board.nodes[1]
 
-        board_build_road.build_road(0, 0, 1)
+        board.build_road(0, 0, 1)
         assert node['roads'] == [{'player_id': 0, 'node_id': 1}] and \
                finishing_node['roads'] == [{'player_id': 0, 'node_id': 0}]
 
         # Transformamos el pueblo en una ciudad y construimos una carretera al nodo 8
-        board_build_road.build_city(0, 0)
-        finishing_node = board_build_road.nodes[8]
+        board.build_city(0, 0)
+        finishing_node = board.nodes[8]
 
-        board_build_road.build_road(0, 0, 8)
+        board.build_road(0, 0, 8)
         assert node['roads'] == [{'player_id': 0, 'node_id': 1}, {'player_id': 0, 'node_id': 8}] and \
                finishing_node['roads'] == [{'player_id': 0, 'node_id': 0}]
 
         # Probamos a construir una carretera desde la que ya existe en el nodo 1, hasta el nodo 2
-        node = board_build_road.nodes[1]
-        finishing_node = board_build_road.nodes[2]
+        node = board.nodes[1]
+        finishing_node = board.nodes[2]
 
-        board_build_road.build_road(0, 1, 2)
+        board.build_road(0, 1, 2)
         assert node['roads'] == [{'player_id': 0, 'node_id': 0}, {'player_id': 0, 'node_id': 2}] and \
                finishing_node['roads'] == [{'player_id': 0, 'node_id': 1}]
 
-        # Aseguramos que no se puede construir una carretera donde ya existe una, para eso le damos el nodo 8 al jugador 2
-        #  y apuntamos al nodo 0 con la carretera. Debería de seguir perteneciéndole al jugador 0 y no al jugador 2
-        board_build_road.nodes[8]['player'] = 2
+        # Aseguramos que no se puede construir una carretera donde ya existe una, para eso le damos el nodo 8 al
+        # jugador 2 y apuntamos al nodo 0 con la carretera. Debería de seguir perteneciéndole al jugador 0
+        board.nodes[8]['player'] = 2
 
-        node = board_build_road.nodes[8]
-        finishing_node = board_build_road.nodes[0]
+        node = board.nodes[8]
+        finishing_node = board.nodes[0]
 
-        board_build_road.build_road(2, 8, 0)
+        board.build_road(2, 8, 0)
         assert node['roads'] == [{'player_id': 0, 'node_id': 0}] and \
                finishing_node['roads'] == [{'player_id': 0, 'node_id': 1}, {'player_id': 0, 'node_id': 8}]
 
-        # Aseguramos que no se puede construir una carretera empezando en el pueblo de un rival, adyacente a una carretera nuestra
-        node = board_build_road.nodes[8]
-        finishing_node = board_build_road.nodes[9]
+        # Aseguramos que no se puede construir una carretera empezando en el pueblo de un rival,
+        # adyacente a una carretera nuestra
+        node = board.nodes[8]
+        finishing_node = board.nodes[9]
 
-        board_build_road.build_road(0, 8, 9)
+        board.build_road(0, 8, 9)
         assert node['roads'] == [{'player_id': 0, 'node_id': 0}] and \
                len(finishing_node['roads']) == 0
 
-        # Aseguramos que no se puede construir una carretera empezando en la ciudad de un rival, adyacente a una carretera nuestra
-        board_build_road.build_city(2, 8)
-        node = board_build_road.nodes[8]
-        finishing_node = board_build_road.nodes[9]
+        # Aseguramos que no se puede construir una carretera empezando en la ciudad de un rival,
+        # adyacente a una carretera nuestra
+        board.build_city(2, 8)
+        node = board.nodes[8]
+        finishing_node = board.nodes[9]
 
-        board_build_road.build_road(0, 8, 9)
+        board.build_road(0, 8, 9)
         assert node['roads'] == [{'player_id': 0, 'node_id': 0}] and \
                len(finishing_node['roads']) == 0
 
         # Aseguramos que no se puede construir una carretera empezando en la carretera de un rival
-        board_build_road.build_road(2, 8, 9)
-        node = board_build_road.nodes[9]
-        finishing_node = board_build_road.nodes[10]
+        board.build_road(2, 8, 9)
+        node = board.nodes[9]
+        finishing_node = board.nodes[10]
 
-        board_build_road.build_road(0, 8, 9)
+        board.build_road(0, 8, 9)
         assert node['roads'] == [{'player_id': 2, 'node_id': 8}] and \
                len(finishing_node['roads']) == 0
 
@@ -179,31 +182,34 @@ class TestBoard:
         # Ver que el ladrón cambia de casilla de su inicial a una secundaria
         # Que cambia de la secundaria a otra diferente
         # Que no se puede colocar el ladrón en el mismo lugar
-        board_move_thief = Board()
+        board = Board()
 
         # Vemos que el desierto empieza con el ladrón
-        terrain = board_move_thief.terrain
+        terrain = board.terrain
         assert terrain[7]['has_thief']
 
-        # Lo movemos a la ficha de terreno 5, y comprobamos que ya no está en el desierto. También nos aseguramos de que la respuesta sea correcta
-        response = board_move_thief.move_thief(5)
+        # Lo movemos a la ficha de terreno 5, y comprobamos que ya no está en el desierto.
+        # También nos aseguramos de que la respuesta sea correcta
+        response = board.move_thief(5)
         assert terrain[5]['has_thief'] and not terrain[7]['has_thief'] and response['response']
 
-        # Lo movemos a la 3, luego comprobamos que no está ni en la 5 ni en el desierto. También nos aseguramos de que la respuesta sea correcta
-        response = board_move_thief.move_thief(3)
+        # Lo movemos a la 3, luego comprobamos que no está ni en la 5 ni en el desierto.
+        # También nos aseguramos de que la respuesta sea correcta
+        response = board.move_thief(3)
         assert terrain[3]['has_thief'] and not terrain[5]['has_thief'] and not terrain[7]['has_thief'] and response[
             'response']
 
         # Lo volvemos a mover a la 3, lo que causa que se mueva a una ficha aleatoria (que no sea donde ya estaba)
-        #   dado que el ladrón no puede moverse al mismo lugar. Comprobamos que está en la pieza que nos dice la respuesta,
-        #   que su "response" es False y que no está en la casilla 3.
-        response = board_move_thief.move_thief(3)
+        # dado que el ladrón no puede moverse al mismo lugar. Comprobamos que está en la pieza que nos dice la
+        # respuesta, que su "response" es False y que no está en la casilla 3.
+        response = board.move_thief(3)
         assert terrain[response['terrain_id']]['has_thief'] and not terrain[3]['has_thief'] and not response['response']
 
         return
 
     def test_valid_town_nodes(self):
-        # Comprobamos que, dado un estado inicial conocido, valid_town_nodes solo devuelve los nodos donde el jugador puede construir pueblos
+        # Comprobamos que, dado un estado inicial conocido, valid_town_nodes solo devuelve los nodos donde
+        # el jugador puede construir pueblos
         board = Board()
 
         # Ponemos carreteras del jugador 0 que enlazan los nodos 0, 1 y 2
@@ -213,7 +219,7 @@ class TestBoard:
         board.nodes[2]['roads'].append({'player_id': 0, 'node_id': 1})
 
         # Al llamar a valid_town_nodes debería de devolver un array con 0, 1 y 2
-        #    (dado que como no hay otros pueblos, todos los nodos con carretera son posibles)
+        # (dado que como no hay otros pueblos, todos los nodos con carretera son posibles)
         valid_nodes = board.valid_town_nodes(0)
         assert valid_nodes == [0, 1, 2]
 
@@ -237,7 +243,8 @@ class TestBoard:
         return
 
     def test_valid_city_nodes(self):
-        # Comprobamos que, dado un estado inicial conocido, valid_town_nodes solo devuelve los nodos donde el jugador puede construir ciudades
+        # Comprobamos que, dado un estado inicial conocido, valid_town_nodes solo devuelve los nodos donde
+        # el jugador puede construir ciudades
         board = Board()
 
         # Le damos los nodos 0 y 53 al J0 y el nodo 4 al J1.
@@ -316,25 +323,22 @@ class TestBoard:
 
     def test_valid_starting_nodes(self):
         board = Board()
-
         # valid_starting_nodes devuelve todos los nodos que no son costeros (hard_coded cuáles son costeros)
-        #    y que no sea de ningún jugador o adyacentes a un pueblo de un jugador
+        # y que no sea de ningún jugador o adyacentes a un pueblo de un jugador
         valid_nodes = board.valid_starting_nodes()
-        print(valid_nodes)
         assert valid_nodes == [9, 10, 11, 12, 13, 18, 19, 20, 21, 22, 23, 24, 29, 30, 31, 32, 33, 34, 35, 40, 41, 42,
                                43, 44]
 
         # Hacemos un pueblo en el nodo 11, lo que debería eliminar de la selección los nodos 10, 11, 12 y 21
         board.nodes[11]['player'] = 0
         valid_nodes = board.valid_starting_nodes()
-        print(valid_nodes)
         assert valid_nodes == [9, 13, 18, 19, 20, 22, 23, 24, 29, 30, 31, 32, 33, 34, 35, 40, 41, 42, 43, 44]
 
         return
 
     def test_check_for_player_harbors(self):
         # Comprobar que devuelve puerto de trigo cuando el jugador tiene uno, y que devuelve puerto de todos
-        #    si no tiene el puerto del material elegido (o es None)
+        # si no tiene el puerto del material elegido (o es None)
         board = Board()
 
         # Le damos al J0 un puerto genérico y uno de trigo. Al J1 le damos un puerto de minerales.
@@ -359,3 +363,16 @@ class TestBoard:
         assert harbor_response == HarborConstants.ALL
 
         return
+
+
+if __name__ == '__main__':
+    test = TestBoard()
+    test.test_build_town()
+    test.test_build_city()
+    test.test_build_road()
+    test.test_move_thief()
+    test.test_valid_town_nodes()
+    test.test_valid_city_nodes()
+    test.test_valid_road_nodes()
+    test.test_valid_starting_nodes()
+    test.test_check_for_player_harbors()

@@ -85,17 +85,16 @@ class GameDirector:
                 break
 
         # Calculamos quien tiene la carretera más larga
-        real_longest_road = {'longest_road': 5, 'player': -1}
         for node in self.game_manager.get_board_nodes():
             longest_road_obj = self.game_manager.longest_road_calculator(node, 1, {'longest_road': 0, 'player': -1},
                                                                          -1, [node['id']])
 
-            if longest_road_obj['longest_road'] > real_longest_road['longest_road']:
-                real_longest_road = longest_road_obj
+            if longest_road_obj['longest_road'] > self.game_manager.get_longest_road()['longest_road']:
+                self.game_manager.set_longest_road(longest_road_obj)
         # Se le da el título a quien tenga la carretera más larga
-        if real_longest_road['player'] != -1:
-            self.game_manager.get_players()[real_longest_road['player']]['longest_road'] = 1
-            self.game_manager.get_players()[real_longest_road['player']]['victory_points'] += 2
+        if self.game_manager.get_longest_road()['player'] != -1:
+            self.game_manager.get_players()[self.game_manager.get_longest_road()['player']]['longest_road'] = 1
+            self.game_manager.get_players()[self.game_manager.get_longest_road()['player']]['victory_points'] += 2
 
         vp = {}
         for i in range(4):

@@ -13,6 +13,7 @@ class GameManager:
     Clase que representa el game manager, entidad que tiene todas las acciones que pueden hacer los jugadores
     """
     MAX_COMMERCE_DEPTH = 2
+    longest_road = {'longest_road': 4, 'player': -1}
 
     def __init__(self, for_test=False):
         self.MAX_COMMERCE_TRADES = 2
@@ -405,8 +406,7 @@ class GameManager:
         :return:
         """
         for road in node['roads']:
-            if ((road['node_id'] not in visited_nodes) and
-                    (road['player_id'] == player_id or player_id == -1) and
+            if ((road['node_id'] not in visited_nodes) and (road['player_id'] == player_id or player_id == -1) and
                     (road['player_id'] == node['player'] or node['player'] == -1)):
                 visited_nodes.append(road['node_id'])
 
@@ -694,6 +694,20 @@ class GameManager:
         :return: int
         """
         return self.last_dice_roll
+
+    def set_longest_road(self, new_longest_road):
+        """
+        :param new_longest_road: dict
+        :return:
+        """
+        self.longest_road = new_longest_road
+        return
+
+    def get_longest_road(self):
+        """
+        :return: dict
+        """
+        return self.longest_road
 
     def player_resources_total(self, player_id):
         """

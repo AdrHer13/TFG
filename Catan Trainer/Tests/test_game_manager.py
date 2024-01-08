@@ -177,19 +177,83 @@ class TestGameManager:
                                                                             MaterialConstants.MINERAL,
                                                                             MaterialConstants.WOOL
                                                                             ], 1)
-
+        self.game_manager.move_thief(9, 3)
         assert self.game_manager.bot_manager.players[3]['resources'].get_total() == 2
         assert self.game_manager.bot_manager.players[0]['resources'].get_total() == 1
+
+    def test_game_start_build_towns_and_roads(self):
+        self.game_manager.reset_game_values()
+
+        valid_nodes = self.game_manager.board.valid_starting_nodes()
+
+        node, road = self.game_manager.on_game_start_build_towns_and_roads(0)
+
+        assert node in valid_nodes
+        assert road in self.game_manager.board.nodes[node]['adjacent']
+
+    def test_longest_road(self):
+        self.game_manager.reset_game_values()
+        longest_road = {'longest_road': 4, 'player': -1}
+
+        for case in range(4):
+            if case == 0:  # Caso 1: Aún no hay nadie con 5 o más caminos
+                self.game_manager.board.nodes[0]['player'] = 0
+                self.game_manager.board.build_road(0, 0, 1)
+                self.game_manager.board.build_road(0, 1, 2)
+                self.game_manager.board.build_road(0, 0, 8)
+
+            if case == 1:  # Caso 2: Hay un jugador con 5 o más caminos
+                self.game_manager.board.build_road(0, 8, 9)
+                self.game_manager.board.build_road(0, 9, 10)
+
+            if case == 2:  # Caso 3: Otro jugador tiene igual cantidad de caminos que el que poseía el camino más largo
+                self.game_manager.board.nodes[17]['player'] = 1
+                self.game_manager.board.build_road(1, 17, 18)
+                self.game_manager.board.build_road(1, 18, 19)
+                self.game_manager.board.build_road(1, 19, 20)
+                self.game_manager.board.build_road(1, 20, 31)
+                self.game_manager.board.build_road(1, 31, 32)
+
+            if case == 3:  # Caso 4: Otro jugador tiene más caminos que el que poseía el camino más largo
+                self.game_manager.board.build_road(1, 32, 33)
+                self.game_manager.board.build_road(1, 33, 34)
+                self.game_manager.board.build_road(1, 34, 35)
+
+            for node in self.game_manager.board.nodes:
+                longest_road_obj = self.game_manager.longest_road_calculator(node, 1, longest_road, -1, [node['id']])
+
+                if longest_road_obj['longest_road'] >= longest_road['longest_road']:
+                    longest_road = longest_road_obj
+
+            if case == 0:  # Caso 1: Aún no hay nadie con 5 o más caminos
+                assert longest_road == {'longest_road': 4, 'player': -1}
+
+            if case == 1:  # Caso 2: Hay un jugador con 5 o más caminos
+                assert longest_road == {'longest_road': 5, 'player': 0}
+
+            if case == 2:  # Caso 3: Otro jugador alcanza la misma cantidad de caminos que el que tiene la carretera
+                assert longest_road == {'longest_road': 5, 'player': 0}
+
+            if case == 3:  # Caso 4: Otro jugador tiene más caminos que el que poseía el camino más largo
+                assert longest_road == {'longest_road': 8, 'player': 1}
+        return
+
+    def test_play_development_card(self):
+        self.game_manager.reset_game_values()
+
+
 
 
 
 if __name__ == '__main__':
     test = TestGameManager()
-    # test.test_reset_values()
-    # test.test_give_resources()
-    # test.test_send_trade_to_everyone()
-    # test.test_build_town()
-    # test.test_build_city()
-    # test.test_build_road()
-    # test.test_build_development_card()
+    test.test_reset_values()
+    test.test_give_resources()
+    test.test_send_trade_to_everyone()
+    test.test_build_town()
+    test.test_build_city()
+    test.test_build_road()
+    test.test_build_development_card()
     test.test_move_thief()
+    test.test_game_start_build_towns_and_roads()
+    test.test_longest_road()

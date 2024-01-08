@@ -377,7 +377,7 @@ class GameManager:
                 for ter_id in terrain_ids:
                     materials.append(self.board.terrain[ter_id]['terrain_type'])
 
-                self.board.nodes[node_id]['player'] = self.turn_manager.get_whose_turn_is_it()
+                self.board.nodes[node_id]['player'] = player
 
                 # Se le dan materiales al BotManager y este a los bots para que sepan cuantos tienen en realidad
                 self.bot_manager.players[player]['resources'].add_material(materials, 1)
@@ -386,12 +386,12 @@ class GameManager:
                 self.bot_manager.players[player]['victory_points'] += 1
 
                 # Parte carreteras
-                if self.board.build_road(self.turn_manager.get_whose_turn_is_it(), node_id, road_to)['response']:
+                if self.board.build_road(player, node_id, road_to)['response']:
                     return node_id, road_to
                 else:
                     possible_roads = self.board.nodes[node_id]['adjacent']
                     road_to = possible_roads[random.randint(0, len(possible_roads) - 1)]
-                    self.board.build_road(self.turn_manager.get_whose_turn_is_it(), node_id, road_to)
+                    self.board.build_road(player, node_id, road_to)
                     return node_id, road_to
 
     def longest_road_calculator(self, node, depth, longest_road_obj, player_id, visited_nodes):

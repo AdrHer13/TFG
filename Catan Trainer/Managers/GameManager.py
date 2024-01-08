@@ -285,12 +285,12 @@ class GameManager:
         card_drawn = self.development_cards_deck.draw_card()
         if card_drawn is not None:
 
-            player_hand = self.bot_manager.players[player_id]['resources']
-            if player_hand.resources.has_this_more_materials('card'):
-                player_hand.remove_material([MaterialConstants.CEREAL,
-                                             MaterialConstants.MINERAL,
-                                             MaterialConstants.WOOL
-                                             ], 1)
+            if self.bot_manager.players[player_id]['resources'].resources.has_this_more_materials('card'):
+                self.bot_manager.players[player_id]['resources'].remove_material([MaterialConstants.CEREAL,
+                                                                                  MaterialConstants.MINERAL,
+                                                                                  MaterialConstants.WOOL
+                                                                                  ], 1)
+                self.bot_manager.players[player_id]['player'].hand = self.bot_manager.players[player_id]['resources']
 
                 if card_drawn.get_type() == DevelopmentCardConstants.VICTORY_POINT:
                     self.bot_manager.players[player_id]['hidden_victory_points'] += 1

@@ -50,6 +50,7 @@ class DevelopmentDeck:
             card = self.deck[self.current_index]
             self.current_index += 1
             return card
+        return
 
     def __str__(self):
         string = '[ \n'

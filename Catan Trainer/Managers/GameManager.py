@@ -417,13 +417,14 @@ class GameManager:
                                                                 longest_road_obj, road['player_id'], visited_nodes)
         return {'longest_road': longest_road_obj['longest_road'], 'player': longest_road_obj['player']}
 
-    def play_development_card(self, player_id, card):
+    def play_development_card(self, player_id, card, winner):
         """Si la carta que llega existe en la mano del BotManager se elimina y se hace el efecto, si no, se hace
         un return nulo. Si la carta es un punto de victoria no se borra de la mano.
         Después se iguala la mano del jugador a la del BotManager para evitar trampas.
         :param player_id:
         :param card:
-        :return: {}
+        :param winner: bool
+        :return: {}, bool
         """
         card_obj = {}
 
@@ -441,7 +442,7 @@ class GameManager:
             card_obj['played_card'] = 'none'
             card_obj['reason'] = 'Trying to use cards they don\'t have'
 
-            return card_obj
+            return card_obj, winner
 
         if card.get_type() == DevelopmentCardConstants.KNIGHT:
             # se le suma un nuevo caballero al jugador y se le pide mover al ladrón
@@ -474,7 +475,7 @@ class GameManager:
             card_obj['robbed_player'] = move_thief_obj['robbed_player']
             card_obj['stolen_material_id'] = move_thief_obj['stolen_material_id']
 
-            return card_obj
+            return card_obj, winner
 
         elif card.get_type() == DevelopmentCardConstants.VICTORY_POINT:
             # Si tienen suficientes puntos de victoria para ganar. Ganan automáticamente, si no, no pasa nada
@@ -484,10 +485,12 @@ class GameManager:
 
                 card_obj['played_card'] = 'victory_point'
                 self.bot_manager.players[player_id]['victory_points'] = 10
+                winner = True
+                return card_obj, winner
             else:
                 card_obj['played_card'] = 'failed_victory_point'
 
-            return card_obj
+            return card_obj, winner
 
         elif card.get_type() == DevelopmentCardConstants.PROGRESS_CARD:
 
@@ -517,7 +520,7 @@ class GameManager:
                 for i in range(4):
                     card_obj['hand_P' + str(i)] = self.bot_manager.players[i]['resources'].resources.__to_object__()
 
-                return card_obj
+                return card_obj, winner
 
             elif card.get_effect() == DevelopmentCardConstants.ROAD_BUILDING_EFFECT:
 
@@ -577,11 +580,11 @@ class GameManager:
 
                     # Después del bucle ponemos donde se han construido las carreteras y devolvemos el objeto
                     card_obj['roads'] = road_nodes
-                    return card_obj
+                    return card_obj, winner
                 else:
                     # Si el objeto carreteras es None implica que no hay carreteras construidas
                     card_obj['roads'] = None
-                    return card_obj
+                    return card_obj, winner
 
             elif card.get_effect() == DevelopmentCardConstants.YEAR_OF_PLENTY_EFFECT:
                 card_obj['played_card'] = 'year_of_plenty'
@@ -603,9 +606,9 @@ class GameManager:
 
                 card_obj['hand_P' + str(player_id)] = self.bot_manager.players[player_id][
                     'resources'].resources.__to_object__()
-                return card_obj
-            return card_obj
-        return card_obj
+                return card_obj, winner
+            return card_obj, winner
+        return card_obj, winner
 
     def check_player_hands(self):
         for i in range(4):
@@ -792,12 +795,13 @@ class GameManager:
             start_turn_object['stolen_material_id'] = move_thief_obj['stolen_material_id']
         return start_turn_object
 
-    def on_commerce_response(self, commerce_phase_object, commerce_response, depth, player_id):
+    def on_commerce_response(self, commerce_phase_object, commerce_response, depth, player_id, winner):
         """
         :param commerce_phase_object: dict
         :param commerce_response: TradeOffer(), dict, DevelopmentCard, None
         :param depth: int
         :param player_id: int
+        :param winner: bool
         :return: dict
         """
         if isinstance(commerce_response, TradeOffer) and depth <= self.MAX_COMMERCE_TRADES:
@@ -811,7 +815,7 @@ class GameManager:
             else:
                 commerce_phase_object['inviable'] = True
 
-            return commerce_phase_object
+            return commerce_phase_object, winner
 
         elif isinstance(commerce_response, dict):
 
@@ -838,14 +842,14 @@ class GameManager:
                 self.bot_manager.players[player_id]['player'].hand = self.bot_manager.players[player_id]['resources']
                 commerce_phase_object['answer'] = response.resources.__to_object__()
 
-                return commerce_phase_object
+                return commerce_phase_object, winner
             else:
                 commerce_phase_object['answer'] = response
 
-            return commerce_phase_object
+            return commerce_phase_object, winner
 
         elif isinstance(commerce_response, DevelopmentCard) and not self.already_played_development_card:
-            played_card_obj = self.play_development_card(player_id, commerce_response)
+            played_card_obj, winner = self.play_development_card(player_id, commerce_response, winner)
             commerce_phase_object['trade_offer'] = 'played_card'
             commerce_phase_object['harbor_trade'] = False
             commerce_phase_object['development_card_played'] = played_card_obj
@@ -853,17 +857,18 @@ class GameManager:
                     played_card_obj['played_card'] == 'failed_victory_point'):
                 self.already_played_development_card = True
 
-            return commerce_phase_object
+            return commerce_phase_object, winner
         else:
             commerce_phase_object['trade_offer'] = 'None'
-            return commerce_phase_object
+            return commerce_phase_object, winner
 
-    def build_phase_object(self, build_phase_object, build_response, player_id):
+    def build_phase_object(self, build_phase_object, build_response, player_id, winner):
         """
          :param build_phase_object: dict
          :param build_response: dict, DevelopmentCard, None
          :param player_id: int
-         :return: dict
+         :param winner: bool
+         :return: dict, bool
          """
         if isinstance(build_response, dict):
             build_phase_object = build_response
@@ -883,7 +888,7 @@ class GameManager:
             else:
                 build_phase_object['finished'] = False
                 build_phase_object['error_msg'] = 'Se intenta constrir algo fuera de las reglas'
-                return build_phase_object
+                return build_phase_object, winner
 
             if built['response']:
                 if build_response['building'] in [BuildConstants.TOWN, BuildConstants.CITY]:
@@ -896,14 +901,14 @@ class GameManager:
 
                 build_phase_object['finished'] = True
 
-                return build_phase_object
+                return build_phase_object, winner
             else:
                 build_phase_object['finished'] = False
                 build_phase_object['error_msg'] = 'Falta de materiales'
-                return build_phase_object
+                return build_phase_object, winner
 
         elif isinstance(build_response, DevelopmentCard) and not self.already_played_development_card:
-            played_card_obj = self.play_development_card(player_id, build_response)
+            played_card_obj, winner = self.play_development_card(player_id, build_response, winner)
             build_phase_object['building'] = 'played_card'
             build_phase_object['finished'] = True
             build_phase_object['development_card_played'] = played_card_obj
@@ -912,7 +917,7 @@ class GameManager:
                     played_card_obj['played_card'] == 'failed_victory_point'):
                 self.already_played_development_card = True
 
-            return build_phase_object
+            return build_phase_object, winner
         else:
             build_phase_object['building'] = 'None'
-            return build_phase_object
+            return build_phase_object, winner

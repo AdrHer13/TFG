@@ -31,9 +31,11 @@ function init_events() {
             reader.onload = function (evt) {
                 game_obj = JSON.parse(evt.target.result);
 
+                // TODO: falta añadir "mayor ejercito" / "carretera más larga"
                 init_events_with_game_obj();
                 addLogFromJSON();
                 setup();
+                reset_game();
             }
             reader.onerror = function (evt) {
                 console.log('Error al cargar el archivo');
@@ -48,18 +50,25 @@ function init_events() {
         round_obj = {};
         turn_obj = {};
         phase_obj = {};
-
-
-        jQuery('#puntos_victoria_J1').text(0);
-        jQuery('#puntos_victoria_J2').text(0);
-        jQuery('#puntos_victoria_J3').text(0);
-        jQuery('#puntos_victoria_J4').text(0);
     });
 
 
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
     })
+}
+
+function reset_game() {
+    let materials = ['cereal', 'clay', 'wool', 'wood', 'mineral'];
+    let cards = ['knight', 'victory_point', 'road_building', 'year_of_plenty', 'monopoly'];
+    let classes = materials.concat(cards);
+
+    for (let i = 1; i < 5; i++) {
+        $('#puntos_victoria_J' + i).text(0);
+        classes.forEach(function (array_element) {
+            $('#hand_P' + (i - 1) + ' .' + array_element + '_quantity').text(0);
+        });
+    }
 }
 
 function addLogFromJSON() {
@@ -290,14 +299,7 @@ function init_events_with_game_obj() {
                     diceroll_div.text('Diceroll: ' + phase_obj['dice']);
 
                     if (phase_obj['dice'] == 7) {
-                        // jQuery('#terrain_' + phase_obj['past_thief_terrain']).text('')
-                        if (game_obj['setup']['board']['board_terrain'][phase_obj['past_thief_terrain']]['probability'] != 0) {
-                            jQuery('#terrain_' + phase_obj['past_thief_terrain'] + ' .terrain_number').html('<span>' + game_obj['setup']['board']['board_terrain'][phase_obj['past_thief_terrain']]['probability'] + '</span>');
-                        } else {
-                            jQuery('#terrain_' + phase_obj['past_thief_terrain'] + ' .terrain_number').html('')
-                        }
-
-                        jQuery('#terrain_' + phase_obj['thief_terrain'] + ' .terrain_number').html('<i class="fa-solid fa-user-ninja fa-2x" data-toggle="tooltip" data-placement="top" title="Ladrón"></i>');
+                        move_thief(phase_obj['past_thief_terrain'], phase_obj['thief_terrain'], phase_obj['robbed_player'], phase_obj['stolen_material_id'], false);
                     }
 
                     if (phase_obj['development_card_played'] && phase_obj['development_card_played'].length) {
@@ -979,7 +981,7 @@ function init_events_with_game_obj() {
 
     //-------------------------------------------------
     ronda_previa_btn.off().on('click', function (e) {
-        if(contador_turnos.val() == 1) {
+        if (contador_turnos.val() == 1) {
             turno_previo_btn.click();
         }
         while (contador_turnos.val() > 1) {
@@ -987,7 +989,7 @@ function init_events_with_game_obj() {
         }
     });
     ronda_siguiente_btn.off().on('click', function (e) {
-        if(contador_turnos.val() == 1) {
+        if (contador_turnos.val() == 1) {
             turno_siguiente_btn.click();
         }
         while (contador_turnos.val() > 1) {
@@ -997,7 +999,7 @@ function init_events_with_game_obj() {
 
     //-------------------------------------------------
     turno_previo_btn.off().on('click', function (e) {
-        if(contador_fases.val() == 1) {
+        if (contador_fases.val() == 1) {
             fase_previa_btn.click();
         }
         while (contador_fases.val() > 1) {
@@ -1005,7 +1007,7 @@ function init_events_with_game_obj() {
         }
     });
     turno_siguiente_btn.off().on('click', function (e) {
-        if(contador_fases.val() == 1) {
+        if (contador_fases.val() == 1) {
             fase_siguiente_btn.click();
         }
         while (contador_fases.val() > 1) {
@@ -1060,12 +1062,17 @@ function init_events_with_game_obj() {
 }
 
 function changeHandObject(player, hand_obj) {
+    let materials = ['cereal', 'mineral', 'clay', 'wood', 'wool'];
+
     //TODO: Debería de alguna manera mostrar que materiales se han actualizado. Si son iguales no deberían de recalcarse
-    $('#hand_P' + player + ' .cereal_quantity').text(hand_obj['cereal']).change();
-    $('#hand_P' + player + ' .clay_quantity').text(hand_obj['clay']).change();
-    $('#hand_P' + player + ' .wood_quantity').text(hand_obj['wood']).change();
-    $('#hand_P' + player + ' .wool_quantity').text(hand_obj['wool']).change();
-    $('#hand_P' + player + ' .mineral_quantity').text(hand_obj['mineral']).change();
+    materials.forEach(function (material) {
+        $('#hand_P' + player + ' .' + material + '_quantity').text(hand_obj[material]).change();
+    });
+    //    $('#hand_P' + player + ' .cereal_quantity').text(hand_obj['cereal']).change();
+    //    $('#hand_P' + player + ' .clay_quantity').text(hand_obj['clay']).change();
+    //    $('#hand_P' + player + ' .wood_quantity').text(hand_obj['wood']).change();
+    //    $('#hand_P' + player + ' .wool_quantity').text(hand_obj['wool']).change();
+    //    $('#hand_P' + player + ' .mineral_quantity').text(hand_obj['mineral']).change();
 }
 
 // utilities
@@ -1091,68 +1098,120 @@ function paint_it_player_color(player, object_to_paint) {
     }
 }
 
-function on_development_card_played(card) {
-    // TODO: mostrar dentro de "otra información útil" que se ha jugado una carta de desarrollo
-    jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + card['played_card']).removeClass(['increased', 'neutral', 'decreased']).addClass('decreased')
-    jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + card['played_card'] + ' .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down')
-    let quantity = jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + card['played_card'] + '_quantity')
-    quantity.text(parseInt(quantity.text()) - 1).change()
+function move_thief(past_terrain, new_terrain, robbed_player, stolen_material_id, comes_from_card) {
+    let materials = ['cereal', 'mineral', 'clay', 'wood', 'wool'];
+    let actual_player = parseInt($('#contador_turnos').val()) - 1;
 
+    if (game_obj['setup']['board']['board_terrain'][past_terrain]['probability'] != 0) {
+        jQuery('#terrain_' + past_terrain + ' .terrain_number').html('<span>' + game_obj['setup']['board']['board_terrain'][past_terrain]['probability'] + '</span>');
+    } else {
+        jQuery('#terrain_' + past_terrain + ' .terrain_number').html('')
+    }
+
+    jQuery('#terrain_' + new_terrain + ' .terrain_number').html('<i class="fa-solid fa-user-ninja fa-2x" data-toggle="tooltip" data-placement="top" title="Ladrón"></i>');
+
+    if (comes_from_card) {
+        let actual_player_material_quantity = $('#hand_P' + actual_player + ' .' + materials[stolen_material_id] + '_quantity');
+        let robbed_player_material_quantity = $('#hand_P' + robbed_player + ' .' + materials[stolen_material_id] + '_quantity');
+        actual_player_material_quantity.val(actual_player_material_quantity.val() + 1);
+        robbed_player_material_quantity.val(robbed_player_material_quantity.val() - 1);
+    }
+
+    if (actual_player == robbed_player) {
+        $('#hand_P' + actual_player + ' .' + materials[stolen_material_id] + ' .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-minus');
+        $('#hand_P' + actual_player + ' .' + materials[stolen_material_id]).removeClass(['increased', 'neutral', 'decreased']).addClass('neutral');
+    } else {
+        $('#hand_P' + actual_player + ' .' + materials[stolen_material_id] + ' .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+        $('#hand_P' + actual_player + ' .' + materials[stolen_material_id]).removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+        $('#hand_P' + robbed_player + ' .' + materials[stolen_material_id] + ' .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
+        $('#hand_P' + robbed_player + ' .' + materials[stolen_material_id]).removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
+    }
+}
+
+function on_development_card_played(card) {
+    // TODO: Mejora a futuro: mostrar dentro de "mayor ejercito" o algún lugar, cantidad de caballeros que tiene activos cada jugador.
+    // TODO: limitar altura de jQuery('#other_useful_info_text')
+    let materials = ['cereal', 'mineral', 'clay', 'wood', 'wool'];
+
+    let contador_turnos = jQuery('#contador_turnos');
+    let other_useful_info_text = jQuery('#other_useful_info_text');
+    let actual_player = $('#contador_turnos').val() - 1;
+    let quantity = jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + card['played_card'] + '_quantity');
+
+    jQuery('#hand_P' + (contador_turnos.val() - 1) + ' .' + card['played_card']).removeClass(['increased', 'neutral', 'decreased']).addClass('decreased');
+    jQuery('#hand_P' + (contador_turnos.val() - 1) + ' .' + card['played_card'] + ' .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-down');
+    quantity.text(parseInt(quantity.text()) - 1).change();
+
+    let html = '<div>';
     switch (card['played_card']) {
         case 'knight':
-            //console.log(quantity.text(parseInt(quantity.text()) - 1));
+            move_thief(card['past_thief_terrain'], card['thief_terrain'], card['robbed_player'], card['stolen_material_id'], true);
+            html += 'Played card: knight | Past thief terrain: ' + card['past_thief_terrain'] + ' | New thief terrain: ' + card['thief_terrain'] + ' | Robbed player: ' + card['robbed_player'] + ' | Stolen material: ' + materials[card['stolen_material_id']];
             break;
         case 'victory_point':
-            break;
+            html += 'Played card: Victory point';
         case 'failed_victory_point':
+            html += 'Played card: Failed victory point'
             break;
 
         case 'monopoly':
-            material_chosen = ''
-            switch (card['material_chosen']) {
-                case 0:
-                    material_chosen = 'cereal';
-                    break;
-                case 1:
-                    material_chosen = 'mineral';
-                    break;
-                case 2:
-                    material_chosen = 'clay';
-                    break;
-                case 3:
-                    material_chosen = 'wood';
-                    break;
-                case 4:
-                    material_chosen = 'wool';
-                    break;
-                default:
-                    break;
-            }
+            let material_chosen = materials[card['material_chosen']];
 
             for (let i = 0; i < 4; i++) {
                 changeHandObject(i, card['hand_P' + i]);
-
-                if (material_chosen != '') {
-                    jQuery('#hand_P' + i + ' .' + material_chosen).addClass('decreased');
-                    jQuery('#hand_P' + i + ' .' + material_chosen + ' .increment').addClass('fa-caret-down');
-                }
+                jQuery('#hand_P' + i + ' .' + material_chosen).addClass('decreased');
+                jQuery('#hand_P' + i + ' .' + material_chosen + ' .increment').addClass('fa-caret-down');
             }
 
-            if (material_chosen != '') {
-                jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + material_chosen).removeClass('decreased').addClass('increased');
-                jQuery('#hand_P' + (jQuery('#contador_turnos').val() - 1) + ' .' + material_chosen + ' .increment').removeClass('fa-caret-down').addClass('fa-caret-up');
-            }
+            jQuery('#hand_P' + actual_player + ' .' + material_chosen).removeClass('decreased').addClass('increased');
+            jQuery('#hand_P' + actual_player + ' .' + material_chosen + ' .increment').removeClass('fa-caret-down').addClass('fa-caret-up');
+
+            html += 'Played card: Monopoly | Material chosen: ' + material_chosen
             break;
 
         case 'year_of_plenty':
+            let materials_chosen = [materials[card['materials_selected']['material']], materials[card['materials_selected']['material_2']]];
+
+            changeHandObject(actual_player, card['hand_P' + actual_player]);
+            materials_chosen.forEach(function (material) {
+                jQuery('#hand_P' + actual_player + ' .' + material).removeClass(['increased', 'neutral', 'decreased']).addClass('increased');
+                jQuery('#hand_P' + actual_player + ' .' + material + ' .increment').removeClass(['fa-caret-up', 'fa-minus', 'fa-caret-down']).addClass('fa-caret-up');
+            })
+
+            html += 'Played card: Year of plenty | Material chosen 1: ' + materials_chosen[0] + ' | Material chosen 2: ' + materials_chosen[1];
             break;
+
         case 'road_building':
+            let roads = card['roads'];
+
+            if (card['valid_road_1']) {
+                let road = '';
+                if (roads['node_id'] < roads['road_to']) {
+                    road = jQuery('#road_' + roads['node_id'] + '_' + roads['road_to']);
+                } else {
+                    road = jQuery('#road_' + roads['road_to'] + '_' + roads['node_id']);
+                }
+                paint_it_player_color(actual_player, road);
+            }
+            if (card['valid_road_2']) {
+                let road = '';                            
+                if (roads['node_id_2'] < roads['road_to_2']) {
+                    road = jQuery('#road_' + roads['node_id_2'] + '_' + roads['road_to_2']);
+                } else {
+                    road = jQuery('#road_' + roads['road_to_2'] + '_' + roads['node_id_2']);
+                }
+                paint_it_player_color(actual_player, road);
+            }
+
+            html += 'Played card: Road building | Node 1: ' + roads['node_id'] + ' | Road to: ' + roads['road_to'] + ' | Valid road: ' + card['valid_road_1'] + ' | Node 2: ' + roads['node_id_2'] + ' | Road to 2: ' + roads['road_to_2'] + ' | Valid road 2: ' + card['valid_road_2'];
             break;
 
         case 'none':
         default:
             break;
     }
+    html += '</div>';
+    other_useful_info_text.append(html);
 }
 
 function off_development_card_played(card) {

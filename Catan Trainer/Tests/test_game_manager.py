@@ -41,14 +41,55 @@ class TestGameManager:
         assert self.game_manager.bot_manager.players[0]['victory_points'] == 0
 
     def test_game_manager_give_resources(self):
-        # TODO: Hay que definir un estado de tablero controlable.
-        #  Forzar una tirada específica.
-        #  Ver que se entregan los materiales bien
-        self.game_manager.board.build_town()
+        self.game_manager.last_dice_roll = 11
+        # Añadimos pueblos al J0
+        self.game_manager.board.nodes[20]['player'] = 0  # Un pueblo adyacente
+        self.game_manager.board.nodes[13]['player'] = 0  # Un pueblo no adyacente
+        self.game_manager.board.nodes[33]['player'] = 0
+        self.game_manager.board.build_city(0, 33)  # Una ciudad adyacente
+
+        # Añadimos pueblos al J2
+        self.game_manager.board.nodes[10]['player'] = 2  # Un pueblo adyacente
+        self.game_manager.board.nodes[39]['player'] = 2  # Un pueblo no adyacente
+        self.game_manager.board.nodes[0]['player'] = 2
+        self.game_manager.board.build_city(2, 0)  # Una ciudad adyacente
 
         self.game_manager.give_resources()
+
+        # Comprobamos los del J0
+        assert self.game_manager.bot_manager.players[0]['player'].hand.resources.get_cereal() == 3
+        assert self.game_manager.bot_manager.players[0]['resources'].resources.get_cereal() == 3
+
+        assert self.game_manager.bot_manager.players[0]['player'].hand.resources.get_mineral() == 0
+        assert self.game_manager.bot_manager.players[0]['resources'].resources.get_mineral() == 0
+
+        assert self.game_manager.bot_manager.players[0]['player'].hand.resources.get_clay() == 0
+        assert self.game_manager.bot_manager.players[0]['resources'].resources.get_clay() == 0
+
+        assert self.game_manager.bot_manager.players[0]['player'].hand.resources.get_wood() == 0
+        assert self.game_manager.bot_manager.players[0]['resources'].resources.get_wood() == 0
+
+        assert self.game_manager.bot_manager.players[0]['player'].hand.resources.get_wool() == 0
+        assert self.game_manager.bot_manager.players[0]['resources'].resources.get_wool() == 0
+
+        # Comprobamos los del J2
+        assert self.game_manager.bot_manager.players[2]['player'].hand.resources.get_cereal() == 0
+        assert self.game_manager.bot_manager.players[2]['resources'].resources.get_cereal() == 0
+
+        assert self.game_manager.bot_manager.players[2]['player'].hand.resources.get_mineral() == 0
+        assert self.game_manager.bot_manager.players[2]['resources'].resources.get_mineral() == 0
+
+        assert self.game_manager.bot_manager.players[2]['player'].hand.resources.get_clay() == 0
+        assert self.game_manager.bot_manager.players[2]['resources'].resources.get_clay() == 0
+
+        assert self.game_manager.bot_manager.players[2]['player'].hand.resources.get_wood() == 3
+        assert self.game_manager.bot_manager.players[2]['resources'].resources.get_wood() == 3
+
+        assert self.game_manager.bot_manager.players[2]['player'].hand.resources.get_wool() == 0
+        assert self.game_manager.bot_manager.players[2]['resources'].resources.get_wool() == 0
 
 
 if __name__ == '__main__':
     test = TestGameManager()
     test.test_game_manager_reset_values()
+    test.test_game_manager_give_resources()

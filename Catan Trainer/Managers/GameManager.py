@@ -466,6 +466,7 @@ class GameManager:
 
             on_moving_thief = self.bot_manager.players[player_id]['player'].on_moving_thief()
             move_thief_obj = self.move_thief(on_moving_thief['terrain'], on_moving_thief['player'])
+            self.already_played_development_card = True
 
             # se pasan los cambios al objeto
             card_obj['played_card'] = 'knight'
@@ -608,6 +609,8 @@ class GameManager:
                     'resources'].resources.__to_object__()
                 return card_obj, winner
             return card_obj, winner
+
+        self.already_played_development_card = True
         return card_obj, winner
 
     def check_player_hands(self):

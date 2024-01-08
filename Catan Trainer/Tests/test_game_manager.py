@@ -1,7 +1,7 @@
 from Classes.Materials import Materials
 from Managers.GameManager import GameManager
 from Classes.TradeOffer import TradeOffer
-from Classes.Constants import MaterialConstants
+from Classes.Constants import MaterialConstants, DevelopmentCardConstants
 
 
 class TestGameManager:
@@ -240,6 +240,82 @@ class TestGameManager:
 
     def test_play_development_card(self):
         self.game_manager.reset_game_values()
+        done_0 = False
+        done_1 = False
+        done_1_1 = False
+        done_2 = False
+        done_2_2 = False
+        done_2_3 = False
+        done_2_4 = False
+        winner = False
+
+        for player in range(3):
+            self.game_manager.bot_manager.players[player]['resources'].add_material([MaterialConstants.CEREAL,
+                                                                                    MaterialConstants.MINERAL,
+                                                                                    MaterialConstants.CLAY,
+                                                                                    MaterialConstants.WOOL,
+                                                                                    MaterialConstants.WOOD,
+                                                                                    ], 1)
+        while done_0 or done_1 or done_2:
+            self.game_manager.bot_manager.players[3]['resources'].add_material([MaterialConstants.CEREAL,
+                                                                                MaterialConstants.MINERAL,
+                                                                                MaterialConstants.WOOL,
+                                                                                ], 1)
+            self.game_manager.build_development_card(3)
+            card = self.game_manager.bot_manager.players[3]['development_cards'].hand.pop
+
+            if card.get_type() == DevelopmentCardConstants.KNIGHT and not done_0:
+                card, winner = self.game_manager.play_development_card(3, card, winner)
+
+                assert winner is False
+                assert self.game_manager.bot_manager.players[3]['knights'] == 1
+                assert self.game_manager.bot_manager.players[3]['resources'].get_total() == 6
+                assert self.game_manager.bot_manager.players['robbed_player']['resources'].get_total() == 4
+                done_0 = True
+
+            elif card.get_type() == DevelopmentCardConstants.VICTORY_POINT and not done_1:
+                if not done_1_1:
+                    self.game_manager.bot_manager.players[3]['victory_points'] = 9
+                    card, winner = self.game_manager.play_development_card(3, card, winner)
+
+                    assert winner is True
+                    assert card['played_card'] == 'victory_point'
+
+                    winner = False
+                    self.game_manager.bot_manager.players[3]['victory_points'] = 0
+                    done_1_1 = True
+
+                else:
+                    card, winner = self.game_manager.play_development_card(3, card, winner)
+
+                    assert winner is False
+                    assert card['played_card'] == 'failed_victory_point'
+                    done_1 = True
+
+            elif card.get_type() == DevelopmentCardConstants.PROGRESS_CARD and not done_2:
+                card, winner = self.game_manager.play_development_card(3, card, winner)
+
+                if card.get_effect() == DevelopmentCardConstants.MONOPOLY_EFFECT and not done_2_4:
+
+                    assert winner is False
+                    assert self.game_manager.bot_manager.players[3]['resources'].get_total() == ?
+                    done_2_4 = True
+
+                elif card.get_effect() == DevelopmentCardConstants.ROAD_BUILDING_EFFECT and not done_2_2:
+                    card, winner = self.game_manager.play_development_card(3, card, winner)
+
+                    assert winner is False
+                    assert card['roads']
+                    done_2_2 = True
+
+                elif card.get_effect() == DevelopmentCardConstants.YEAR_OF_PLENTY_EFFECT and not done_2_3:
+                    card, winner = self.game_manager.play_development_card(3, card, winner)
+
+                    assert winner is False
+                    assert self.game_manager.bot_manager.players[3]['resources'].get_total() == ?
+                    done_2_3 = True
+                if done_2_4 and done_2_3 and done_2_2:
+                    done_2 = True
 
 
 
@@ -247,13 +323,14 @@ class TestGameManager:
 
 if __name__ == '__main__':
     test = TestGameManager()
-    test.test_reset_values()
-    test.test_give_resources()
-    test.test_send_trade_to_everyone()
-    test.test_build_town()
-    test.test_build_city()
-    test.test_build_road()
-    test.test_build_development_card()
-    test.test_move_thief()
-    test.test_game_start_build_towns_and_roads()
-    test.test_longest_road()
+    # test.test_reset_values()
+    # test.test_give_resources()
+    # test.test_send_trade_to_everyone()
+    # test.test_build_town()
+    # test.test_build_city()
+    # test.test_build_road()
+    # test.test_build_development_card()
+    # test.test_move_thief()
+    # test.test_game_start_build_towns_and_roads()
+    # test.test_longest_road()
+    test.test_play_development_card()

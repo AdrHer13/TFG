@@ -13,13 +13,14 @@ class GameManager:
     Clase que representa el game manager, entidad que tiene todas las acciones que pueden hacer los jugadores
     """
     MAX_COMMERCE_DEPTH = 2
+    MAX_COMMERCE_TRADES = 2
 
     def __init__(self, for_test=False):
-        self.MAX_COMMERCE_TRADES = 2
         self.already_played_development_card = False
         self.last_dice_roll = 0
         self.largest_army = 2
         self.largest_army_player = {}
+        self.longest_road = {'longest_road': 4, 'player': -1}
 
         self.board = Board()
         self.development_cards_deck = DevelopmentDeck()
@@ -34,15 +35,16 @@ class GameManager:
         Reinicia las variables al valor inicial
         :return: None
         """
+        self.already_played_development_card = False
         self.last_dice_roll = 0
         self.largest_army = 2
         self.largest_army_player = {}
+        self.longest_road = {'longest_road': 4, 'player': -1}
 
         self.board = Board()
         self.development_cards_deck = DevelopmentDeck()
         self.development_cards_deck.shuffle_deck()
         self.turn_manager = TurnManager()
-        self.commerce_manager = CommerceManager()
         self.bot_manager.reset_game_values()
         return
 
@@ -53,7 +55,6 @@ class GameManager:
         """
         first_d6 = random.randint(1, 6)
         second_d6 = random.randint(1, 6)
-        # self.last_dice_roll = random.randint(2, 12)
         self.last_dice_roll = first_d6 + second_d6
         return
 
@@ -216,7 +217,6 @@ class GameManager:
         :param node: (Tree()) Número que representa un nodo en el tablero.
         :return: {bool, string}. Devuelve si se ha podido o no construir el poblado, y en caso negativo, la razón.
         """
-        # TODO: quitar getters? Python no los necesita
         if self.bot_manager.players[player_id]['resources'].resources.has_this_more_materials('town'):
             build_town_obj = self.board.build_town(self.turn_manager.whose_turn_is_it, node)
 
@@ -405,8 +405,7 @@ class GameManager:
         :return:
         """
         for road in node['roads']:
-            if ((road['node_id'] not in visited_nodes) and
-                    (road['player_id'] == player_id or player_id == -1) and
+            if ((road['node_id'] not in visited_nodes) and (road['player_id'] == player_id or player_id == -1) and
                     (road['player_id'] == node['player'] or node['player'] == -1)):
                 visited_nodes.append(road['node_id'])
 
@@ -694,6 +693,20 @@ class GameManager:
         :return: int
         """
         return self.last_dice_roll
+
+    def set_longest_road(self, new_longest_road):
+        """
+        :param new_longest_road: dict
+        :return:
+        """
+        self.longest_road = new_longest_road
+        return
+
+    def get_longest_road(self):
+        """
+        :return: dict
+        """
+        return self.longest_road
 
     def player_resources_total(self, player_id):
         """

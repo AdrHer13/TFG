@@ -1,9 +1,7 @@
-from Classes.Constants import *
 from Classes.DevelopmentCards import *
 
 
 class TestDevelopmentCards:
-    Dcc = DevelopmentCardConstants
 
     def test_development_deck(self):
         development_deck = DevelopmentDeck()
@@ -39,7 +37,6 @@ class TestDevelopmentCards:
 
     def test_development_cards_hand(self):
         development_deck = DevelopmentDeck()
-        # development_deck.shuffle_deck()
         hand_of_cards = DevelopmentCardsHand()
 
         # Vemos que la mano no posee cartas
@@ -64,13 +61,21 @@ class TestDevelopmentCards:
 
         # Comprobamos que se pueden jugar cartas. El game_manager es el encargado de borrarlas de la mano
         played_card = hand_of_cards.select_card_by_id(2)
-        assert played_card.get_id() == 2 and played_card.get_effect() == Dcc.KNIGHT_EFFECT and played_card.get_type() == Dcc.KNIGHT
+        assert (played_card.get_id() == 2 and played_card.get_effect() == Dcc.KNIGHT_EFFECT and
+                played_card.get_type() == Dcc.KNIGHT)
 
         played_card = hand_of_cards.select_card_by_array_index(0)
-        assert played_card.get_id() == 0 and played_card.get_effect() == Dcc.KNIGHT_EFFECT and played_card.get_type() == Dcc.KNIGHT
+        assert (played_card.get_id() == 0 and played_card.get_effect() == Dcc.KNIGHT_EFFECT and
+                played_card.get_type() == Dcc.KNIGHT)
 
         # Comprobamos que la función delete_card() borra la carta correctamente por ID
         hand_of_cards.delete_card(1)
         assert hand_of_cards.check_hand() == [{'id': 0, 'type': Dcc.KNIGHT, 'effect': Dcc.KNIGHT_EFFECT},
                                               {'id': 2, 'type': Dcc.KNIGHT, 'effect': Dcc.KNIGHT_EFFECT}]
         return
+
+
+if __name__ == '__main__':
+    test = TestDevelopmentCards()
+    test.test_development_deck()
+    test.test_development_cards_hand()

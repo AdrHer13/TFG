@@ -10,3 +10,8 @@ class TestTradeOffer:
 
         assert trade_offer.gives == gives and trade_offer.receives == receives
         assert trade_offer.__to_object__() == {'gives': gives.__to_object__(), 'receives': receives.__to_object__()}
+
+
+if __name__ == '__main__':
+    test = TestTradeOffer()
+    test.test_trade_offer()

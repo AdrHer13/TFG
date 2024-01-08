@@ -96,6 +96,23 @@ class TestGameManager:
 
         assert type(self.game_manager.send_trade_to_everyone(trade)) is list
 
+    def test_build_road(self):
+        self.game_manager.reset_game_values()
+
+        # No tenemos materiales suficientes así que no hará nada
+        assert self.game_manager.build_road(0, 0, 1)['response'] is False
+
+        self.game_manager.bot_manager.players[0]['resources'].add_material([MaterialConstants.CLAY,
+                                                                            MaterialConstants.WOOD
+                                                                            ], 1)
+        # No tenemos poblado así que no hará nada
+        assert self.game_manager.build_road(0, 0, 1)['response'] is False
+
+        self.game_manager.board.nodes[0]['player'] = 0
+
+        assert self.game_manager.build_road(0, 0, 1)['response'] is True
+        assert self.game_manager.bot_manager.players[0]['resources'].get_total() == 0
+
     def test_build_town(self):
         self.game_manager.reset_game_values()
 
@@ -132,23 +149,6 @@ class TestGameManager:
         assert self.game_manager.build_city(0, 0)['response'] is True
         assert self.game_manager.bot_manager.players[0]['resources'].get_total() == 1
 
-    def test_build_road(self):
-        self.game_manager.reset_game_values()
-
-        # No tenemos materiales suficientes así que no hará nada
-        assert self.game_manager.build_road(0, 0, 1)['response'] is False
-
-        self.game_manager.bot_manager.players[0]['resources'].add_material([MaterialConstants.CLAY,
-                                                                            MaterialConstants.WOOD
-                                                                            ], 1)
-        # No tenemos poblado así que no hará nada
-        assert self.game_manager.build_road(0, 0, 1)['response'] is False
-
-        self.game_manager.board.nodes[0]['player'] = 0
-
-        assert self.game_manager.build_road(0, 0, 1)['response'] is True
-        assert self.game_manager.bot_manager.players[0]['resources'].get_total() == 0
-
     def test_build_development_card(self):
         self.game_manager.reset_game_values()
 
@@ -167,6 +167,21 @@ class TestGameManager:
         # No quedan más cartas que robar
         assert self.game_manager.build_development_card(0)['response'] is False
 
+    def test_move_thief(self):
+        self.game_manager.reset_game_values()
+
+        self.game_manager.board.nodes[0]['player'] = 0
+        self.game_manager.board.nodes[32]['player'] = 3
+
+        self.game_manager.bot_manager.players[3]['resources'].add_material([MaterialConstants.CEREAL,
+                                                                            MaterialConstants.MINERAL,
+                                                                            MaterialConstants.WOOL
+                                                                            ], 1)
+
+        assert self.game_manager.bot_manager.players[3]['resources'].get_total() == 2
+        assert self.game_manager.bot_manager.players[0]['resources'].get_total() == 1
+
+
 
 if __name__ == '__main__':
     test = TestGameManager()
@@ -176,5 +191,5 @@ if __name__ == '__main__':
     # test.test_build_town()
     # test.test_build_city()
     # test.test_build_road()
-    test.test_build_development_card()
-    
+    # test.test_build_development_card()
+    test.test_move_thief()

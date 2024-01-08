@@ -324,8 +324,8 @@ class GameManager:
                         move_thief_obj['stolen_material_id'] = self._steal_from_player(adjacent_player)
                         move_thief_obj['robbed_player'] = adjacent_player
                         break
-                move_thief_obj['error_msg'] = \
-                    'No se ha podido robar al jugador debido a que no está en un nodo adyacente'
+            else:
+                move_thief_obj['error_msg'] = 'No se ha podido robar a otro jugador ya que no hay ninguno'
         return move_thief_obj
 
     def _steal_from_player(self, player):

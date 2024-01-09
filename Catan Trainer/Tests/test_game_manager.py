@@ -96,6 +96,28 @@ class TestGameManager:
 
         assert type(self.game_manager.send_trade_to_everyone(trade)) is list
 
+    def test__on_tradeoffer_response(self):
+        return
+
+    def test__trade_with_player(self):
+        self.game_manager.reset_game_values()
+
+        self.game_manager._give_all_resources()
+
+        response = self.game_manager._trade_with_player()
+
+        assert response is False
+
+        trade_offer = TradeOffer(gives=Materials(1, 0, 0, 0, 0), receives=Materials(0, 0, 1, 1, 0))
+        giver = self.game_manager.bot_manager.players[0]
+        receiver = self.game_manager.bot_manager.players[2]
+
+        response = self.game_manager._trade_with_player(trade_offer, giver, receiver)
+
+        assert response is True
+        assert self.game_manager.bot_manager.players[0]['resources'].get_total() == 26
+        assert self.game_manager.bot_manager.players[2]['resources'].get_total() == 24
+
     def test_build_road(self):
         self.game_manager.reset_game_values()
 
@@ -178,10 +200,23 @@ class TestGameManager:
                                                                             MaterialConstants.WOOL
                                                                             ], 1)
         self.game_manager.move_thief(9, 3)
-        assert self.game_manager.bot_manager.players[3]['resources'].get_total() == 2
         assert self.game_manager.bot_manager.players[0]['resources'].get_total() == 1
+        assert self.game_manager.bot_manager.players[3]['resources'].get_total() == 2
 
-    def test_game_start_build_towns_and_roads(self):
+    def test__steal_from_player(self):
+        self.game_manager.reset_game_values()
+        self.game_manager.bot_manager.actual_player = 0
+
+        self.game_manager._give_all_resources()
+
+        material = self.game_manager._steal_from_player(1)
+
+        assert self.game_manager.bot_manager.players[0]['resources'].get_total() == 26
+        assert self.game_manager.bot_manager.players[1]['resources'].get_total() == 24
+        assert self.game_manager.bot_manager.players[0]['resources'].get_from_id(material) == 6
+        assert self.game_manager.bot_manager.players[1]['resources'].get_from_id(material) == 4
+
+    def test_on_game_start_build_towns_and_roads(self):
         self.game_manager.reset_game_values()
 
         valid_nodes = self.game_manager.board.valid_starting_nodes()
@@ -239,42 +274,48 @@ class TestGameManager:
         return
 
     def test_play_development_card(self):
-        self.game_manager.reset_game_values()
-        done_0 = False
-        done_1 = False
-        done_1_1 = False
-        done_2 = False
+        done_0 = True
+        done_1 = True
+        done_1_1 = True
+        done_2 = True
         done_2_2 = False
+        done_2_2_1 = True
         done_2_3 = False
         done_2_4 = False
         winner = False
 
-        for player in range(3):
-            self.game_manager.bot_manager.players[player]['resources'].add_material([MaterialConstants.CEREAL,
-                                                                                    MaterialConstants.MINERAL,
-                                                                                    MaterialConstants.CLAY,
-                                                                                    MaterialConstants.WOOL,
-                                                                                    MaterialConstants.WOOD,
-                                                                                    ], 1)
         while done_0 or done_1 or done_2:
+            self.game_manager.reset_game_values()
+
+            self.game_manager.board.nodes[24]['player'] = 0
+            self.game_manager.board.nodes[19]['player'] = 1
+            self.game_manager.board.nodes[42]['player'] = 2
+            self.game_manager.board.nodes[0]['player'] = 3
+            for player in range(3):
+                self.game_manager.bot_manager.players[player]['resources'].add_material([MaterialConstants.CEREAL,
+                                                                                         MaterialConstants.MINERAL,
+                                                                                         MaterialConstants.CLAY,
+                                                                                         MaterialConstants.WOOL,
+                                                                                         MaterialConstants.WOOD
+                                                                                         ], 1)
+
             self.game_manager.bot_manager.players[3]['resources'].add_material([MaterialConstants.CEREAL,
                                                                                 MaterialConstants.MINERAL,
                                                                                 MaterialConstants.WOOL,
                                                                                 ], 1)
             self.game_manager.build_development_card(3)
-            card = self.game_manager.bot_manager.players[3]['development_cards'].hand.pop
+            card = self.game_manager.bot_manager.players[3]['development_cards'].hand[
+                len(self.game_manager.bot_manager.players[3]['development_cards'].hand) - 1]
 
-            if card.get_type() == DevelopmentCardConstants.KNIGHT and not done_0:
+            if card.get_type() == DevelopmentCardConstants.KNIGHT and done_0:
                 card, winner = self.game_manager.play_development_card(3, card, winner)
 
                 assert winner is False
                 assert self.game_manager.bot_manager.players[3]['knights'] == 1
-                assert self.game_manager.bot_manager.players[3]['resources'].get_total() == 6
-                assert self.game_manager.bot_manager.players['robbed_player']['resources'].get_total() == 4
-                done_0 = True
+                done_0 = False
 
-            elif card.get_type() == DevelopmentCardConstants.VICTORY_POINT and not done_1:
-                if not done_1_1:
+            elif card.get_type() == DevelopmentCardConstants.VICTORY_POINT and done_1:
+                if done_1_1:
                     self.game_manager.bot_manager.players[3]['victory_points'] = 9
                     card, winner = self.game_manager.play_development_card(3, card, winner)
 
@@ -282,55 +323,108 @@ class TestGameManager:
                     assert card['played_card'] == 'victory_point'
 
                     winner = False
-                    self.game_manager.bot_manager.players[3]['victory_points'] = 0
-                    done_1_1 = True
+                    done_1_1 = False
 
                 else:
                     card, winner = self.game_manager.play_development_card(3, card, winner)
 
                     assert winner is False
                     assert card['played_card'] == 'failed_victory_point'
-                    done_1 = True
+                    done_1 = False
 
-            elif card.get_type() == DevelopmentCardConstants.PROGRESS_CARD and not done_2:
-                card, winner = self.game_manager.play_development_card(3, card, winner)
+            elif card.get_type() == DevelopmentCardConstants.PROGRESS_CARD and done_2:
 
                 if card.get_effect() == DevelopmentCardConstants.MONOPOLY_EFFECT and not done_2_4:
-
-                    assert winner is False
-                    assert self.game_manager.bot_manager.players[3]['resources'].get_total() == ?
-                    done_2_4 = True
-
-                elif card.get_effect() == DevelopmentCardConstants.ROAD_BUILDING_EFFECT and not done_2_2:
                     card, winner = self.game_manager.play_development_card(3, card, winner)
 
                     assert winner is False
-                    assert card['roads']
-                    done_2_2 = True
+                    assert card['played_card'] == 'monopoly'
+                    assert self.game_manager.bot_manager.players[3]['resources'].get_total() == 3
+                    assert self.game_manager.bot_manager.players[1]['resources'].get_from_id(
+                        card['material_chosen']) == 0
+                    done_2_4 = True
+
+                elif card.get_effect() == DevelopmentCardConstants.ROAD_BUILDING_EFFECT and not done_2_2:
+                    if done_2_2_1:
+                        card_bad, winner = self.game_manager.play_development_card(3, card, winner)
+
+                        assert winner is False
+                        assert card_bad['roads'] is None
+                        done_2_2_1 = False
+                    else:
+                        # self.game_manager.board.build_road(3, 0, 1)
+                        card, winner = self.game_manager.play_development_card(3, card, winner)  # Auxilio no se porqué no va
+
+                        assert winner is False
+                        print(card['roads'])
+                        # assert card['roads'] is dict
+                        assert card['played_card'] == 'road_building'
+
+                        done_2_2 = True
 
                 elif card.get_effect() == DevelopmentCardConstants.YEAR_OF_PLENTY_EFFECT and not done_2_3:
                     card, winner = self.game_manager.play_development_card(3, card, winner)
 
                     assert winner is False
-                    assert self.game_manager.bot_manager.players[3]['resources'].get_total() == ?
+                    assert card['played_card'] == 'year_of_plenty'
+                    assert self.game_manager.bot_manager.players[3]['resources'].get_total() == 2
                     done_2_3 = True
-                if done_2_4 and done_2_3 and done_2_2:
-                    done_2 = True
 
+                elif done_2_4 and done_2_3 and done_2_2:
+                    done_2 = False
 
+    def test_check_if_thief_is_called(self):
+        self.game_manager.reset_game_values()
 
+        self.game_manager.last_dice_roll = 7
+        self.game_manager.board.nodes[24]['player'] = 0
+        self.game_manager.board.nodes[19]['player'] = 1
+        self.game_manager.board.nodes[42]['player'] = 2
+        self.game_manager.board.nodes[0]['player'] = 3
+
+        for player in range(4):
+            self.game_manager.bot_manager.players[player]['resources'].add_material([MaterialConstants.CEREAL,
+                                                                                     MaterialConstants.MINERAL,
+                                                                                     MaterialConstants.CLAY,
+                                                                                     MaterialConstants.WOOL,
+                                                                                     MaterialConstants.WOOD
+                                                                                     ], player)
+            self.game_manager.bot_manager.players[player]['player'].hand = (
+                self.game_manager.bot_manager.players)[player]['resources']
+
+        start_turn_object = {}
+        start_turn_object = self.game_manager.check_if_thief_is_called(start_turn_object, 2)
+
+        assert start_turn_object['past_thief_terrain'] != start_turn_object['thief_terrain']
+
+        assert self.game_manager.bot_manager.players[0]['resources'].get_total() == 0
+        assert self.game_manager.bot_manager.players[1]['resources'].get_total() == 5
+        assert self.game_manager.bot_manager.players[2]['resources'].get_total() == 5
+        assert self.game_manager.bot_manager.players[3]['resources'].get_total() == 7
+
+    def test_on_commerce_response(self):
+        return
+
+    def test_build_phase_object(self):
+        return
 
 
 if __name__ == '__main__':
     test = TestGameManager()
     # test.test_reset_values()
     # test.test_give_resources()
-    # test.test_send_trade_to_everyone()
+    # test.test_send_trade_to_everyone()   #########
+    # test.test__on_tradeoffer_response()  #########
+    # test.test__trade_with_player()
     # test.test_build_town()
     # test.test_build_city()
     # test.test_build_road()
     # test.test_build_development_card()
     # test.test_move_thief()
+    # test.test__steal_from_player()
     # test.test_game_start_build_towns_and_roads()
     # test.test_longest_road()
-    test.test_play_development_card()
+    # test.test_play_development_card()
+    # test.test_check_if_thief_is_called()
+    # test.test_on_commerce_response()     #########
+    # test.test_build_phase_object()       #########

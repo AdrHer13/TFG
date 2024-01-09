@@ -476,6 +476,7 @@ class GameManager:
             card_obj['robbed_player'] = move_thief_obj['robbed_player']
             card_obj['stolen_material_id'] = move_thief_obj['stolen_material_id']
 
+            self.already_played_development_card = True
             return card_obj, winner
 
         elif card.get_type() == DevelopmentCardConstants.VICTORY_POINT:
@@ -487,6 +488,8 @@ class GameManager:
                 card_obj['played_card'] = 'victory_point'
                 self.bot_manager.players[player_id]['victory_points'] = 10
                 winner = True
+
+                self.already_played_development_card = True
                 return card_obj, winner
             else:
                 card_obj['played_card'] = 'failed_victory_point'
@@ -521,6 +524,7 @@ class GameManager:
                 for i in range(4):
                     card_obj['hand_P' + str(i)] = self.bot_manager.players[i]['resources'].resources.__to_object__()
 
+                self.already_played_development_card = True
                 return card_obj, winner
 
             elif card.get_effect() == DevelopmentCardConstants.ROAD_BUILDING_EFFECT:
@@ -581,10 +585,14 @@ class GameManager:
 
                     # Después del bucle ponemos donde se han construido las carreteras y devolvemos el objeto
                     card_obj['roads'] = road_nodes
+
+                    self.already_played_development_card = True
                     return card_obj, winner
                 else:
                     # Si el objeto carreteras es None implica que no hay carreteras construidas
                     card_obj['roads'] = None
+
+                    self.already_played_development_card = True
                     return card_obj, winner
 
             elif card.get_effect() == DevelopmentCardConstants.YEAR_OF_PLENTY_EFFECT:
@@ -605,12 +613,12 @@ class GameManager:
                 # Se actualiza la mano
                 self.bot_manager.players[player_id]['player'].hand = self.bot_manager.players[player_id]['resources']
 
-                card_obj['hand_P' + str(player_id)] = self.bot_manager.players[player_id][
-                    'resources'].resources.__to_object__()
-                return card_obj, winner
-            return card_obj, winner
+                card_obj['hand_P' + str(player_id)] = self.bot_manager.players[
+                    player_id]['resources'].resources.__to_object__()
 
-        self.already_played_development_card = True
+                self.already_played_development_card = True
+                return card_obj, winner
+
         return card_obj, winner
 
     def check_player_hands(self):

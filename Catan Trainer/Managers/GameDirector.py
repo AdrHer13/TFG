@@ -8,8 +8,8 @@ class GameDirector:
     Clase que se encarga de dirigir la partida, empezarla y acabarla
     """
 
-    def __init__(self):
-        self.game_manager = GameManager()
+    def __init__(self, for_test=False):
+        self.game_manager = GameManager(for_test)
         self.trace_loader = TraceLoader()
         return
 
@@ -27,7 +27,7 @@ class GameDirector:
         Esta función permite iniciar el turno a un jugador.
         :param winner: bool
         :param player: (int) número que representa al jugador.
-        :return: object
+        :return: object, bool
         """
         start_turn_object = {'development_card_played': []}
 
@@ -43,20 +43,23 @@ class GameDirector:
                 self.game_manager.set_card_used(True)
             start_turn_object['development_card_played'].append(played_card_obj)
 
-        self.game_manager.throw_dice()
-        self.game_manager.give_resources()
+        if not winner:
+            self.game_manager.throw_dice()
+            self.game_manager.give_resources()
 
-        start_turn_object['dice'] = self.game_manager.get_last_dice_roll()
-        start_turn_object['actual_player'] = str(self.game_manager.get_whose_turn_is_it())
+            start_turn_object['dice'] = self.game_manager.get_last_dice_roll()
+            start_turn_object['actual_player'] = str(self.game_manager.get_whose_turn_is_it())
 
-        # Si ha salido un 7 en la tirada de dado se llama al ladrón
-        start_turn_object = self.game_manager.check_if_thief_is_called(start_turn_object, player)
+            # Si ha salido un 7 en la tirada de dado se llama al ladrón
+            start_turn_object = self.game_manager.check_if_thief_is_called(start_turn_object, player)
 
-        for i in range(4):
-            start_turn_object['hand_P' + str(i)] = self.game_manager.player_resources_to_object(i)
-            start_turn_object['total_P' + str(i)] = str(self.game_manager.player_resources_total(i))
+            for i in range(4):
+                start_turn_object['hand_P' + str(i)] = self.game_manager.player_resources_to_object(i)
+                start_turn_object['total_P' + str(i)] = str(self.game_manager.player_resources_total(i))
 
-        return start_turn_object
+            return start_turn_object, winner
+        else:
+            return start_turn_object, winner
 
     def end_turn(self, winner, player=-1):
         """
@@ -156,7 +159,7 @@ class GameDirector:
             self.game_manager.set_turn(self.game_manager.get_turn() + 1)
             self.game_manager.set_whose_turn_is_it(i)
 
-            start_turn_object = self.start_turn(winner, self.game_manager.get_whose_turn_is_it())
+            start_turn_object, winner = self.start_turn(winner, self.game_manager.get_whose_turn_is_it())
             obj['start_turn'] = start_turn_object
 
             # Se permite comerciar un máximo de 2 veces con jugadores, pero cualquier cantidad con el puerto.

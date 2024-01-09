@@ -1,5 +1,5 @@
-from Classes.Materials import Materials
 from Managers.GameManager import GameManager
+from Classes.Materials import Materials
 from Classes.TradeOffer import TradeOffer
 from Classes.Constants import MaterialConstants, DevelopmentCardConstants
 
@@ -353,7 +353,7 @@ class TestGameManager:
                         done_2_2_1 = False
                     else:
                         # self.game_manager.board.build_road(3, 0, 1)
-                        card, winner = self.game_manager.play_development_card(3, card, winner)  # Auxilio no se porqué no va
+                        card, winner = self.game_manager.play_development_card(3, card, winner)  # Auxilio no se porqué no vaaaaaaaaaaaaaaaaaaaaaa
 
                         assert winner is False
                         print(card['roads'])

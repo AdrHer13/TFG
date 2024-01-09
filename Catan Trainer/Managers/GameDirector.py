@@ -22,9 +22,10 @@ class GameDirector:
         return
 
     # -- -- -- --  Turn  -- -- -- --
-    def start_turn(self, player=-1):
+    def start_turn(self, winner, player=-1):
         """
         Esta función permite iniciar el turno a un jugador.
+        :param winner: bool
         :param player: (int) número que representa al jugador.
         :return: object
         """
@@ -36,7 +37,7 @@ class GameDirector:
         turn_start_response = self.game_manager.on_turn_start(player)
 
         if isinstance(turn_start_response, DevelopmentCard) and not self.game_manager.get_card_used():
-            played_card_obj = self.game_manager.play_development_card(player, turn_start_response)
+            played_card_obj, winner = self.game_manager.play_development_card(player, turn_start_response, winner)
             if not (played_card_obj['played_card'] == 'victory_point' or
                     played_card_obj['played_card'] == 'failed_victory_point'):
                 self.game_manager.set_card_used(True)
@@ -57,9 +58,10 @@ class GameDirector:
 
         return start_turn_object
 
-    def end_turn(self, player=-1):
+    def end_turn(self, winner, player=-1):
         """
         Esta función permite finalizar el turno
+        :param winner: bool
         :param player: número que representa al jugador
         :return: void
         """
@@ -70,42 +72,44 @@ class GameDirector:
         turn_end_response = self.game_manager.call_to_bot_on_turn_end(player)
 
         if isinstance(turn_end_response, DevelopmentCard) and not self.game_manager.get_card_used():
-            played_card_obj = self.game_manager.play_development_card(player, turn_end_response)
+            played_card_obj, winner = self.game_manager.play_development_card(player, turn_end_response, winner)
             if not (played_card_obj['played_card'] == 'victory_point' or
                     played_card_obj['played_card'] == 'failed_victory_point'):
                 self.game_manager.set_card_used(True)
             end_turn_object['development_card_played'].append(played_card_obj)
 
-        # -- -- -- -- Calcular carretera más larga -- -- -- --
-        # Le quitamos el título al jugador que lo tiene
-        for player in self.game_manager.get_players():
-            if player['longest_road'] == 1:
-                player['longest_road'] = 0
-                player['victory_points'] -= 2
-                break
+        if not winner:
+            # -- -- -- -- Calcular carretera más larga -- -- -- --
+            # Le quitamos el título al jugador que lo tiene
+            for player in self.game_manager.get_players():
+                if player['longest_road'] == 1:
+                    player['longest_road'] = 0
+                    player['victory_points'] -= 2
+                    break
 
-        # Calculamos quien tiene la carretera más larga
-        for node in self.game_manager.get_board_nodes():
-            longest_road_obj = self.game_manager.longest_road_calculator(node, 1, {'longest_road': 0, 'player': -1},
-                                                                         -1, [node['id']])
+            # Calculamos quien tiene la carretera más larga
+            for node in self.game_manager.get_board_nodes():
+                longest_road_obj = self.game_manager.longest_road_calculator(node, 1, {'longest_road': 0, 'player': -1},
+                                                                             -1, [node['id']])
 
-            if longest_road_obj['longest_road'] > self.game_manager.get_longest_road()['longest_road']:
-                self.game_manager.set_longest_road(longest_road_obj)
-        # Se le da el título a quien tenga la carretera más larga
-        if self.game_manager.get_longest_road()['player'] != -1:
-            self.game_manager.get_players()[self.game_manager.get_longest_road()['player']]['longest_road'] = 1
-            self.game_manager.get_players()[self.game_manager.get_longest_road()['player']]['victory_points'] += 2
+                if longest_road_obj['longest_road'] > self.game_manager.get_longest_road()['longest_road']:
+                    self.game_manager.set_longest_road(longest_road_obj)
+            # Se le da el título a quien tenga la carretera más larga
+            if self.game_manager.get_longest_road()['player'] != -1:
+                self.game_manager.get_players()[self.game_manager.get_longest_road()['player']]['longest_road'] = 1
+                self.game_manager.get_players()[self.game_manager.get_longest_road()['player']]['victory_points'] += 2
 
         vp = {}
         for i in range(4):
             vp['J' + str(i)] = str(self.game_manager.get_players()[i]['victory_points'])
 
         end_turn_object['victory_points'] = vp
-        return end_turn_object
+        return end_turn_object, winner
 
-    def start_commerce_phase(self, player=-1, depth=1):
+    def start_commerce_phase(self, winner, depth=1, player=-1):
         """
         Esta función permite pasar a la fase de comercio a un jugador.
+        :param winner: bool
         :param depth: (int) número de veces que ha comerciado ya el jugador.
         :param player: (int) número que representa al jugador.
         :return: object
@@ -116,14 +120,15 @@ class GameDirector:
 
         commerce_response = self.game_manager.call_to_bot_on_commerce_phase(player)
 
-        commerce_phase_object = self.game_manager.on_commerce_response(commerce_phase_object, commerce_response, depth,
-                                                                       player)
+        commerce_phase_object, winner = self.game_manager.on_commerce_response(commerce_phase_object, commerce_response,
+                                                                               depth, player, winner)
 
-        return commerce_phase_object
+        return commerce_phase_object, winner
 
-    def start_build_phase(self, player=-1):
+    def start_build_phase(self, winner, player=-1):
         """
         Esta función permite pasar a la fase de construcción a un jugador.
+        :param winner: bool
         :param player: (int) número que representa al jugador.
         :return: void
         """
@@ -133,9 +138,10 @@ class GameDirector:
 
         build_response = self.game_manager.call_to_bot_on_build_phase(player)
 
-        build_phase_object = self.game_manager.build_phase_object(build_phase_object, build_response, player)
+        build_phase_object, winner = self.game_manager.build_phase_object(build_phase_object, build_response, player,
+                                                                          winner)
 
-        return build_phase_object
+        return build_phase_object, winner
 
     # Round #
     def round_start(self, winner):
@@ -150,15 +156,17 @@ class GameDirector:
             self.game_manager.set_turn(self.game_manager.get_turn() + 1)
             self.game_manager.set_whose_turn_is_it(i)
 
-            start_turn_object = self.start_turn(self.game_manager.get_whose_turn_is_it())
+            start_turn_object = self.start_turn(winner, self.game_manager.get_whose_turn_is_it())
             obj['start_turn'] = start_turn_object
 
             # Se permite comerciar un máximo de 2 veces con jugadores, pero cualquier cantidad con el puerto.
             # Si se intenta comercia con un jugador una tercera vez, devuelve None y corta el bucle
+
             commerce_phase_array, depth = [], 1
             trading = True
-            while trading:
-                commerce_phase_object = self.start_commerce_phase(self.game_manager.get_whose_turn_is_it(), depth)
+            while trading and not winner:
+                commerce_phase_object, winner = self.start_commerce_phase(winner, depth,
+                                                                          self.game_manager.get_whose_turn_is_it())
                 commerce_phase_array.append(commerce_phase_object)
                 if commerce_phase_object['trade_offer'] == 'None':
                     trading = False
@@ -170,15 +178,16 @@ class GameDirector:
             # para evitar un bucle infinito, se corta si se construye 'None' o si fallan al intentar construir
             build_phase_array = []
             building = True
-            while building:
-                build_phase_object = self.start_build_phase(self.game_manager.get_whose_turn_is_it())
+            while building and not winner:
+                build_phase_object, winner = self.start_build_phase(winner, self.game_manager.get_whose_turn_is_it())
                 build_phase_array.append(build_phase_object)
                 if build_phase_object['building'] == 'None' or not build_phase_object['finished']:
                     building = False
             obj['build_phase'] = build_phase_array
 
-            end_turn_object = self.end_turn(self.game_manager.get_whose_turn_is_it())
-            obj['end_turn'] = end_turn_object
+            if not winner:
+                end_turn_object = self.end_turn(winner, self.game_manager.get_whose_turn_is_it())
+                obj['end_turn'] = end_turn_object
 
             round_object['turn_P' + str(i)] = obj
 

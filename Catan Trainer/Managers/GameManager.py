@@ -466,7 +466,6 @@ class GameManager:
 
             on_moving_thief = self.bot_manager.players[player_id]['player'].on_moving_thief()
             move_thief_obj = self.move_thief(on_moving_thief['terrain'], on_moving_thief['player'])
-            self.already_played_development_card = True
 
             # se pasan los cambios al objeto
             card_obj['played_card'] = 'knight'
@@ -864,9 +863,6 @@ class GameManager:
             commerce_phase_object['trade_offer'] = 'played_card'
             commerce_phase_object['harbor_trade'] = False
             commerce_phase_object['development_card_played'] = played_card_obj
-            if not (played_card_obj['played_card'] == 'victory_point' or
-                    played_card_obj['played_card'] == 'failed_victory_point'):
-                self.already_played_development_card = True
 
             return commerce_phase_object, winner
         else:
@@ -923,10 +919,6 @@ class GameManager:
             build_phase_object['building'] = 'played_card'
             build_phase_object['finished'] = True
             build_phase_object['development_card_played'] = played_card_obj
-
-            if not (played_card_obj['played_card'] == 'victory_point' or
-                    played_card_obj['played_card'] == 'failed_victory_point'):
-                self.already_played_development_card = True
 
             return build_phase_object, winner
         else:

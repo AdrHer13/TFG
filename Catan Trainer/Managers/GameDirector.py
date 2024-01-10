@@ -36,11 +36,8 @@ class GameDirector:
 
         turn_start_response = self.game_manager.on_turn_start(player)
 
-        if isinstance(turn_start_response, DevelopmentCard) and not self.game_manager.get_card_used():
+        if isinstance(turn_start_response, DevelopmentCard) and not self.game_manager.get_card_used() and not winner:
             played_card_obj, winner = self.game_manager.play_development_card(player, turn_start_response, winner)
-            if not (played_card_obj['played_card'] == 'victory_point' or
-                    played_card_obj['played_card'] == 'failed_victory_point'):
-                self.game_manager.set_card_used(True)
             start_turn_object['development_card_played'].append(played_card_obj)
 
         if not winner:
@@ -74,11 +71,8 @@ class GameDirector:
 
         turn_end_response = self.game_manager.call_to_bot_on_turn_end(player)
 
-        if isinstance(turn_end_response, DevelopmentCard) and not self.game_manager.get_card_used():
+        if isinstance(turn_end_response, DevelopmentCard) and not self.game_manager.get_card_used() and not winner:
             played_card_obj, winner = self.game_manager.play_development_card(player, turn_end_response, winner)
-            if not (played_card_obj['played_card'] == 'victory_point' or
-                    played_card_obj['played_card'] == 'failed_victory_point'):
-                self.game_manager.set_card_used(True)
             end_turn_object['development_card_played'].append(played_card_obj)
 
         if not winner:
@@ -188,9 +182,8 @@ class GameDirector:
                     building = False
             obj['build_phase'] = build_phase_array
 
-            if not winner:
-                end_turn_object = self.end_turn(winner, self.game_manager.get_whose_turn_is_it())
-                obj['end_turn'] = end_turn_object
+            end_turn_object = self.end_turn(winner, self.game_manager.get_whose_turn_is_it())
+            obj['end_turn'] = end_turn_object
 
             round_object['turn_P' + str(i)] = obj
 

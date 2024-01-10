@@ -34,7 +34,7 @@ class GameDirector:
         self.game_manager.set_phase(0)
         self.game_manager.set_actual_player(player)
 
-        turn_start_response = self.game_manager.on_turn_start(player)
+        turn_start_response = self.game_manager.call_to_bot_on_turn_start(player)
 
         if isinstance(turn_start_response, DevelopmentCard) and not self.game_manager.get_card_used() and not winner:
             played_card_obj, winner = self.game_manager.play_development_card(player, turn_start_response, winner)

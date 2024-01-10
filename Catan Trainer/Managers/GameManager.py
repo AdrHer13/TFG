@@ -694,13 +694,6 @@ class GameManager:
         self.turn_manager.actual_player = player_id
         return
 
-    def on_turn_start(self, player):
-        """
-        :param player: int
-        :return: DevelopmentCard, None
-        """
-        return self.bot_manager.players[player]['player'].on_turn_start()
-
     def get_last_dice_roll(self):
         """
         :return: int
@@ -733,6 +726,20 @@ class GameManager:
         """
         return self.bot_manager.players[player_id]['resources'].resources.__to_object__()
 
+    def call_to_bot_on_turn_start(self, player):
+        """
+        :param player: int
+        :return: DevelopmentCard, None
+        """
+        return self.bot_manager.players[player]['player'].on_turn_start()
+
+    def call_to_bot_on_turn_end(self, player_id):
+        """
+        :param player_id: int
+        :return: DevelopmentCard, None
+        """
+        return self.bot_manager.players[player_id]['player'].on_turn_end()
+
     def call_to_bot_on_commerce_phase(self, player_id):
         """
         :param player_id: int
@@ -746,13 +753,6 @@ class GameManager:
         :return: dict{'building': str, 'node_id': int, 'road_to': int/None}, None
         """
         return self.bot_manager.players[player_id]['player'].on_build_phase(self.board)
-
-    def call_to_bot_on_turn_end(self, player_id):
-        """
-        :param player_id: int
-        :return: DevelopmentCard, None
-        """
-        return self.bot_manager.players[player_id]['player'].on_turn_end()
 
     def get_board_nodes(self):
         """

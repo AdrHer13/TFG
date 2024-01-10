@@ -60,36 +60,36 @@ class TestGameManager:
         self.game_manager.give_resources()
 
         # Comprobamos los del J0
-        assert self.game_manager.bot_manager.players[0]['player'].hand.resources.get_cereal() == 3
-        assert self.game_manager.bot_manager.players[0]['resources'].resources.get_cereal() == 3
+        assert self.game_manager.bot_manager.players[0]['player'].hand.resources.resources.cereal == 3
+        assert self.game_manager.bot_manager.players[0]['resources'].resources.resources.cereal == 3
 
-        assert self.game_manager.bot_manager.players[0]['player'].hand.resources.get_mineral() == 0
-        assert self.game_manager.bot_manager.players[0]['resources'].resources.get_mineral() == 0
+        assert self.game_manager.bot_manager.players[0]['player'].hand.resources.resources.mineral == 0
+        assert self.game_manager.bot_manager.players[0]['resources'].resources.resources.mineral == 0
 
-        assert self.game_manager.bot_manager.players[0]['player'].hand.resources.get_clay() == 0
-        assert self.game_manager.bot_manager.players[0]['resources'].resources.get_clay() == 0
+        assert self.game_manager.bot_manager.players[0]['player'].hand.resources.resources.clay == 0
+        assert self.game_manager.bot_manager.players[0]['resources'].resources.resources.clay == 0
 
-        assert self.game_manager.bot_manager.players[0]['player'].hand.resources.get_wood() == 0
-        assert self.game_manager.bot_manager.players[0]['resources'].resources.get_wood() == 0
+        assert self.game_manager.bot_manager.players[0]['player'].hand.resources.resources.wood == 0
+        assert self.game_manager.bot_manager.players[0]['resources'].resources.resources.wood == 0
 
-        assert self.game_manager.bot_manager.players[0]['player'].hand.resources.get_wool() == 0
-        assert self.game_manager.bot_manager.players[0]['resources'].resources.get_wool() == 0
+        assert self.game_manager.bot_manager.players[0]['player'].hand.resources.resources.wool == 0
+        assert self.game_manager.bot_manager.players[0]['resources'].resources.resources.wool == 0
 
         # Comprobamos los del J2
-        assert self.game_manager.bot_manager.players[2]['player'].hand.resources.get_cereal() == 0
-        assert self.game_manager.bot_manager.players[2]['resources'].resources.get_cereal() == 0
+        assert self.game_manager.bot_manager.players[2]['player'].hand.resources.resources.cereal == 0
+        assert self.game_manager.bot_manager.players[2]['resources'].resources.resources.cereal == 0
 
-        assert self.game_manager.bot_manager.players[2]['player'].hand.resources.get_mineral() == 0
-        assert self.game_manager.bot_manager.players[2]['resources'].resources.get_mineral() == 0
+        assert self.game_manager.bot_manager.players[2]['player'].hand.resources.resources.mineral == 0
+        assert self.game_manager.bot_manager.players[2]['resources'].resources.resources.mineral == 0
 
-        assert self.game_manager.bot_manager.players[2]['player'].hand.resources.get_clay() == 0
-        assert self.game_manager.bot_manager.players[2]['resources'].resources.get_clay() == 0
+        assert self.game_manager.bot_manager.players[2]['player'].hand.resources.resources.clay == 0
+        assert self.game_manager.bot_manager.players[2]['resources'].resources.resources.clay == 0
 
-        assert self.game_manager.bot_manager.players[2]['player'].hand.resources.get_wood() == 3
-        assert self.game_manager.bot_manager.players[2]['resources'].resources.get_wood() == 3
+        assert self.game_manager.bot_manager.players[2]['player'].hand.resources.resources.wood == 3
+        assert self.game_manager.bot_manager.players[2]['resources'].resources.resources.wood == 3
 
-        assert self.game_manager.bot_manager.players[2]['player'].hand.resources.get_wool() == 0
-        assert self.game_manager.bot_manager.players[2]['resources'].resources.get_wool() == 0
+        assert self.game_manager.bot_manager.players[2]['player'].hand.resources.resources.wool == 0
+        assert self.game_manager.bot_manager.players[2]['resources'].resources.resources.wool == 0
 
     def test_send_trade_to_everyone(self):
         trade = TradeOffer(Materials(1, 0, 0, 0, 0), Materials(0, 0, 1, 0, 1))
@@ -307,14 +307,14 @@ class TestGameManager:
             card = self.game_manager.bot_manager.players[3]['development_cards'].hand[
                 len(self.game_manager.bot_manager.players[3]['development_cards'].hand) - 1]
 
-            if card.get_type() == DevelopmentCardConstants.KNIGHT and done_0:
+            if card.type == DevelopmentCardConstants.KNIGHT and done_0:
                 card, winner = self.game_manager.play_development_card(3, card, winner)
 
                 assert winner is False
                 assert self.game_manager.bot_manager.players[3]['knights'] == 1
                 done_0 = False
 
-            elif card.get_type() == DevelopmentCardConstants.VICTORY_POINT and done_1:
+            elif card.type == DevelopmentCardConstants.VICTORY_POINT and done_1:
                 if done_1_1:
                     self.game_manager.bot_manager.players[3]['victory_points'] = 9
                     card, winner = self.game_manager.play_development_card(3, card, winner)
@@ -332,9 +332,9 @@ class TestGameManager:
                     assert card['played_card'] == 'failed_victory_point'
                     done_1 = False
 
-            elif card.get_type() == DevelopmentCardConstants.PROGRESS_CARD and done_2:
+            elif card.type == DevelopmentCardConstants.PROGRESS_CARD and done_2:
 
-                if card.get_effect() == DevelopmentCardConstants.MONOPOLY_EFFECT and not done_2_4:
+                if card.effect == DevelopmentCardConstants.MONOPOLY_EFFECT and not done_2_4:
                     card, winner = self.game_manager.play_development_card(3, card, winner)
 
                     assert winner is False
@@ -344,7 +344,7 @@ class TestGameManager:
                         card['material_chosen']) == 0
                     done_2_4 = True
 
-                elif card.get_effect() == DevelopmentCardConstants.ROAD_BUILDING_EFFECT and not done_2_2:
+                elif card.effect == DevelopmentCardConstants.ROAD_BUILDING_EFFECT and not done_2_2:
                     if done_2_2_1:
                         card_bad, winner = self.game_manager.play_development_card(3, card, winner)
 
@@ -362,7 +362,7 @@ class TestGameManager:
 
                         done_2_2 = True
 
-                elif card.get_effect() == DevelopmentCardConstants.YEAR_OF_PLENTY_EFFECT and not done_2_3:
+                elif card.effect == DevelopmentCardConstants.YEAR_OF_PLENTY_EFFECT and not done_2_3:
                     card, winner = self.game_manager.play_development_card(3, card, winner)
 
                     assert winner is False

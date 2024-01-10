@@ -292,7 +292,7 @@ class GameManager:
                                                                                   ], 1)
                 self.bot_manager.players[player_id]['player'].hand = self.bot_manager.players[player_id]['resources']
 
-                if card_drawn.get_type() == DevelopmentCardConstants.VICTORY_POINT:
+                if card_drawn.type == DevelopmentCardConstants.VICTORY_POINT:
                     self.bot_manager.players[player_id]['hidden_victory_points'] += 1
 
                 self.bot_manager.players[player_id]['development_cards'].add_card(card_drawn)
@@ -335,7 +335,7 @@ class GameManager:
         :return: int
         """
         player_obj = self.bot_manager.players[player]
-        actual_player_obj = self.bot_manager.players[self.bot_manager.get_actual_player()]
+        actual_player_obj = self.bot_manager.players[self.bot_manager.actual_player]
 
         material_id = -1
         total = player_obj["resources"].get_total()
@@ -429,8 +429,8 @@ class GameManager:
         card_obj = {}
 
         if card.__to_object__() in self.bot_manager.players[player_id]['development_cards'].check_hand():
-            if card.get_type() != DevelopmentCardConstants.VICTORY_POINT:
-                self.bot_manager.players[player_id]['development_cards'].delete_card(card.get_id())  # Borramos la carta
+            if card.type != DevelopmentCardConstants.VICTORY_POINT:
+                self.bot_manager.players[player_id]['development_cards'].delete_card(card.id)  # Borramos la carta
 
                 self.bot_manager.players[player_id]['player'].development_cards_hand.hand = \
                     self.bot_manager.players[player_id]['development_cards'].hand
@@ -444,7 +444,7 @@ class GameManager:
 
             return card_obj, winner
 
-        if card.get_type() == DevelopmentCardConstants.KNIGHT:
+        if card.type == DevelopmentCardConstants.KNIGHT:
             # se le suma un nuevo caballero al jugador y se le pide mover al ladrón
             self.bot_manager.players[player_id]['knights'] += 1
 
@@ -478,7 +478,7 @@ class GameManager:
             self.already_played_development_card = True
             return card_obj, winner
 
-        elif card.get_type() == DevelopmentCardConstants.VICTORY_POINT:
+        elif card.type == DevelopmentCardConstants.VICTORY_POINT:
             # Si tienen suficientes puntos de victoria para ganar. Ganan automáticamente, si no, no pasa nada
 
             if (self.bot_manager.players[player_id]['victory_points'] +
@@ -495,9 +495,9 @@ class GameManager:
 
             return card_obj, winner
 
-        elif card.get_type() == DevelopmentCardConstants.PROGRESS_CARD:
+        elif card.type == DevelopmentCardConstants.PROGRESS_CARD:
 
-            if card.get_effect() == DevelopmentCardConstants.MONOPOLY_EFFECT:
+            if card.effect == DevelopmentCardConstants.MONOPOLY_EFFECT:
                 # Elige material
                 material_chosen = self.bot_manager.players[player_id]['player'].on_monopoly_card_use()
                 material_sum = 0
@@ -526,7 +526,7 @@ class GameManager:
                 self.already_played_development_card = True
                 return card_obj, winner
 
-            elif card.get_effect() == DevelopmentCardConstants.ROAD_BUILDING_EFFECT:
+            elif card.effect == DevelopmentCardConstants.ROAD_BUILDING_EFFECT:
 
                 # Se piden en qué puntos quieren construir carreteras
                 road_nodes = self.bot_manager.players[player_id]['player'].on_road_building_card_use()
@@ -594,7 +594,7 @@ class GameManager:
                     self.already_played_development_card = True
                     return card_obj, winner
 
-            elif card.get_effect() == DevelopmentCardConstants.YEAR_OF_PLENTY_EFFECT:
+            elif card.effect == DevelopmentCardConstants.YEAR_OF_PLENTY_EFFECT:
                 card_obj['played_card'] = 'year_of_plenty'
 
                 # Eligen 2 materiales (puede ser el mismo 2 veces)
@@ -634,7 +634,7 @@ class GameManager:
         """
         :return: int
         """
-        return self.turn_manager.get_turn()
+        return self.turn_manager.turn
 
     def set_turn(self, turn=0):
         """
@@ -648,7 +648,7 @@ class GameManager:
         """
         :return: int
         """
-        return self.turn_manager.get_whose_turn_is_it()
+        return self.turn_manager.whose_turn_is_it
 
     def set_whose_turn_is_it(self, turn=0):
         """
@@ -670,7 +670,7 @@ class GameManager:
         """
         :return: int
         """
-        return self.turn_manager.get_round()
+        return self.turn_manager.round
 
     def set_round(self, round=0):
         """
@@ -786,8 +786,8 @@ class GameManager:
         :param start_turn_object: dict
         :return: start_turn_object, dict
         """
-        if self.get_last_dice_roll() == 7:
-            for obj in self.get_players():
+        if self.last_dice_roll == 7:
+            for obj in self.bot_manager.players:
                 if obj['resources'].get_total() > 7:
                     total = obj['player'].on_having_more_than_7_materials_when_thief_is_called().get_total()
                     max_hand = (total / 2).__floor__()
@@ -796,7 +796,7 @@ class GameManager:
                         obj['resources'].remove_material(random.randint(0, 4), 1)
                         total = obj['resources'].get_total()
 
-            on_moving_thief = self.get_players()[player_id]['player'].on_moving_thief()
+            on_moving_thief = self.bot_manager.players[player_id]['player'].on_moving_thief()
             move_thief_obj = self.move_thief(on_moving_thief['terrain'], on_moving_thief['player'])
 
             start_turn_object['past_thief_terrain'] = move_thief_obj['last_thief_terrain']
@@ -818,7 +818,8 @@ class GameManager:
             commerce_phase_object['trade_offer'] = commerce_response.__to_object__()
             commerce_phase_object['harbor_trade'] = False
 
-            if self.get_players()[player_id]['resources'].resources.has_this_more_materials(commerce_response.gives):
+            if self.bot_manager.players[player_id]['resources'].resources.has_this_more_materials(
+                    commerce_response.gives):
                 commerce_phase_object['inviable'] = False
                 answer_object = self.send_trade_to_everyone(commerce_response)
                 commerce_phase_object['answers'] = answer_object
@@ -899,7 +900,7 @@ class GameManager:
 
             if built['response']:
                 if build_response['building'] in [BuildConstants.TOWN, BuildConstants.CITY]:
-                    self.get_players()[player_id]['victory_points'] += 1
+                    self.bot_manager.players[player_id]['victory_points'] += 1
 
                 if build_response['building'] == BuildConstants.CARD:
                     build_phase_object['card_id'] = built['card_effect']

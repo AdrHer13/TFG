@@ -31,12 +31,6 @@ class BotManager:
         self.reset_game_values()
         return
 
-    def get_actual_player(self):
-        """
-        :return: actual_player: int
-        """
-        return self.actual_player
-
     def set_actual_player(self, player_id=0):
         """
         :param player_id: int

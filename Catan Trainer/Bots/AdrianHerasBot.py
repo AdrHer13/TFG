@@ -48,17 +48,17 @@ class AdrianHerasBot(BotInterface):
         # Comprueba si tiene materiales para construir una ciudad. Si los tiene, descarta el resto que no le sirvan.
         if self.hand.resources.has_this_more_materials(BuildConstants.CITY):
             while self.hand.get_total() > 7:
-                if self.hand.get_wool() > 0:
+                if self.hand.resources.wool > 0:
                     self.hand.remove_material(4, 1)
 
-                if self.hand.get_cereal() > 2:
+                if self.hand.resources.cereal > 2:
                     self.hand.remove_material(0, 1)
-                if self.hand.get_mineral() > 3:
+                if self.hand.resources.mineral > 3:
                     self.hand.remove_material(1, 1)
 
-                if self.hand.get_clay() > 0:
+                if self.hand.resources.clay > 0:
                     self.hand.remove_material(2, 1)
-                if self.hand.get_wood() > 0:
+                if self.hand.resources.wood > 0:
                     self.hand.remove_material(3, 1)
         # Si no tiene materiales para hacer una ciudad descarta de manera aleatoria cartas de su mano
         return self.hand
@@ -123,11 +123,11 @@ class AdrianHerasBot(BotInterface):
             return None
         # Pedir lo que falte para una ciudad, ofrece del resto de materiales iguales a los que pide
         elif self.town_number >= 1:
-            cereal_hand = self.hand.get_cereal()
-            mineral_hand = self.hand.get_mineral()
-            wood_hand = self.hand.get_wood()
-            clay_hand = self.hand.get_clay()
-            wool_hand = self.hand.get_wool()
+            cereal_hand = self.hand.resources.cereal
+            mineral_hand = self.hand.resources.mineral
+            wood_hand = self.hand.resources.wood
+            clay_hand = self.hand.resources.clay
+            wool_hand = self.hand.resources.wool
             total_given_materials = (2 - cereal_hand) + (3 - mineral_hand)
 
             # Si hay más materiales que los pedidos
@@ -165,11 +165,11 @@ class AdrianHerasBot(BotInterface):
 
                 number_of_materials_received = 0
 
-                materials_to_receive[0] = 1 - self.hand.get_cereal()
-                materials_to_receive[1] = 0 - self.hand.get_mineral()
-                materials_to_receive[2] = 1 - self.hand.get_clay()
-                materials_to_receive[3] = 1 - self.hand.get_wood()
-                materials_to_receive[4] = 1 - self.hand.get_wool()
+                materials_to_receive[0] = 1 - self.hand.resources.cereal
+                materials_to_receive[1] = 0 - self.hand.resources.mineral
+                materials_to_receive[2] = 1 - self.hand.resources.clay
+                materials_to_receive[3] = 1 - self.hand.resources.wood
+                materials_to_receive[4] = 1 - self.hand.resources.wool
 
                 # Nos aseguramos de que solo pida materiales que necesita, y que no hayan negativos
                 for i in range(0, len(materials_to_receive)):

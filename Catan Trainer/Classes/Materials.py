@@ -16,41 +16,25 @@ class Materials:
         self.array_ids = [self.cereal, self.mineral, self.clay, self.wood, self.wool]
         return self.array_ids[material_constant]
 
-    # getters #####
-    def get_cereal(self):
-        return self.cereal
-
-    def get_mineral(self):
-        return self.mineral
-
-    def get_clay(self):
-        return self.clay
-
-    def get_wood(self):
-        return self.wood
-
-    def get_wool(self):
-        return self.wool
-
     # adders #####
     def add_cereal(self, amount):
-        self.cereal = self.get_cereal() + amount
+        self.cereal = self.cereal + amount
         return None
 
     def add_mineral(self, amount):
-        self.mineral = self.get_mineral() + amount
+        self.mineral = self.mineral + amount
         return None
 
     def add_clay(self, amount):
-        self.clay = self.get_clay() + amount
+        self.clay = self.clay + amount
         return None
 
     def add_wood(self, amount):
-        self.wood = self.get_wood() + amount
+        self.wood = self.wood + amount
         return None
 
     def add_wool(self, amount):
-        self.wool = self.get_wool() + amount
+        self.wool = self.wool + amount
         return None
 
     def has_this_more_materials(self, materials):

@@ -55,23 +55,9 @@ class Hand:
     def get_from_id(self, material_id):
         return self.resources.get_from_id(material_id)
 
-    def get_cereal(self):
-        return self.resources.cereal
-
-    def get_mineral(self):
-        return self.resources.mineral
-
-    def get_clay(self):
-        return self.resources.clay
-
-    def get_wood(self):
-        return self.resources.wood
-
-    def get_wool(self):
-        return self.resources.wool
-
     def get_total(self):
-        return self.get_cereal() + self.get_mineral() + self.get_clay() + self.get_wood() + self.get_wool()
+        return (self.resources.cereal + self.resources.mineral + self.resources.clay
+                + self.resources.wood + self.resources.wool)
 
     def __str__(self):
         return 'Hand(' + str(self.resources) + ')'

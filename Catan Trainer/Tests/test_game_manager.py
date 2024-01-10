@@ -1,11 +1,12 @@
 from Managers.GameManager import GameManager
 from Classes.Materials import Materials
 from Classes.TradeOffer import TradeOffer
-from Classes.Constants import MaterialConstants, DevelopmentCardConstants
+from Classes.Constants import *
+from Classes.DevelopmentCards import DevelopmentCard
 
 
 class TestGameManager:
-    game_manager = GameManager(for_test=True)
+    game_manager = GameManager(for_test='test_específico')
 
     def test_reset_values(self):
         self.game_manager.already_played_development_card = True
@@ -92,12 +93,39 @@ class TestGameManager:
         assert self.game_manager.bot_manager.players[2]['resources'].resources.resources.wool == 0
 
     def test_send_trade_to_everyone(self):
+        self.game_manager.reset_game_values()
         trade = TradeOffer(Materials(1, 0, 0, 0, 0), Materials(0, 0, 1, 0, 1))
 
-        assert type(self.game_manager.send_trade_to_everyone(trade)) is list
+        answer_object = self.game_manager.send_trade_to_everyone(trade)
+
+        # Todos aceptan, pero ninguno puede completrlo dado que no tienen materiales
+        assert len(answer_object) == 3
+        for player in range(3):
+            assert answer_object[player][0]['completed'] is False
+            assert answer_object[player][0]['response'] is True
+
+        self.game_manager._give_all_resources()
+
+        answer_object = self.game_manager.send_trade_to_everyone(trade)
+
+        assert len(answer_object) == 1
+        assert answer_object[0][0]['completed'] is True
+        assert answer_object[0][0]['response'] is True
 
     def test__on_tradeoffer_response(self):
-        return
+        self.game_manager.reset_game_values()
+
+        giver = self.game_manager.bot_manager.players[0]
+        receiver = self.game_manager.bot_manager.players[1]
+        trade_offer = TradeOffer(Materials(1, 0, 0, 0, 0), Materials(0, 0, 1, 0, 1))
+
+        response_obj = self.game_manager._on_tradeoffer_response(giver, receiver, 0, trade_offer)
+
+        assert response_obj['response'] is True
+
+        response_obj = self.game_manager._on_tradeoffer_response(giver, receiver, 3, trade_offer)
+
+        assert response_obj['response'] is False
 
     def test__trade_with_player(self):
         self.game_manager.reset_game_values()
@@ -352,8 +380,9 @@ class TestGameManager:
                         assert card_bad['roads'] is None
                         done_2_2_1 = False
                     else:
-                        # self.game_manager.board.build_road(3, 0, 1)
-                        card, winner = self.game_manager.play_development_card(3, card, winner)  # Auxilio no se porqué no vaaaaaaaaaaaaaaaaaaaaaa
+                        # self.game_manager.board.nodes[0]['roads'].append({'player_id': 3, 'node_id': 1})
+                        # self.game_manager.board.build_town(3, 0)
+                        card, winner = self.game_manager.play_development_card(3, card, winner)
 
                         assert winner is False
                         print(card['roads'])
@@ -403,18 +432,246 @@ class TestGameManager:
         assert self.game_manager.bot_manager.players[3]['resources'].get_total() == 7
 
     def test_on_commerce_response(self):
-        return
+        self.game_manager.reset_game_values()
+        # No hay respuesta del comerciante
+        commerce_phase_object = {}
+        commerce_response = None
+        depth = 1
+        player = 0
+        winner = False
+
+        commerce_phase_object, winner = self.game_manager.on_commerce_response(commerce_phase_object, commerce_response,
+                                                                               depth, player, winner)
+
+        assert winner is False
+        assert commerce_phase_object['trade_offer'] == 'None'
+
+        self.game_manager.reset_game_values()
+        # Nadie tiene materiales para intercambiar, haciendo el intercambio inviable
+        commerce_phase_object = {}
+        commerce_response = TradeOffer(Materials(1, 0, 0, 0, 0), Materials(0, 0, 1, 0, 1))
+        depth = 1
+        player = 0
+        winner = False
+
+        commerce_phase_object, winner = self.game_manager.on_commerce_response(commerce_phase_object, commerce_response,
+                                                                               depth, player, winner)
+
+        assert winner is False
+        assert commerce_phase_object['harbor_trade'] is False
+        assert commerce_phase_object['inviable'] is True
+
+        self.game_manager.reset_game_values()
+        # Todos tienen materiales para intercambiar completando el intercambio
+        commerce_phase_object = {}
+        commerce_response = TradeOffer(Materials(1, 0, 0, 0, 0), Materials(0, 0, 1, 0, 1))
+        depth = 1
+        player = 0
+        winner = False
+        self.game_manager._give_all_resources()
+
+        commerce_phase_object, winner = self.game_manager.on_commerce_response(commerce_phase_object, commerce_response,
+                                                                               depth, player, winner)
+
+        assert winner is False
+        assert commerce_phase_object['harbor_trade'] is False
+        assert commerce_phase_object['answers'][0][0]['completed'] is True
+
+        self.game_manager.reset_game_values()
+        # Si la profundidad de los intercambios es mucha se cancelan todos los intercambios
+        commerce_phase_object = {}
+        commerce_response = TradeOffer(Materials(1, 0, 0, 0, 0), Materials(0, 0, 1, 0, 1))
+        depth = 3
+        player = 0
+        winner = False
+
+        commerce_phase_object, winner = self.game_manager.on_commerce_response(commerce_phase_object, commerce_response,
+                                                                               depth, player, winner)
+
+        assert winner is False
+        assert commerce_phase_object['trade_offer'] == 'None'
+
+        self.game_manager.reset_game_values()
+        # Intercambio con un puerto
+        commerce_phase_object = {}
+        commerce_response = {'gives': MaterialConstants.CEREAL, 'receives': MaterialConstants.MINERAL}
+        depth = 1
+        player = 0
+        winner = False
+        self.game_manager._give_all_resources()
+
+        commerce_phase_object, winner = self.game_manager.on_commerce_response(commerce_phase_object, commerce_response,
+                                                                               depth, player, winner)
+
+        assert winner is False
+        assert commerce_phase_object['harbor_trade'] is True
+        assert commerce_phase_object['answer']['cereal'] == '1'
+        assert commerce_phase_object['answer']['mineral'] == '6'
+
+        self.game_manager.reset_game_values()
+        # Uso de una carta de desarrollo
+        commerce_phase_object = {}
+        commerce_response = DevelopmentCard(2, DevelopmentCardConstants.KNIGHT, DevelopmentCardConstants.KNIGHT_EFFECT)
+        self.game_manager.bot_manager.players[0]['development_cards'].add_card(commerce_response)
+        self.game_manager.bot_manager.players[0]['player'].development_cards_hand.hand = \
+            self.game_manager.bot_manager.players[0]['development_cards'].hand
+        depth = 1
+        player = 0
+        winner = False
+
+        commerce_phase_object, winner = self.game_manager.on_commerce_response(commerce_phase_object, commerce_response,
+                                                                               depth, player, winner)
+
+        assert winner is False
+        assert commerce_phase_object['harbor_trade'] is False
+        assert commerce_phase_object['trade_offer'] == 'played_card'
+
+        self.game_manager.reset_game_values()
+        # Uso de una carta de desarrollo para ganar la partida
+        commerce_phase_object = {}
+        self.game_manager.bot_manager.players[0]['victory_points'] = 9
+        self.game_manager.bot_manager.players[0]['hidden_victory_points'] = 1
+        commerce_response = DevelopmentCard(17, DevelopmentCardConstants.VICTORY_POINT,
+                                            DevelopmentCardConstants.VICTORY_POINT_EFFECT)
+        self.game_manager.bot_manager.players[0]['development_cards'].add_card(commerce_response)
+        self.game_manager.bot_manager.players[0]['player'].development_cards_hand.hand = \
+            self.game_manager.bot_manager.players[0]['development_cards'].hand
+        depth = 1
+        player = 0
+        winner = False
+
+        commerce_phase_object, winner = self.game_manager.on_commerce_response(commerce_phase_object, commerce_response,
+                                                                               depth, player, winner)
+
+        assert winner is True
+        assert commerce_phase_object['harbor_trade'] is False
+        assert commerce_phase_object['trade_offer'] == 'played_card'
 
     def test_build_phase_object(self):
-        return
+        self.game_manager.reset_game_values()
+        # No hay respuesta del constructor
+        build_phase_object = {}
+        build_response = None
+        player = 0
+        winner = False
+
+        build_phase_object, winner = self.game_manager.build_phase_object(build_phase_object, build_response, player,
+                                                                          winner)
+
+        assert winner is False
+        assert build_phase_object['building'] == 'None'
+
+        self.game_manager.reset_game_values()
+        # Intento de construir sin materiales
+        build_phase_object = {}
+        build_response = {'building': BuildConstants.TOWN, 'node_id': 5}
+        player = 0
+        winner = False
+
+        build_phase_object, winner = self.game_manager.build_phase_object(build_phase_object, build_response, player,
+                                                                          winner)
+
+        assert winner is False
+        assert build_phase_object['finished'] is False
+
+        self.game_manager.reset_game_values()
+        # Intento de construir un pueblo con materiales y carretera
+        build_phase_object = {}
+        build_response = {'building': BuildConstants.TOWN, 'node_id': 0}
+        player = 0
+        winner = False
+        self.game_manager._give_all_resources()
+        self.game_manager.board.nodes[0]['roads'].append({'player_id': 0, 'node_id': 1})
+
+        build_phase_object, winner = self.game_manager.build_phase_object(build_phase_object, build_response, player,
+                                                                          winner)
+
+        assert winner is False
+        assert self.game_manager.bot_manager.players[0]['victory_points'] == 1
+        assert build_phase_object['building'] == 'town'
+        assert build_phase_object['finished'] is True
+
+        # Intento de construir una ciudad sobre el pueblo de antes con materiales
+        build_phase_object = {}
+        build_response = {'building': BuildConstants.CITY, 'node_id': 0}
+
+        build_phase_object, winner = self.game_manager.build_phase_object(build_phase_object, build_response, player,
+                                                                          winner)
+
+        assert winner is False
+        assert self.game_manager.bot_manager.players[0]['victory_points'] == 2
+        assert build_phase_object['building'] == 'city'
+        assert build_phase_object['finished'] is True
+
+        # Intento de construir una carretera en la situación de antes con materiales
+        build_phase_object = {}
+        build_response = {'building': BuildConstants.ROAD, 'node_id': 0, 'road_to': 8}
+
+        build_phase_object, winner = self.game_manager.build_phase_object(build_phase_object, build_response, player,
+                                                                          winner)
+
+        assert winner is False
+        assert self.game_manager.bot_manager.players[0]['victory_points'] == 2
+        assert build_phase_object['building'] == 'road'
+        assert build_phase_object['finished'] is True
+
+        self.game_manager.reset_game_values()
+        # Intento de construir una carta de desarrollo
+        build_phase_object = {}
+        build_response = {'building': BuildConstants.CARD}
+        player = 0
+        winner = False
+        self.game_manager._give_all_resources()
+
+        build_phase_object, winner = self.game_manager.build_phase_object(build_phase_object, build_response, player,
+                                                                          winner)
+
+        assert winner is False
+        assert build_phase_object['building'] == 'card'
+        assert build_phase_object['finished'] is True
+
+        self.game_manager.reset_game_values()
+        # Uso de una carta de desarrollo
+        build_phase_object = {}
+        build_response = DevelopmentCard(2, DevelopmentCardConstants.KNIGHT, DevelopmentCardConstants.KNIGHT_EFFECT)
+        self.game_manager.bot_manager.players[0]['development_cards'].add_card(build_response)
+        self.game_manager.bot_manager.players[0]['player'].development_cards_hand.hand = \
+            self.game_manager.bot_manager.players[0]['development_cards'].hand
+        player = 0
+        winner = False
+
+        build_phase_object, winner = self.game_manager.build_phase_object(build_phase_object, build_response, player,
+                                                                          winner)
+
+        assert winner is False
+        assert build_phase_object['building'] == 'played_card'
+
+        self.game_manager.reset_game_values()
+        # Uso de una carta de desarrollo para ganar la partida
+        build_phase_object = {}
+        self.game_manager.bot_manager.players[0]['victory_points'] = 9
+        self.game_manager.bot_manager.players[0]['hidden_victory_points'] = 1
+        build_response = DevelopmentCard(17, DevelopmentCardConstants.VICTORY_POINT,
+                                         DevelopmentCardConstants.VICTORY_POINT_EFFECT)
+        self.game_manager.bot_manager.players[0]['development_cards'].add_card(build_response)
+        self.game_manager.bot_manager.players[0]['player'].development_cards_hand.hand = \
+            self.game_manager.bot_manager.players[0]['development_cards'].hand
+        player = 0
+        winner = False
+
+        build_phase_object, winner = self.game_manager.build_phase_object(build_phase_object, build_response, player,
+                                                                          winner)
+
+        assert winner is True
+        assert build_phase_object['building'] == 'played_card'
 
 
 if __name__ == '__main__':
     test = TestGameManager()
     # test.test_reset_values()
     # test.test_give_resources()
-    # test.test_send_trade_to_everyone()   #########
-    # test.test__on_tradeoffer_response()  #########
+    # test.test_send_trade_to_everyone()
+    # test.test__on_tradeoffer_response()
     # test.test__trade_with_player()
     # test.test_build_town()
     # test.test_build_city()
@@ -424,7 +681,7 @@ if __name__ == '__main__':
     # test.test__steal_from_player()
     # test.test_game_start_build_towns_and_roads()
     # test.test_longest_road()
-    # test.test_play_development_card()
-    # test.test_check_if_thief_is_called()
-    # test.test_on_commerce_response()     #########
-    # test.test_build_phase_object()       #########
+    # test.test_play_development_card()      #########
+    # test.test_check_if_thief_is_called()   #########
+    # test.test_on_commerce_response()
+    # test.test_build_phase_object()

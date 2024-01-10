@@ -1,4 +1,4 @@
-from Bots import RandomBot
+from Bots import RandomBot, AlexPastorBot
 from Classes.DevelopmentCards import DevelopmentCardsHand
 from Classes.Hand import Hand
 
@@ -22,6 +22,11 @@ class BotManager:
             self.second_bot_class = self.import_bot_class_from_input('segundo')
             self.third_bot_class = self.import_bot_class_from_input('tercer')
             self.fourth_bot_class = self.import_bot_class_from_input('cuarto')
+        elif for_test == 'test_específico':
+            self.first_bot_class = AlexPastorBot.AlexPastorBot
+            self.second_bot_class = AlexPastorBot.AlexPastorBot
+            self.third_bot_class = AlexPastorBot.AlexPastorBot
+            self.fourth_bot_class = AlexPastorBot.AlexPastorBot
         else:
             self.first_bot_class = RandomBot.RandomBot
             self.second_bot_class = RandomBot.RandomBot

@@ -148,48 +148,49 @@ class GameDirector:
         round_object = {}
         self.game_manager.set_card_used(False)
 
-        for i in range(4):
-            obj = {}
-            self.game_manager.set_turn(self.game_manager.get_turn() + 1)
-            self.game_manager.set_whose_turn_is_it(i)
+        if not winner:
+            for i in range(4):
+                obj = {}
+                self.game_manager.set_turn(self.game_manager.get_turn() + 1)
+                self.game_manager.set_whose_turn_is_it(i)
 
-            start_turn_object, winner = self.start_turn(winner, self.game_manager.get_whose_turn_is_it())
-            obj['start_turn'] = start_turn_object
+                start_turn_object, winner = self.start_turn(winner, self.game_manager.get_whose_turn_is_it())
+                obj['start_turn'] = start_turn_object
 
-            # Se permite comerciar un máximo de 2 veces con jugadores, pero cualquier cantidad con el puerto.
-            # Si se intenta comercia con un jugador una tercera vez, devuelve None y corta el bucle
+                # Se permite comerciar un máximo de 2 veces con jugadores, pero cualquier cantidad con el puerto.
+                # Si se intenta comercia con un jugador una tercera vez, devuelve None y corta el bucle
+                commerce_phase_array, depth = [], 1
+                trading = True
+                while trading and not winner:
+                    commerce_phase_object, winner = self.start_commerce_phase(winner, depth,
+                                                                              self.game_manager.get_whose_turn_is_it())
+                    commerce_phase_array.append(commerce_phase_object)
+                    if commerce_phase_object['trade_offer'] == 'None':
+                        trading = False
+                    elif not (commerce_phase_object['harbor_trade'] or commerce_phase_object['harbor_trade'] is None):
+                        depth += 1
+                obj['commerce_phase'] = commerce_phase_array
 
-            commerce_phase_array, depth = [], 1
-            trading = True
-            while trading and not winner:
-                commerce_phase_object, winner = self.start_commerce_phase(winner, depth,
-                                                                          self.game_manager.get_whose_turn_is_it())
-                commerce_phase_array.append(commerce_phase_object)
-                if commerce_phase_object['trade_offer'] == 'None':
-                    trading = False
-                elif not (commerce_phase_object['harbor_trade'] or commerce_phase_object['harbor_trade'] is None):
-                    depth += 1
-            obj['commerce_phase'] = commerce_phase_array
+                # Se puede construir cualquier cantidad de veces en un turno mientras tengan materiales. Así que
+                # para evitar un bucle infinito, se corta si se construye 'None' o si fallan al intentar construir
+                build_phase_array = []
+                building = True
+                while building and not winner:
+                    build_phase_object, winner = self.start_build_phase(winner,
+                                                                        self.game_manager.get_whose_turn_is_it())
+                    build_phase_array.append(build_phase_object)
+                    if build_phase_object['building'] == 'None' or not build_phase_object['finished']:
+                        building = False
+                obj['build_phase'] = build_phase_array
 
-            # Se puede construir cualquier cantidad de veces en un turno mientras tengan materiales. Así que
-            # para evitar un bucle infinito, se corta si se construye 'None' o si fallan al intentar construir
-            build_phase_array = []
-            building = True
-            while building and not winner:
-                build_phase_object, winner = self.start_build_phase(winner, self.game_manager.get_whose_turn_is_it())
-                build_phase_array.append(build_phase_object)
-                if build_phase_object['building'] == 'None' or not build_phase_object['finished']:
-                    building = False
-            obj['build_phase'] = build_phase_array
+                end_turn_object = self.end_turn(winner, self.game_manager.get_whose_turn_is_it())
+                obj['end_turn'] = end_turn_object
 
-            end_turn_object = self.end_turn(winner, self.game_manager.get_whose_turn_is_it())
-            obj['end_turn'] = end_turn_object
+                round_object['turn_P' + str(i)] = obj
 
-            round_object['turn_P' + str(i)] = obj
-
-            winner = self.round_end(winner)
-            if winner:
-                return round_object, winner
+                winner = self.round_end(winner)
+                if winner:
+                    return round_object, winner
 
         return round_object, winner
 
@@ -221,7 +222,6 @@ class GameDirector:
                 "board_terrain": self.game_manager.get_board_terrain(),
             }
         }
-
         # Se le da paso al primer jugador para que ponga un poblado y una aldea
         for i in range(4):
             setup_object["P" + str(i)] = []

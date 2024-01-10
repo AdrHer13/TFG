@@ -22,7 +22,6 @@ class AlexPastorBot(BotInterface):
         """
         return True
 
-
     def on_turn_start(self):
         # Si tiene una carta de desarrollo la usa
         if len(self.development_cards_hand.check_hand()):
@@ -38,7 +37,7 @@ class AlexPastorBot(BotInterface):
     def on_having_more_than_7_materials_when_thief_is_called(self):
         return self.hand
 
-    def on_moving_thief(self):                                        # Modificar para que siempre lo ponga donde hay un rival
+    def on_moving_thief(self):  # TODO Modificar para que siempre lo ponga donde hay un rival
         # Bloquea un número 6 u 8 donde no tenga un pueblo, pero que tenga uno del rival
         # Si no se dan las condiciones lo deja donde está, lo que hace que el GameManager lo ponga en un lugar aleatorio
         terrain_with_thief_id = -1
@@ -163,4 +162,3 @@ class AlexPastorBot(BotInterface):
     def on_year_of_plenty_card_use(self):
         material, material2 = random.randint(0, 4), random.randint(0, 4)
         return {'material': material, 'material_2': material2}
-

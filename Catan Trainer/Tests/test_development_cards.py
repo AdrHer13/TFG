@@ -8,15 +8,15 @@ class TestDevelopmentCards:
         # Comprobamos que el deck se compone de 15 caballeros, 5 puntos de victoria y 2 de cada carta especial
         for card in development_deck.deck:
             if 0 <= card.id < 14:
-                assert card.get_effect() == Dcc.KNIGHT_EFFECT and card.get_type() == Dcc.KNIGHT
+                assert card.effect == Dcc.KNIGHT_EFFECT and card.type == Dcc.KNIGHT
             elif 14 <= card.id < 19:
-                assert card.get_effect() == Dcc.VICTORY_POINT_EFFECT and card.get_type() == Dcc.VICTORY_POINT
+                assert card.effect == Dcc.VICTORY_POINT_EFFECT and card.type == Dcc.VICTORY_POINT
             elif 19 <= card.id < 21:
-                assert card.get_effect() == Dcc.ROAD_BUILDING_EFFECT and card.get_type() == Dcc.PROGRESS_CARD
+                assert card.effect == Dcc.ROAD_BUILDING_EFFECT and card.type == Dcc.PROGRESS_CARD
             elif 21 <= card.id < 23:
-                assert card.get_effect() == Dcc.YEAR_OF_PLENTY_EFFECT and card.get_type() == Dcc.PROGRESS_CARD
+                assert card.effect == Dcc.YEAR_OF_PLENTY_EFFECT and card.type == Dcc.PROGRESS_CARD
             elif 23 <= card.id < 25:
-                assert card.get_effect() == Dcc.MONOPOLY_EFFECT and card.get_type() == Dcc.PROGRESS_CARD
+                assert card.effect == Dcc.MONOPOLY_EFFECT and card.type == Dcc.PROGRESS_CARD
 
         # Se comprueba que se baraja la baraja
         initial_values = []
@@ -29,10 +29,10 @@ class TestDevelopmentCards:
         # Se comprueba que draw_card() devuelve la primera carta del deck y si se roba una segunda carta, no es la misma
         first_card_in_deck = development_deck.deck[0]
         drawn_card = development_deck.draw_card()
-        assert first_card_in_deck.get_id() == drawn_card.get_id()
+        assert first_card_in_deck.id == drawn_card.id
 
         second_drawn_card = development_deck.draw_card()
-        assert drawn_card.get_id() != second_drawn_card.get_id()
+        assert drawn_card.id != second_drawn_card.id
         return
 
     def test_development_cards_hand(self):
@@ -61,12 +61,12 @@ class TestDevelopmentCards:
 
         # Comprobamos que se pueden jugar cartas. El game_manager es el encargado de borrarlas de la mano
         played_card = hand_of_cards.select_card_by_id(2)
-        assert (played_card.get_id() == 2 and played_card.get_effect() == Dcc.KNIGHT_EFFECT and
-                played_card.get_type() == Dcc.KNIGHT)
+        assert (played_card.id == 2 and played_card.effect == Dcc.KNIGHT_EFFECT and
+                played_card.type == Dcc.KNIGHT)
 
         played_card = hand_of_cards.select_card_by_array_index(0)
-        assert (played_card.get_id() == 0 and played_card.get_effect() == Dcc.KNIGHT_EFFECT and
-                played_card.get_type() == Dcc.KNIGHT)
+        assert (played_card.id == 0 and played_card.effect == Dcc.KNIGHT_EFFECT and
+                played_card.type == Dcc.KNIGHT)
 
         # Comprobamos que la función delete_card() borra la carta correctamente por ID
         hand_of_cards.delete_card(1)

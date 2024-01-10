@@ -14,13 +14,13 @@ class TestHand:
         hand.add_material(3, 1)
         hand.add_material(4, 1)
         hand.add_material(5, 1)
-        assert hand.get_cereal() == 1 and hand.get_mineral() == 1 and hand.get_clay() == 1 and \
-               hand.get_wood() == 1 and hand.get_wool() == 1 and hand.get_total() == 5
+        assert hand.resources.cereal == 1 and hand.resources.mineral == 1 and hand.resources.clay == 1 and \
+               hand.resources.wood == 1 and hand.resources.wool == 1 and hand.get_total() == 5
 
         # Comprobamos que la versión por lista funciona correctamente también
         hand.add_material([0, 1, 2, 3, 4], 1)
-        assert hand.get_cereal() == 2 and hand.get_mineral() == 2 and hand.get_clay() == 2 and \
-               hand.get_wood() == 2 and hand.get_wool() == 2 and hand.get_total() == 10
+        assert hand.resources.cereal == 2 and hand.resources.mineral == 2 and hand.resources.clay == 2 and \
+               hand.resources.wood == 2 and hand.resources.wool == 2 and hand.get_total() == 10
 
         # Comprobamos que remove_material elimina materiales correctamente
         hand.remove_material(0, 1)
@@ -28,8 +28,8 @@ class TestHand:
         hand.remove_material(2, 1)
         hand.remove_material(3, 1)
         hand.remove_material(4, 1)
-        assert hand.get_cereal() == 1 and hand.get_mineral() == 1 and hand.get_clay() == 1 and \
-               hand.get_wood() == 1 and hand.get_wool() == 1 and hand.get_total() == 5
+        assert hand.resources.cereal == 1 and hand.resources.mineral == 1 and hand.resources.clay == 1 and \
+               hand.resources.wood == 1 and hand.resources.wool == 1 and hand.get_total() == 5
 
         # Comprobamos que la versión por lista funciona correctamente también
         hand.remove_material([0, 1, 2, 3, 4], 1)

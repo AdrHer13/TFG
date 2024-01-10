@@ -7,19 +7,19 @@ class TestMaterials:
         materials = Materials()
 
         materials.add_cereal(1)
-        assert materials.get_cereal() == 1
+        assert materials.cereal == 1
 
         materials.add_mineral(2)
-        assert materials.get_mineral() == 2
+        assert materials.mineral == 2
 
         materials.add_clay(3)
-        assert materials.get_clay() == 3
+        assert materials.clay == 3
 
         materials.add_wood(4)
-        assert materials.get_wood() == 4
+        assert materials.wood == 4
 
         materials.add_wool(5)
-        assert materials.get_wool() == 5
+        assert materials.wool == 5
 
         mc = [MaterialConstants.CEREAL, MaterialConstants.MINERAL, MaterialConstants.CLAY,
               MaterialConstants.WOOD, MaterialConstants.WOOL]

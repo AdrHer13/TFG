@@ -80,17 +80,8 @@ class DevelopmentCard:
     def __str__(self):
         return "{'id': " + str(self.id) + ", 'type': " + str(self.type) + ", 'effect': " + str(self.effect) + "}"
 
-    def get_id(self):
-        return self.id
-
-    def get_type(self):
-        return self.type
-
-    def get_effect(self):
-        return self.effect
-
     def __to_object__(self):
-        return {'id': self.get_id(), 'type': self.get_type(), 'effect': self.get_effect()}
+        return {'id': self.id, 'type': self.type, 'effect': self.effect}
 
 
 class DevelopmentCardsHand:
@@ -117,7 +108,7 @@ class DevelopmentCardsHand:
         """
         hand_array = []
         for card in self.hand:
-            card_obj = {'id': card.get_id(), 'type': card.get_type(), 'effect': card.get_effect()}
+            card_obj = {'id': card.id, 'type': card.type, 'effect': card.effect}
             hand_array.append(card_obj)
 
         return hand_array
@@ -140,7 +131,7 @@ class DevelopmentCardsHand:
         :param id: (int) Número indicativo de la carta.
         """
         for card in self.hand:
-            if card.get_id() == id:
+            if card.id == id:
                 card_obj = card
                 return card_obj
 
@@ -153,7 +144,7 @@ class DevelopmentCardsHand:
         """
         rest_of_hand = []
         for card in self.hand:
-            if card.get_id() != id:
+            if card.id != id:
                 rest_of_hand.append(card)
         self.hand = rest_of_hand
         return

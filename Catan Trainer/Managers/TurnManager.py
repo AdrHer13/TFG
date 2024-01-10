@@ -13,31 +13,6 @@ class TurnManager:
         self.round = round
         return
 
-    # -- -- -- --  getters  -- -- -- --
-    def get_turn(self):
-        """
-        :return: turn: int
-        """
-        return self.turn
-
-    def get_whose_turn_is_it(self):
-        """
-        :return: whose_turn_is_it: int
-        """
-        return self.whose_turn_is_it
-
-    def get_phase(self):
-        """
-        :return: phase: int
-        """
-        return self.phase
-
-    def get_round(self):
-        """
-        :return: round: int
-        """
-        return self.round
-
     # -- -- -- --  setters  -- -- -- --
     def set_turn(self, turn=0):
         """

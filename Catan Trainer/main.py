@@ -7,13 +7,13 @@ def main():
         games_to_play = int(input('Cantidad de partidas a jugar: '))
     except ValueError:
         games_to_play = 0
-    if isinstance(games_to_play, int):
+    if isinstance(games_to_play, int) and games_to_play > 0:
         for i in range(games_to_play):
             print('......')
             game_director.game_start(i + 1)
     else:
         print('......')
-        game_director.game_start()
+        print('Cantidad no válida')
     print('------------------------')
     game_director.trace_loader.export_every_game_to_file()
     return

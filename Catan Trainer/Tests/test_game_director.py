@@ -73,14 +73,103 @@ class TestGameDirector:
         start_turn_object, winner = self.game_director.start_turn(False, 0)
 
         assert winner is True
-        assert len(start_turn_object) == 1
+        assert len(start_turn_object['development_card_played']) == 1
 
     def test_end_turn(self):
+        self.game_director.reset_game_values()
 
+        self.game_director.game_manager.board.nodes[0]['player'] = 0
+        self.game_director.game_manager.board.build_road(0, 0, 1)
+        self.game_director.game_manager.board.build_road(0, 1, 2)
+        self.game_director.game_manager.board.build_road(0, 0, 8)
+        self.game_director.game_manager.board.build_road(0, 8, 9)
+        self.game_director.game_manager.board.build_road(0, 9, 10)
 
+        end_turn_object, winner = self.game_director.end_turn(True, 0)
+
+        assert winner is True
+        assert self.game_director.game_manager.longest_road == {'longest_road': 4, 'player': -1}
+        assert self.game_director.game_manager.bot_manager.players[0]['victory_points'] == 0
+
+        end_turn_object, winner = self.game_director.end_turn(False, 0)
+
+        assert winner is False
+        assert self.game_director.game_manager.longest_road == {'longest_road': 5, 'player': 0}
+        assert self.game_director.game_manager.bot_manager.players[0]['victory_points'] == 2
+
+        # Al ganar con una carta de desarrollo
+        self.game_director.reset_game_values()
+
+        self.game_director.game_manager.bot_manager.players[0]['victory_points'] = 9
+        self.game_director.game_manager.bot_manager.players[0]['hidden_victory_points'] = 1
+        self.game_director.game_manager.bot_manager.players[0]['development_cards'].add_card(
+            DevelopmentCard(17, DevelopmentCardConstants.VICTORY_POINT, DevelopmentCardConstants.VICTORY_POINT_EFFECT))
+        self.game_director.game_manager.bot_manager.players[0]['player'].development_cards_hand.hand = \
+            self.game_director.game_manager.bot_manager.players[0]['development_cards'].hand
+
+        end_turn_object, winner = self.game_director.end_turn(False, 0)
+
+        assert winner is True
+        assert len(end_turn_object['development_card_played']) == 1
+
+    def test_start_commerce_phase(self):
+        return
+
+    def test_start_build_phase(self):
+        return
+
+    def test_round_start(self):
+        self.game_director.reset_game_values()
+
+        round_object, winner = self.game_director.round_start(True)
+
+        assert winner is True
+        assert len(round_object) == 0
+
+        round_object, winner = self.game_director.round_start(False)
+
+        assert winner is False
+        assert len(round_object) != 0
+
+        # Al ganar con una carta de desarrollo
+        self.game_director.reset_game_values()
+
+        self.game_director.game_manager.bot_manager.players[0]['victory_points'] = 9
+        self.game_director.game_manager.bot_manager.players[0]['hidden_victory_points'] = 1
+        self.game_director.game_manager.bot_manager.players[0]['development_cards'].add_card(
+            DevelopmentCard(17, DevelopmentCardConstants.VICTORY_POINT, DevelopmentCardConstants.VICTORY_POINT_EFFECT))
+        self.game_director.game_manager.bot_manager.players[0]['player'].development_cards_hand.hand = \
+            self.game_director.game_manager.bot_manager.players[0]['development_cards'].hand
+
+        round_object, winner = self.game_director.round_start(False)
+
+        assert winner is True
+        assert len(round_object) != 0
+
+    def test_round_end(self):
+        self.game_director.reset_game_values()
+
+        winner = self.game_director.round_end(False)
+
+        assert winner is False
+
+        self.game_director.game_manager.bot_manager.players[0]['victory_points'] = 10
+
+        winner = self.game_director.round_end(False)
+
+        assert winner is True
+
+    def test_game_start_and_game_loop(self):
+        self.game_director.game_start(1)
 
 
 if __name__ == '__main__':
     test = TestGameDirector()
     # test.test_reset_game_values()
-    test.test_start_turn()
+    # test.test_start_turn()
+    # test.test_end_turn()
+    # test.test_start_commerce_phase()
+    # test.test_start_build_phase()
+    # test.test_round_start()
+    # test.test_round_end()
+    # test.test_game_start_and_game_loop()

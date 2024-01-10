@@ -4,7 +4,7 @@ from Classes.DevelopmentCards import *
 
 
 class TestGameDirector:
-    game_director = GameDirector(for_test=True)
+    game_director = GameDirector(for_test="test_específico")
 
     def test_reset_game_values(self):
         self.game_director.game_manager.already_played_development_card = True
@@ -165,11 +165,11 @@ class TestGameDirector:
 
 if __name__ == '__main__':
     test = TestGameDirector()
-    # test.test_reset_game_values()
-    # test.test_start_turn()
-    # test.test_end_turn()
-    # test.test_start_commerce_phase()
-    # test.test_start_build_phase()
-    # test.test_round_start()
-    # test.test_round_end()
-    # test.test_game_start_and_game_loop()
+    test.test_reset_game_values()
+    test.test_start_turn()
+    test.test_end_turn()
+    # test.test_start_commerce_phase()  Testeado realmente en el Manager
+    # test.test_start_build_phase()     Testeado realmente en el Manager
+    test.test_round_start()
+    test.test_round_end()
+    test.test_game_start_and_game_loop()

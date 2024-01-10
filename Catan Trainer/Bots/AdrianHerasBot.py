@@ -10,7 +10,6 @@ class AdrianHerasBot(BotInterface):
     """
     Es necesario poner super().nombre_de_funcion() para asegurarse de que coge la función del padre
     """
-
     town_number = 0
     material_given_more_than_three = None
     # Son los materiales más necesarios en construcciones, luego se piden con year of plenty para tener en mano

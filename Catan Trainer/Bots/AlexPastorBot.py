@@ -20,10 +20,8 @@ class AlexPastorBot(BotInterface):
         :param incoming_trade_offer:
         :return:
         """
-        if incoming_trade_offer.gives.has_this_more_materials(incoming_trade_offer.receives):
-            return True
-        else:
-            return False
+        return True
+
 
     def on_turn_start(self):
         # Si tiene una carta de desarrollo la usa

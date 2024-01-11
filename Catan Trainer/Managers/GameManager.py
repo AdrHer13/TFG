@@ -132,7 +132,6 @@ class GameManager:
                 else:
                     on_tradeoffer_response.append(response_obj)
                     offer = False
-
             if on_tradeoffer_response[(len(on_tradeoffer_response) - 1)]['response']:
                 if count % 2 == 0:
                     done = self._trade_with_player(trade_offer, giver, receiver)
@@ -166,14 +165,12 @@ class GameManager:
             'giver': giver['id'],
             'receiver': receiver['id'],
         }
-
         response = receiver['player'].on_trade_offer(trade_offer)
 
         if count > self.MAX_COMMERCE_DEPTH:
             json_obj['response'] = False
         else:
             json_obj['response'] = response
-
         return json_obj
 
     def _trade_with_player(self, trade_offer=None, giver=None, receiver=None):

@@ -117,10 +117,10 @@ class AdrianHerasBot(BotInterface):
         receives = Materials()
 
         # No pide nada porque puede hacer una ciudad
-        if self.town_number >= 1 and self.hand.resources.has_this_more_materials(Materials('city')):
+        if self.town_number >= 1 and self.hand.resources.has_this_more_materials(BuildConstants.CITY):
             self.material_given_more_than_three = None
             return None
-        # Pedir lo que falte para una ciudad, ofrece del resto de materiales iguales a los que pide
+        # Pedir lo que falte para una ciudad, ofrece el resto de materiales iguales a los que pide
         elif self.town_number >= 1:
             cereal_hand = self.hand.resources.cereal
             mineral_hand = self.hand.resources.mineral
@@ -149,7 +149,7 @@ class AdrianHerasBot(BotInterface):
             else:
                 gives = Materials(0, 0, clay_hand, wood_hand, wool_hand)
 
-            receives = Materials((2 - cereal_hand), (3 - mineral_hand), 0, 0, 0)
+            receives = Materials(2, 3, 0, 0, 0)
 
         # Como no puede construir una ciudad pide materiales para hacer un pueblo
         elif self.town_number == 0:

@@ -57,12 +57,13 @@ class Materials:
                 return False
 
         if isinstance(materials, Materials):
-            if self.cereal < materials.cereal or self.mineral < materials.mineral or self.clay < materials.clay or \
-               self.wood < materials.wood or self.wool < materials.wool:
+            if (0 <= materials.cereal <= self.cereal and 0 <= materials.mineral <= self.mineral and
+                    0 <= materials.clay <= self.clay and 0 <= materials.wood <= self.wood and
+                    0 <= materials.wool <= self.wool):
 
-                return False
+                return True
 
-            return True
+            return False
         else:
             return False
 

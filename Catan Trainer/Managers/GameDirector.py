@@ -161,6 +161,7 @@ class GameDirector:
                 # Si se intenta comercia con un jugador una tercera vez, devuelve None y corta el bucle
                 commerce_phase_array, depth = [], 1
                 trading = True
+
                 while trading and not winner:
                     commerce_phase_object, winner = self.start_commerce_phase(winner, depth,
                                                                               self.game_manager.get_whose_turn_is_it())
@@ -182,7 +183,6 @@ class GameDirector:
                     if build_phase_object['building'] == 'None' or not build_phase_object['finished']:
                         building = False
                 obj['build_phase'] = build_phase_array
-
                 end_turn_object = self.end_turn(winner, self.game_manager.get_whose_turn_is_it())
                 obj['end_turn'] = end_turn_object
 

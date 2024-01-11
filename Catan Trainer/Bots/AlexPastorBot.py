@@ -37,26 +37,17 @@ class AlexPastorBot(BotInterface):
     def on_having_more_than_7_materials_when_thief_is_called(self):
         return self.hand
 
-    def on_moving_thief(self):  # TODO Modificar para que siempre lo ponga donde hay un rival
-        # Bloquea un número 6 u 8 donde no tenga un pueblo, pero que tenga uno del rival
-        # Si no se dan las condiciones lo deja donde está, lo que hace que el GameManager lo ponga en un lugar aleatorio
+    def on_moving_thief(self):
+        # Pone el ladrón donde haya un jugador adyacente para robarle.
+        # Si no se da la condición lo deja donde está, lo que hace que el GameManager lo ponga en un lugar aleatorio
         terrain_with_thief_id = -1
         for terrain in self.board.terrain:
             if not terrain['has_thief']:
-                if terrain['probability'] == 6 or terrain['probability'] == 8:
-                    nodes = self.board.__get_contacting_nodes__(terrain['id'])
-                    has_own_town = False
-                    has_enemy_town = False
-                    enemy = -1
-                    for node_id in nodes:
-                        if self.board.nodes[node_id]['player'] == self.id:
-                            has_own_town = True
-                            break
-                        if self.board.nodes[node_id]['player'] != -1:
-                            has_enemy_town = True
-                            enemy = self.board.nodes[node_id]['player']
+                nodes = terrain['contacting_nodes']
+                for node_id in nodes:
+                    if self.board.nodes[node_id]['player'] not in [self.id, -1]:
+                        enemy = self.board.nodes[node_id]['player']
 
-                    if not has_own_town and has_enemy_town:
                         return {'terrain': terrain['id'], 'player': enemy}
             else:
                 terrain_with_thief_id = terrain['id']

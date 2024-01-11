@@ -218,7 +218,7 @@ class GameManager:
         :return: {bool, string}. Devuelve si se ha podido o no construir el poblado, y en caso negativo, la razón.
         """
         if self.bot_manager.players[player_id]['resources'].resources.has_this_more_materials('town'):
-            build_town_obj = self.board.build_town(self.turn_manager.whose_turn_is_it, node)
+            build_town_obj = self.board.build_town(player_id, node)
 
             if build_town_obj['response']:
                 self.bot_manager.players[player_id]['resources'].remove_material([MaterialConstants.CEREAL,
@@ -240,7 +240,7 @@ class GameManager:
         :return: {bool, string}. Devuelve si se ha podido o no construir la ciudad, y en caso negativo, la razón.
         """
         if self.bot_manager.players[player_id]['resources'].resources.has_this_more_materials('city'):
-            build_city_obj = self.board.build_city(self.turn_manager.whose_turn_is_it, node)
+            build_city_obj = self.board.build_city(player_id, node)
 
             if build_city_obj['response']:
                 self.bot_manager.players[player_id]['resources'].remove_material(MaterialConstants.CEREAL, 2)
@@ -262,7 +262,7 @@ class GameManager:
         :return: {bool, string}. Devuelve si se ha podido o no construir la carretera, y en caso negativo, la razón.
         """
         if self.bot_manager.players[player_id]['resources'].resources.has_this_more_materials('road') or free:
-            build_road_obj = self.board.build_road(self.turn_manager.whose_turn_is_it, node, road)
+            build_road_obj = self.board.build_road(player_id, node, road)
 
             if build_road_obj['response'] and not free:
                 self.bot_manager.players[player_id]['resources'].remove_material([MaterialConstants.CLAY,

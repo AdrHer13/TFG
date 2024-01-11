@@ -418,8 +418,8 @@ class Board:
             if road['node_id'] == finishing_node:
                 # Dejamos de mirar si ya hay una carretera hacia el nodo final
                 return {'response': False, 'error_msg': 'Ya hay una carretera aquí'}
-            if road['player_id'] == player and \
-                    (self.nodes[starting_node]['player'] == -1 or self.nodes[starting_node]['player'] == player):
+            if (road['player_id'] == player and
+                    (self.nodes[starting_node]['player'] == -1 or self.nodes[starting_node]['player'] == player)):
                 can_build = True
 
         for road in self.nodes[finishing_node]['roads']:

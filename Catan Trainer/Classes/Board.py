@@ -252,8 +252,8 @@ class Board:
     def __get_terrain_type__(self, terrain_id):
         """
         Establecer el tablero con el tipo de terreno por defecto del mapa de ejemplo de Catán
-        :param terrain_id:
-        :return:
+        :param terrain_id: int
+        :return: int
         """
         if terrain_id == 0 or terrain_id == 8 or terrain_id == 10 or terrain_id == 18:
             return TerrainConstants.WOOD
@@ -481,7 +481,7 @@ class Board:
         """
         Comprueba si los nodos a una casilla de distancia del node_id tienen pueblo o ciudad
         :param node_id:
-        :return:
+        :return: bool
         """
         for adjacent_id in self.nodes[node_id]['adjacent']:
             if self.nodes[adjacent_id]['player'] != -1:
@@ -501,7 +501,7 @@ class Board:
         Devuelve un array del ID de los nodos válidos donde el jugador puede poner un pueblo.
         Deberían de no haber ID repetidos
         :param player_id: int
-        :return: [id...]
+        :return: [int...]
         """
         valid_nodes = []
         for node in self.nodes:
@@ -517,7 +517,7 @@ class Board:
         """
         Devuelve un array de las ids de los nodos válidos para convertir pueblos en ciudades
         :param player_id: int
-        :return: [id...]
+        :return: [int...]
         """
         valid_nodes = []
         for node in self.nodes:
@@ -586,9 +586,9 @@ class Board:
     def check_for_player_harbors(self, player, material_harbor=None):
         """
         Comprueba qué puertos tiene el jugador. Material_harbor sirve para buscar puertos 2:1 de ese tipo
-        :param player:
-        :param material_harbor:
-        :return:
+        :param player: int
+        :param material_harbor: int/None
+        :return: int
         """
         harbor_3_1_nodes = [7, 17, 26, 37, 45, 46, 47, 48]
 

@@ -146,19 +146,6 @@ class TestGameDirector:
         assert winner is True
         assert len(round_object) != 0
 
-    def test_round_end(self):
-        self.game_director.reset_game_values()
-
-        winner = self.game_director.round_end(False)
-
-        assert winner is False
-
-        self.game_director.game_manager.bot_manager.players[0]['victory_points'] = 10
-
-        winner = self.game_director.round_end(False)
-
-        assert winner is True
-
     def test_game_start_and_game_loop(self):
         self.game_director.game_start(1)
 

@@ -309,7 +309,7 @@ class GameManager:
         jugador adyacente a dicha casilla permite robarle un material aleatorio de la mano.
         :param terrain: Número que representa un hexágono en el tablero
         :param adjacent_player: Número de un jugador que esté adyacente al hexágono seleccionado
-        :return: void
+        :return: None
         """
         move_thief_obj = self.board.move_thief(terrain)
         move_thief_obj['robbed_player'] = -1
@@ -399,7 +399,7 @@ class GameManager:
         :param longest_road_obj:
         :param player_id:
         :param visited_nodes:
-        :return:
+        :return: {'longest_road': int, 'player': int}
         """
         for road in node['roads']:
             if ((road['node_id'] not in visited_nodes) and (road['player_id'] == player_id or player_id == -1) and
@@ -421,7 +421,7 @@ class GameManager:
         :param player_id:
         :param card:
         :param winner: bool
-        :return: {}, bool
+        :return: {'id': int, 'type': string, 'effect': int}, bool
         """
         card_obj = {}
 
@@ -636,7 +636,7 @@ class GameManager:
     def set_turn(self, turn=0):
         """
         :param turn: int
-        :return:
+        :return: None
         """
         self.turn_manager.set_turn(turn)
         return
@@ -650,7 +650,7 @@ class GameManager:
     def set_whose_turn_is_it(self, turn=0):
         """
         :param turn: int
-        :return:
+        :return: None
         """
         self.turn_manager.set_whose_turn_is_it(turn)
         return
@@ -658,7 +658,7 @@ class GameManager:
     def set_phase(self, phase=0):
         """
         :param phase: int
-        :return:
+        :return: None
         """
         self.turn_manager.set_phase(phase)
         return
@@ -672,9 +672,9 @@ class GameManager:
     def set_round(self, round=0):
         """
         :param round: int
-        :return:
+        :return: NOne
         """
-        self.turn_manager.set_turn(round)
+        self.turn_manager.set_round(round)
         return
 
     def get_players(self):
@@ -686,7 +686,7 @@ class GameManager:
     def set_actual_player(self, player_id=0):
         """
         :param player_id: int
-        :return:
+        :return: None
         """
         self.turn_manager.actual_player = player_id
         return
@@ -700,7 +700,7 @@ class GameManager:
     def set_longest_road(self, new_longest_road):
         """
         :param new_longest_road: dict
-        :return:
+        :return: None
         """
         self.longest_road = new_longest_road
         return
@@ -772,7 +772,7 @@ class GameManager:
     def set_card_used(self, used):
         """
         :param used: bool
-        :return:
+        :return: None
         """
         self.already_played_development_card = used
         return

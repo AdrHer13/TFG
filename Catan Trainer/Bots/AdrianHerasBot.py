@@ -22,7 +22,7 @@ class AdrianHerasBot(BotInterface):
     def on_trade_offer(self, incoming_trade_offer=TradeOffer()):
         """
         Hay que tener en cuenta que gives se refiere a los materiales que da el jugador que hace la oferta,
-         luego en este caso es lo que recibe
+        luego en este caso es lo que recibe
         :param incoming_trade_offer:
         :return:
         """

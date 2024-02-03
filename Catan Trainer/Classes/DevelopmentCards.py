@@ -104,7 +104,7 @@ class DevelopmentCardsHand:
     def check_hand(self):
         """
         Devuelve la mano que tiene el jugador, por si quiere por su cuenta comprobar qué cartas posee para gastar.
-        :return:
+        :return: [{'id': int, 'type': string, 'effect': int}...]
         """
         hand_array = []
         for card in self.hand:
@@ -118,7 +118,7 @@ class DevelopmentCardsHand:
         Al usar esta función indicas que quieres jugar esta carta pasando el índice de la carta en el array,
         lo que se la pasa al gameManager, la juega y la borra de la mano.
         :param index:
-        :return:
+        :return: {'id': int, 'type': string, 'effect': int}
         """
         if len(self.hand):
             card_obj = self.hand[index]

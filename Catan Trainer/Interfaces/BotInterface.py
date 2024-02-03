@@ -79,7 +79,7 @@ class BotInterface:
     def on_game_start(self, board_instance):
         """
         Se llama únicamente al inicio de la partida y sirve para colocar 1 pueblo y una carretera adyacente en el mapa
-        :return:
+        :return: int, int
         """
         self.board = board_instance
 
@@ -103,13 +103,13 @@ class BotInterface:
     def on_road_building_card_use(self):
         """
         Se eligen 2 lugares válidos donde construir carreteras. Si no son válidos, el programa pondrá aleatorios
-        :return:
+        :return: {'node_id': int, 'road_to': int, 'node_id_2': int, 'road_to_2': int}
         """
         return None
 
     def on_year_of_plenty_card_use(self):
         """
         Se eligen dos materiales (puede elegirse el mismo 2 veces). Te llevas una carta de ese material
-        :return:
+        :return: {'material': int, 'material_2': int}
         """
         return None

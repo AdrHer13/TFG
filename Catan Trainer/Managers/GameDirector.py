@@ -63,7 +63,7 @@ class GameDirector:
         Esta función permite finalizar el turno
         :param winner: bool
         :param player: número que representa al jugador
-        :return: void
+        :return: None
         """
         end_turn_object = {'development_card_played': []}
 
@@ -100,6 +100,10 @@ class GameDirector:
         for i in range(4):
             vp['J' + str(i)] = str(self.game_manager.get_players()[i]['victory_points'])
 
+        for player in self.game_manager.get_players():
+            if player['victory_points'] >= 10:
+                winner = True
+
         end_turn_object['victory_points'] = vp
         return end_turn_object, winner
 
@@ -127,7 +131,7 @@ class GameDirector:
         Esta función permite pasar a la fase de construcción a un jugador.
         :param winner: bool
         :param player: (int) número que representa al jugador.
-        :return: void
+        :return: None
         """
         build_phase_object = {}
 
@@ -183,27 +187,15 @@ class GameDirector:
                     if build_phase_object['building'] == 'None' or not build_phase_object['finished']:
                         building = False
                 obj['build_phase'] = build_phase_array
-                end_turn_object = self.end_turn(winner, self.game_manager.get_whose_turn_is_it())
+
+                end_turn_object, winner = self.end_turn(winner, self.game_manager.get_whose_turn_is_it())
                 obj['end_turn'] = end_turn_object
 
                 round_object['turn_P' + str(i)] = obj
 
-                winner = self.round_end(winner)
                 if winner:
-                    return round_object, winner
-
+                    break
         return round_object, winner
-
-    def round_end(self, winner):
-        """
-        Esta función permite acabar una ronda empezada.
-        """
-        for player in self.game_manager.get_players():
-            if player['victory_points'] >= 10:
-                winner = True
-
-        self.game_manager.set_round(self.game_manager.get_round() + 1)
-        return winner
 
     # Game #
     def game_start(self, game_number=0):
@@ -252,8 +244,10 @@ class GameDirector:
         """
         game_object = {}
         winner = False
+        # TODO: borrar round end. round++ en este bucle. Comprobar winner en end_turn. En un principio eso lo arregla
         while not winner:
             game_object['round_' + str(self.game_manager.get_round())], winner = self.round_start(winner)
+            winner = self.round_end(winner)
 
         print('Game (' + str(game_number) + ') results')
         for i in range(4):

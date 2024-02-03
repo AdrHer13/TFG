@@ -16,7 +16,7 @@ class Hand:
         Si se le pasa una lista se convierte en una función recusiva de sí misma.
         :param resource: (int o list) tipo de recurso a añadir.
         :param amount: (int) cantidad del recurso a añadir.
-        :return: void
+        :return: None
         """
         if isinstance(resource, list):
             for material in resource:
@@ -42,7 +42,7 @@ class Hand:
         Si se le pasa una lista se convierte en una función recusiva de sí misma.
         :param resource: (int o list) tipo de recurso a quitar.
         :param amount: (int)cantidad del recurso a quitar.
-        :return: void
+        :return: None
         """
         if isinstance(resource, list):
             for material in resource:

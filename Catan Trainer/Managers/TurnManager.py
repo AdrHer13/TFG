@@ -17,7 +17,7 @@ class TurnManager:
     def set_turn(self, turn=0):
         """
         :param turn: int
-        :return:
+        :return: None
         """
         self.turn = turn
         return
@@ -25,7 +25,7 @@ class TurnManager:
     def set_whose_turn_is_it(self, player=0):
         """
         :param player: int
-        :return:
+        :return: None
         """
         self.whose_turn_is_it = player
         return
@@ -33,7 +33,7 @@ class TurnManager:
     def set_phase(self, phase=0):
         """
         :param phase: int
-        :return:
+        :return: None
         """
         self.phase = phase
         return
@@ -41,7 +41,7 @@ class TurnManager:
     def set_round(self, round=0):
         """
         :param round: int
-        :return:
+        :return: None
         """
         self.round = round
         return

@@ -271,7 +271,7 @@ class TestBoard:
         """
         Respecto a dudas si puede o no construir una carretera atravesando un pueblo:
             https://www.quora.com/The-Settlers-of-Catan-board-game-Is-it-legal-to-build-a-road-through-an-opponents-settlement
-        :return:
+        :return: None
         """
         board = Board()
 

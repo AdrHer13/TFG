@@ -244,10 +244,9 @@ class GameDirector:
         """
         game_object = {}
         winner = False
-        # TODO: borrar round end. round++ en este bucle. Comprobar winner en end_turn. En un principio eso lo arregla
         while not winner:
             game_object['round_' + str(self.game_manager.get_round())], winner = self.round_start(winner)
-            winner = self.round_end(winner)
+            self.game_manager.set_round(self.game_manager.get_round() + 1)
 
         print('Game (' + str(game_number) + ') results')
         for i in range(4):

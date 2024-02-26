@@ -787,7 +787,7 @@ class GameManager:
             for obj in self.bot_manager.players:
                 if obj['resources'].get_total() > 7:
                     total = obj['player'].on_having_more_than_7_materials_when_thief_is_called().get_total()
-                    max_hand = (total / 2).__floor__()
+                    max_hand = math.floor(total / 2)
 
                     while total > max_hand:
                         obj['resources'].remove_material(random.randint(0, 4), 1)

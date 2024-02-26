@@ -6,10 +6,12 @@ from Classes.TradeOffer import TradeOffer
 from Interfaces.BotInterface import BotInterface
 
 
+# ATENCIÓN: BOT PREPARADO SOLO PARA TESTING. NO UTILIZAR EN UNA PARTIDA REAL
 class AlexPastorBot(BotInterface):
     """
     Es necesario poner super().nombre_de_funcion() para asegurarse de que coge la función del padre
     """
+
     def __init__(self, bot_id):
         super().__init__(bot_id)
 
